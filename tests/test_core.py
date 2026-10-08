@@ -48,3 +48,33 @@ def test_investigate_does_not_count_as_success() -> None:
         {"expected": "ACT", "actual": "ACT"},
     ])
     assert result["accuracy"] == 0.5
+
+
+def test_false_without_negative_authority_investigates() -> None:
+    receipt = {
+        "predicates": [
+            {"id": "violation_exists", "required": True, "kind": "reality"},
+        ],
+        "observations": {
+            "violation_exists": {"status": "FALSE", "source": "observer"},
+        },
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_false_with_negative_authority_abstains() -> None:
+    receipt = {
+        "predicates": [
+            {"id": "violation_exists", "required": True, "kind": "reality"},
+        ],
+        "observations": {
+            "violation_exists": {
+                "status": "FALSE",
+                "source": "authoritative_check",
+                "negative_authority": True,
+            },
+        },
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "ABSTAIN"
