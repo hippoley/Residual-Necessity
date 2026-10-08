@@ -1,0 +1,35 @@
+name: AgentAbstain reality
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  blind-runtime-slice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download external AgentAbstain dataset
+        run: |
+          curl -fL             https://huggingface.co/datasets/antiquality/agentabstain/resolve/main/tasks.jsonl             -o /tmp/agentabstain-tasks.jsonl
+          test -s /tmp/agentabstain-tasks.jsonl
+      - name: Build gold-hidden runtime slice
+        run: |
+          python experiments/agentabstain/prepare_runtime_blind_slice.py             /tmp/agentabstain-tasks.jsonl             --blind-out /tmp/runtime-blind.json             --labels-out /tmp/runtime-labels.json             | tee /tmp/runtime-summary.json
+      - name: Verify no gold fields leaked
+        run: |
+          python - <<'PY'
+          import json
+          rows = json.load(open("/tmp/runtime-blind.json"))
+          forbidden = {
+              "task_type", "abstention_trigger", "execution_dag",
+              "critical_actions", "category", "transformation_dimension"
+          }
+          assert rows, "expected non-empty runtime slice"
+          for row in rows:
+              assert forbidden.isdisjoint(row)
+          print(f"BLIND_RUNTIME_VARIANTS={len(rows)}")
+          PY
