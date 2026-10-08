@@ -32,7 +32,7 @@ Status vocabulary:
 | US-14 | As an ExecSurface consumer, incomplete or unsupported evidence stays UNKNOWN. | CLOSED | Adapter tests cover incomplete collection and unsupported capability. |
 | US-15 | As an ExecSurface consumer, effect absence must not become FALSE until the producer grants proposition-specific negative authority. | CLOSED by conservative contract | Absence returns UNKNOWN; external contract question is open upstream. |
 | US-16 | As a consumer, contradictory typed/raw evidence must fail closed. | CLOSED | Backend, completeness, and warning-code mismatch tests. |
-| US-17 | As a runtime, freshness should be automatically derived from wall-clock TTL. | OPEN / not currently claimed | `observed_at` exists but gate does not compute age. Current contract expects providers to emit STALE or bind evidence to revision. |
+| US-17 | As a runtime, every decision is pinned to a current target revision/state token rather than relying on wall-clock freshness heuristics. | CLOSED for draft semantics | `target.revision` is required; positive/negative authority must match it. Wall-clock TTL is intentionally not inferred by the gate. |
 
 ## Governance/runtime integrations
 
@@ -62,8 +62,8 @@ Status vocabulary:
 | --- | --- | --- | --- |
 | US-30 | As a third-party developer, I can install a versioned package and import a stable API. | OPEN intentionally | No `pyproject.toml` / package release yet. Do not stabilize API before Reality Gate semantics settle. |
 | US-31 | As a third-party developer, schema changes are versioned and examples cannot silently drift. | CLOSED for current draft | Receipt schema bumped to 0.2; examples/conformance validated by JSON Schema in CI. |
-| US-32 | As a third-party developer, the repository has a canonical license file. | OPEN hygiene | Current LICENSE is only the Apache-2.0 notice/header, not the full canonical license text. |
-| US-33 | As a reviewer, one PR tells one coherent story. | OPEN governance debt | PR #2 now contains AgentAbstain, core semantics, ExecSurface, ACS, ADL, and node-valuation work. Needs retitle/reframe or split before merge. |
+| US-32 | As a third-party developer, the repository has a canonical license file. | CLOSED | Full canonical Apache-2.0 license text installed. |
+| US-33 | As a reviewer, one PR tells one coherent story. | PARTIAL | PR #2 has been retitled/reframed as the first Reality Gate branch, but it is still broad (core + AgentAbstain + ExecSurface + ACS + standards work). Keep draft until CI and merge gate are satisfied. |
 | US-34 | As a maintainer, latest commits cancel superseded CI so one PR does not accumulate stale runs. | CLOSED | Workflow concurrency + cancel-in-progress added. |
 
 ## Claims deliberately de-scoped
@@ -87,6 +87,6 @@ The repository should not expand framework surface until these are resolved in o
    Public history must become reviewable before merge.
 4. **US-32 — canonical license hygiene.**
 5. **US-30 — packaging only after semantics survive the Reality Gate.**
-6. **US-17 — time-based freshness only if real workloads require it; revision binding is currently preferred.**
+6. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
 
 If the real evaluation cannot beat reasonable baselines without false-abstention collapse, stop independent framework growth and upstream the useful completeness/conformance pieces.
