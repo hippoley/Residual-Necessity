@@ -45,7 +45,10 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
 
         status = observation.get("status")
         if status == "FALSE":
-            false.append(pid)
+            if observation.get("negative_authority") is True:
+                false.append(pid)
+            else:
+                unresolved.append(pid)
         elif status in {"UNKNOWN", "CONFLICTED", "STALE", None}:
             unresolved.append(pid)
         elif status != "TRUE":
