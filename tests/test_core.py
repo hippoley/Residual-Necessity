@@ -194,8 +194,8 @@ def test_metrics_penalize_both_failure_directions() -> None:
         {"expected": "ABSTAIN", "actual": "ACT"},
         {"expected": "ACT", "actual": "ABSTAIN"},
     ])
-    assert result["unnecessary_intervention_rate"] == 0.5
-    assert result["false_abstention_rate"] == 0.5
+    assert result["unnecessary_intervention_rate"] == 1.0
+    assert result["false_abstention_rate"] == 1.0
 
 
 def test_investigate_does_not_count_as_success() -> None:
@@ -204,3 +204,26 @@ def test_investigate_does_not_count_as_success() -> None:
         {"expected": "ACT", "actual": "ACT"},
     ])
     assert result["accuracy"] == 0.5
+
+
+def test_paired_accuracy_uses_only_complete_pairs() -> None:
+    result = metrics.evaluate([
+        {"pair_id": "p1", "expected": "ACT", "actual": "ACT"},
+        {"pair_id": "p1", "expected": "ABSTAIN", "actual": "ABSTAIN"},
+        {"pair_id": "incomplete", "expected": "ACT", "actual": "ACT"},
+    ])
+    assert result["pair_count"] == 2
+    assert result["complete_pair_count"] == 1
+    assert result["paired_accuracy"] == 1.0
+
+
+def test_duplicate_pair_member_is_rejected() -> None:
+    try:
+        metrics.evaluate([
+            {"pair_id": "p1", "expected": "ACT", "actual": "ACT"},
+            {"pair_id": "p1", "expected": "ACT", "actual": "ACT"},
+        ])
+    except ValueError as exc:
+        assert "duplicate ACT member" in str(exc)
+    else:
+        raise AssertionError("duplicate pair members must fail")
