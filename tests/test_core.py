@@ -227,3 +227,23 @@ def test_duplicate_pair_member_is_rejected() -> None:
         assert "duplicate ACT member" in str(exc)
     else:
         raise AssertionError("duplicate pair members must fail")
+
+
+def test_missing_target_revision_investigates() -> None:
+    receipt = base_receipt()
+    receipt["target"].pop("revision")
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_false_scope_investigates_instead_of_abstaining() -> None:
+    receipt = base_receipt()
+    receipt["predicates"].append(
+        {"id": "scope_is_valid", "required": True, "kind": "scope"}
+    )
+    receipt["observations"]["scope_is_valid"] = {
+        "status": "FALSE",
+        "negative_authority": negative_authority("scope_is_valid"),
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
