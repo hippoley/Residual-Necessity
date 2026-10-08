@@ -45,10 +45,10 @@
     },
     "target": {
       "type": "object",
-      "required": ["identity"],
+      "required": ["identity", "revision"],
       "properties": {
         "identity": {"type": "string", "minLength": 1},
-        "revision": {"type": "string"},
+        "revision": {"type": "string", "minLength": 1},
         "environment": {"type": "object"}
       },
       "additionalProperties": true
