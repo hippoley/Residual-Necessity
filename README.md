@@ -79,7 +79,11 @@ Models may propose hypotheses or probes. The authoritative inputs must come from
 
 ## Current status
 
-**Research prototype. External adoption: none yet.**
+**Research prototype. External adoption: none yet. External evidence qualification: one third-party real-workload record accepted for upstream scientific review.**
+
+ExecSurface maintainers reviewed the preserved Residual-Necessity workload run under their preregistered P8-A4 protocol and classified it as a genuine external real-workload evidence record in the provisional `PARTIAL_OR_UNSUPPORTED / INCOMPLETE` family. This is external scientific qualification of an execution record, not adoption, endorsement, citation, or dependency.
+
+See `docs/EXTERNAL_EVIDENCE.md`.
 
 The project is currently gated by [Reality Gate #1](https://github.com/hippoley/Residual-Necessity/issues/1): no benchmark or runtime-value claim graduates until it is supported by a non-self-referential external result.
 
