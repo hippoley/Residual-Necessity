@@ -50,3 +50,27 @@ Stop treating this as an independent project if a mature neighboring system alre
 6. a stable external interface adopted by real runtimes.
 
 In that case, contribute upstream instead.
+
+
+## 2026-10-08 competitive pressure update
+
+New adjacent systems make the project boundary narrower:
+
+- **Open Agent Passport (OAP)**: deterministic pre-action authorization with signed audit records. This occupies authorization and policy enforcement, not residual necessity.
+- **AgentHook**: a general runtime-evidence envelope for agent lifecycle events. This occupies evidence transport/standardization, so Residual Necessity must not become another generic evidence schema.
+- **Proof-Carrying Agent Actions (PCAA)**: runtime-neutral action certificates spanning admissibility, approval, execution and outcome closure. This occupies portable proof-carrying governance.
+- **sincLLM pre-action evidence and authority gate**: explicitly treats observed start state, evidence freshness, missing/mixed evidence and human hold/escalation as first-class. This overlaps strongly with any broad "pre-action evidence gate" claim.
+
+### Surviving seam
+
+The project should survive only if it can demonstrate a narrower predicate that these systems do not already own:
+
+> Given that an action is authorized, in scope, policy-compliant, and supported by runtime evidence, what currently violated condition still exists that makes this next state transition necessary now?
+
+The differentiator is therefore **residual necessity**, especially:
+- already-fixed / stale requests;
+- partially-fixed states where one historical symptom disappeared but another violated property remains;
+- repeated/retried actions where authority persists but necessity has expired;
+- evidence that is sufficient to authorize observation but insufficient to prove necessity.
+
+If real evaluation cannot show value beyond authorization/evidence/hold semantics already covered by adjacent systems, this project should upstream or stop rather than widen scope.
