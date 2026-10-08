@@ -61,9 +61,11 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
         or not isinstance(target, dict)
         or not isinstance(target.get("identity"), str)
         or not target.get("identity")
+        or not isinstance(target.get("revision"), str)
+        or not target.get("revision")
         or not isinstance(intervention, dict)
     ):
-        return "INVESTIGATE", "missing predicates, observations, target, or intervention"
+        return "INVESTIGATE", "missing predicates, observations, target identity/revision, or intervention"
 
     justified_by = intervention.get("justified_by")
     if (
