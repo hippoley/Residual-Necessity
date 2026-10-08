@@ -34,6 +34,4 @@ annotators:
     type: classifier
 
 tools:
-  dangerous_write:
-    type: Tool
-    id: dangerous_write
+  dangerous_write: {}
