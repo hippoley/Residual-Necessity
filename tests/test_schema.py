@@ -1,0 +1,30 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from jsonschema import Draft202012Validator
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SCHEMA = json.loads((ROOT / "schema" / "necessity.schema.json").read_text(encoding="utf-8"))
+VALIDATOR = Draft202012Validator(SCHEMA)
+
+
+def validate_receipt(receipt: dict) -> None:
+    errors = sorted(VALIDATOR.iter_errors(receipt), key=lambda e: list(e.path))
+    assert not errors, "\n".join(error.message for error in errors)
+
+
+def test_residual_act_example_matches_schema() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    validate_receipt(receipt)
+
+
+def test_all_conformance_receipts_match_schema() -> None:
+    cases = json.loads((ROOT / "conformance" / "core-cases.json").read_text(encoding="utf-8"))
+    for case in cases:
+        try:
+            validate_receipt(case["receipt"])
+        except AssertionError as exc:
+            raise AssertionError(f"{case['id']}: {exc}") from exc
