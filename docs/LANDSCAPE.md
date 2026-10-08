@@ -74,3 +74,39 @@ The differentiator is therefore **residual necessity**, especially:
 - evidence that is sufficient to authorize observation but insufficient to prove necessity.
 
 If real evaluation cannot show value beyond authorization/evidence/hold semantics already covered by adjacent systems, this project should upstream or stop rather than widen scope.
+
+
+## TwinCheck pressure test — 2026-10-08
+
+**TwinCheck: Evidence-Grounded Negative-Twin Verification for Stateful Tool Agents** occupies a nearby but distinct execution-boundary problem.
+
+TwinCheck:
+- starts from a proposed tool action;
+- requires trace-local evidence for a concrete failure hypothesis;
+- constructs a counterfactual replacement ("negative twin");
+- replaces the actor only when the alternative passes structural checks and a pairwise verifier prefers it.
+
+This means Residual Necessity must not claim novelty for:
+- evidence-grounded intervention;
+- execution-boundary verification;
+- avoiding unnecessary repair;
+- preserving the original action when repair is uncertain.
+
+### Surviving distinction
+
+TwinCheck asks:
+
+> Given a suspicious proposed action, should this action be preserved or replaced by a better counterfactual action?
+
+Residual Necessity should ask a prior and narrower question:
+
+> Given current-world evidence, does any residual violated condition still exist that justifies changing state at all?
+
+The strongest candidate cases are therefore:
+- stale requests where the historical problem is already resolved;
+- partial fixes where the original symptom disappeared but a different violated property remains;
+- retries/resumes where authorization persists but necessity has expired;
+- repeated actions where the previous transition already satisfied the relevant invariant;
+- negative evidence that is only admissible when an observer has explicit authority to prove absence.
+
+If evaluation reduces Residual Necessity to action-repair selection or counterfactual replacement, TwinCheck is the stronger prior art and this project should not claim a distinct primitive.
