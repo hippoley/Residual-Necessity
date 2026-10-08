@@ -19,6 +19,8 @@ jobs:
       - name: Build gold-hidden runtime slice
         run: |
           python experiments/agentabstain/prepare_runtime_blind_slice.py             /tmp/agentabstain-tasks.jsonl             --blind-out /tmp/runtime-blind.json             --labels-out /tmp/runtime-labels.json             | tee /tmp/runtime-summary.json
+      - name: Inspect blind runtime shape
+        run: python experiments/agentabstain/inspect_blind_shape.py /tmp/runtime-blind.json
       - name: Verify no gold fields leaked
         run: |
           python - <<'PY'
