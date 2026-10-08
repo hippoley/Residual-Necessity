@@ -1,0 +1,39 @@
+agent_control_specification_version: "0.4.0-alpha.1"
+metadata:
+  name: residual-necessity-e2e
+  version: "0.1.0"
+
+policies:
+  necessity_policy:
+    type: custom
+    adapter: residual_necessity
+
+intervention_points:
+  pre_tool_call:
+    policy_target_kind: tool_args
+    policy_target: "$.tool_call.args"
+    tool_name_from: "$.tool_call.name"
+    annotations:
+      residual_necessity:
+        from: "$target"
+    policy:
+      id: necessity_policy
+
+  post_tool_call:
+    policy_target_kind: tool_result
+    policy_target: "$.tool_result.value"
+    tool_name_from: "$.tool_call.name"
+    annotations:
+      residual_necessity:
+        from: "$target"
+    policy:
+      id: necessity_policy
+
+annotators:
+  residual_necessity:
+    type: classifier
+
+tools:
+  dangerous_write:
+    type: Tool
+    id: dangerous_write
