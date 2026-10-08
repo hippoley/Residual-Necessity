@@ -81,6 +81,8 @@ Models may propose hypotheses or probes. The authoritative inputs must come from
 
 **Research prototype. External adoption: none yet.**
 
+The project is currently gated by [Reality Gate #1](https://github.com/hippoley/Residual-Necessity/issues/1): no benchmark or runtime-value claim graduates until it is supported by a non-self-referential external result.
+
 The repository does not currently claim that Residual Necessity improves a real benchmark. The first graduation requirement is a paired evaluation that measures both:
 
 - unnecessary intervention: acting when the correct outcome is abstention;
