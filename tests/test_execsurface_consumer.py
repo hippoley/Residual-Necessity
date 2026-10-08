@@ -63,8 +63,18 @@ def test_matching_effect_supports_true():
         "target": "/tmp/marker",
         "guarantees": {},
     }]
-    result = consumer.target_write_observation(report, "/tmp/marker")
+    result = consumer.target_write_observation(
+        report,
+        "/tmp/marker",
+        predicate_id="write_effect_exists",
+        target_identity="resource:/tmp/marker",
+        target_revision="r1",
+    )
     assert result["status"] == "TRUE"
+    authority = result["positive_authority"]
+    assert authority["scope"]["predicate_id"] == "write_effect_exists"
+    assert authority["scope"]["target_identity"] == "resource:/tmp/marker"
+    assert authority["scope"]["target_revision"] == "r1"
 
 
 def test_incomplete_collection_is_unknown():
@@ -73,19 +83,37 @@ def test_incomplete_collection_is_unknown():
     report["collection_health"]["warning_codes"] = ["loss"]
     report["raw_observation"]["complete"] = False
     report["raw_observation"]["warnings"] = [{"code": "loss", "tid": None, "message": ""}]
-    result = consumer.target_write_observation(report, "/tmp/marker")
+    result = consumer.target_write_observation(
+        report,
+        "/tmp/marker",
+        predicate_id="write_effect_exists",
+        target_identity="resource:/tmp/marker",
+        target_revision="r1",
+    )
     assert result["status"] == "UNKNOWN"
 
 
 def test_unsupported_capability_is_unknown():
     report = base_report()
     report["unsupported_capabilities"] = ["fd_read_write_effect"]
-    result = consumer.target_write_observation(report, "/tmp/marker")
+    result = consumer.target_write_observation(
+        report,
+        "/tmp/marker",
+        predicate_id="write_effect_exists",
+        target_identity="resource:/tmp/marker",
+        target_revision="r1",
+    )
     assert result["status"] == "UNKNOWN"
 
 
 def test_absence_is_not_silently_false():
-    result = consumer.target_write_observation(base_report(), "/tmp/marker")
+    result = consumer.target_write_observation(
+        base_report(),
+        "/tmp/marker",
+        predicate_id="write_effect_exists",
+        target_identity="resource:/tmp/marker",
+        target_revision="r1",
+    )
     assert result["status"] == "UNKNOWN"
 
 
@@ -93,7 +121,13 @@ def test_contradictory_completeness_fails_closed():
     report = base_report()
     report["raw_observation"]["complete"] = False
     try:
-        consumer.target_write_observation(report, "/tmp/marker")
+        consumer.target_write_observation(
+        report,
+        "/tmp/marker",
+        predicate_id="write_effect_exists",
+        target_identity="resource:/tmp/marker",
+        target_revision="r1",
+    )
     except ValueError as exc:
         assert "contradicts" in str(exc)
     else:
@@ -107,7 +141,13 @@ def test_warning_code_mismatch_fails_closed():
     report["raw_observation"]["complete"] = False
     report["raw_observation"]["warnings"] = [{"code": "different", "tid": None, "message": ""}]
     try:
-        consumer.target_write_observation(report, "/tmp/marker")
+        consumer.target_write_observation(
+        report,
+        "/tmp/marker",
+        predicate_id="write_effect_exists",
+        target_identity="resource:/tmp/marker",
+        target_revision="r1",
+    )
     except ValueError as exc:
         assert "warning codes disagree" in str(exc)
     else:
@@ -118,7 +158,13 @@ def test_backend_mismatch_fails_closed():
     report = base_report()
     report["raw_observation"]["backend"]["name"] = "other"
     try:
-        consumer.target_write_observation(report, "/tmp/marker")
+        consumer.target_write_observation(
+        report,
+        "/tmp/marker",
+        predicate_id="write_effect_exists",
+        target_identity="resource:/tmp/marker",
+        target_revision="r1",
+    )
     except ValueError as exc:
         assert "backend mismatch" in str(exc)
     else:
