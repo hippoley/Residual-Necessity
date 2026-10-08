@@ -14,8 +14,10 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         raise ValueError("at least one evaluation record is required")
 
     total = len(records)
-    correct = unnecessary = false_abstain = investigate = escalate = 0
-    by_pair: dict[str, dict[str, bool]] = {}
+    correct = investigate = escalate = 0
+    unnecessary = false_abstain = 0
+    expected_abstain = expected_act = 0
+    by_pair: dict[str, dict[str, bool | None]] = {}
 
     for record in records:
         expected = str(record.get("expected") or "").upper()
@@ -27,31 +29,51 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
             raise ValueError(f"unsupported actual verdict: {actual!r}")
 
         correct += actual == expected
-        unnecessary += expected == "ABSTAIN" and actual == "ACT"
-        false_abstain += expected == "ACT" and actual == "ABSTAIN"
         investigate += actual == "INVESTIGATE"
         escalate += actual == "ESCALATE"
 
+        if expected == "ABSTAIN":
+            expected_abstain += 1
+            unnecessary += actual == "ACT"
+        else:
+            expected_act += 1
+            false_abstain += actual == "ABSTAIN"
+
         pair_id = record.get("pair_id")
         if isinstance(pair_id, str) and pair_id:
-            state = by_pair.setdefault(pair_id, {"act": False, "abstain": False})
-            if expected == "ACT":
-                state["act"] = actual == "ACT"
-            else:
-                state["abstain"] = actual == "ABSTAIN"
+            state = by_pair.setdefault(pair_id, {"act": None, "abstain": None})
+            key = "act" if expected == "ACT" else "abstain"
+            if state[key] is not None:
+                raise ValueError(f"duplicate {expected} member for pair {pair_id!r}")
+            state[key] = actual == expected
 
-    pairs = list(by_pair.values())
-    paired_correct = sum(1 for pair in pairs if pair["act"] and pair["abstain"])
+    complete_pairs = [
+        pair for pair in by_pair.values()
+        if pair["act"] is not None and pair["abstain"] is not None
+    ]
+    paired_correct = sum(
+        1 for pair in complete_pairs
+        if pair["act"] is True and pair["abstain"] is True
+    )
 
     return {
         "total": total,
         "accuracy": correct / total,
-        "unnecessary_intervention_rate": unnecessary / total,
-        "false_abstention_rate": false_abstain / total,
+        "expected_act_count": expected_act,
+        "expected_abstain_count": expected_abstain,
+        "unnecessary_intervention_rate": (
+            unnecessary / expected_abstain if expected_abstain else None
+        ),
+        "false_abstention_rate": (
+            false_abstain / expected_act if expected_act else None
+        ),
         "investigate_rate": investigate / total,
         "escalate_rate": escalate / total,
-        "pair_count": len(pairs),
-        "paired_accuracy": paired_correct / len(pairs) if pairs else None,
+        "pair_count": len(by_pair),
+        "complete_pair_count": len(complete_pairs),
+        "paired_accuracy": (
+            paired_correct / len(complete_pairs) if complete_pairs else None
+        ),
     }
 
 
