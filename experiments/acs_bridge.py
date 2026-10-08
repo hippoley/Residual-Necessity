@@ -1,10 +1,24 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Callable
 from typing import Any
 
 
 EVIDENCE_STATUSES = {"TRUE", "FALSE", "UNKNOWN", "CONFLICTED", "STALE"}
+
+
+def _artefact(evidence: dict[str, Any]) -> dict[str, str]:
+    encoded = json.dumps(
+        evidence,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        default=str,
+    ).encode("utf-8")
+    digest = hashlib.sha256(encoded).hexdigest()
+    return {"artefact": f"sha256:{digest}"}
 
 
 class NecessityAnnotator:
@@ -35,17 +49,20 @@ class NecessityPolicy:
         annotations = policy_input.get("annotations") or {}
         evidence = annotations.get(self.ANNOTATOR_NAME) or {}
         status = evidence.get("status")
+        artefact = _artefact(evidence)
 
         if status == "TRUE":
             return {
                 "decision": "allow",
                 "reason": "current evidence supports residual necessity",
+                "evidence": artefact,
             }
 
         if status == "FALSE":
             return {
                 "decision": "deny",
                 "reason": "current evidence shows the intervention is unnecessary",
+                "evidence": artefact,
             }
 
         if status in {"UNKNOWN", "CONFLICTED", "STALE"}:
@@ -56,10 +73,12 @@ class NecessityPolicy:
                     "kind": "residual_necessity_review",
                     "evidence_status": status,
                 },
+                "evidence": artefact,
             }
 
         return {
             "decision": "deny",
             "reason": "necessity annotation missing or invalid",
             "approval": {"kind": "residual_necessity_review"},
+            "evidence": artefact,
         }
