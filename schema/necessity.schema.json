@@ -50,7 +50,25 @@
           "status": {"enum": ["TRUE", "FALSE", "UNKNOWN", "CONFLICTED", "STALE"]},
           "source": {"type": "string"},
           "observed_at": {"type": "string"},
-          "negative_authority": {"type": "boolean", "default": false},
+          "negative_authority": {
+            "type": "object",
+            "required": ["scope", "basis", "evidence_ref"],
+            "properties": {
+              "scope": {
+                "type": "object",
+                "required": ["predicate_id", "target_identity"],
+                "properties": {
+                  "predicate_id": {"type": "string", "minLength": 1},
+                  "target_identity": {"type": "string", "minLength": 1},
+                  "target_revision": {"type": "string"}
+                },
+                "additionalProperties": false
+              },
+              "basis": {"type": "string", "minLength": 1},
+              "evidence_ref": {"type": "string", "minLength": 1}
+            },
+            "additionalProperties": true
+          },
           "details": {}
         },
         "additionalProperties": true
