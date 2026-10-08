@@ -16,12 +16,49 @@ def load(path: str | Path) -> dict[str, Any]:
     return value
 
 
+def _negative_authority_matches(
+    authority: Any,
+    *,
+    predicate_id: str,
+    target: dict[str, Any],
+) -> bool:
+    if not isinstance(authority, dict):
+        return False
+    scope = authority.get("scope")
+    if not isinstance(scope, dict):
+        return False
+    if scope.get("predicate_id") != predicate_id:
+        return False
+    if scope.get("target_identity") != target.get("identity"):
+        return False
+
+    expected_revision = target.get("revision")
+    scoped_revision = scope.get("target_revision")
+    if expected_revision is not None and scoped_revision != expected_revision:
+        return False
+
+    basis = authority.get("basis")
+    evidence_ref = authority.get("evidence_ref")
+    if not isinstance(basis, str) or not basis:
+        return False
+    if not isinstance(evidence_ref, str) or not evidence_ref:
+        return False
+    return True
+
+
 def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
     predicates = receipt.get("predicates")
     observations = receipt.get("observations")
+    target = receipt.get("target")
 
-    if not isinstance(predicates, list) or not isinstance(observations, dict):
-        return "INVESTIGATE", "missing predicates or observations"
+    if (
+        not isinstance(predicates, list)
+        or not isinstance(observations, dict)
+        or not isinstance(target, dict)
+        or not isinstance(target.get("identity"), str)
+        or not target.get("identity")
+    ):
+        return "INVESTIGATE", "missing predicates, observations, or target identity"
 
     required = [p for p in predicates if isinstance(p, dict) and p.get("required") is True]
     if not required:
@@ -45,7 +82,11 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
 
         status = observation.get("status")
         if status == "FALSE":
-            if observation.get("negative_authority") is True:
+            if _negative_authority_matches(
+                observation.get("negative_authority"),
+                predicate_id=pid,
+                target=target,
+            ):
                 false.append(pid)
             else:
                 unresolved.append(pid)
