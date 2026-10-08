@@ -50,6 +50,7 @@
           "status": {"enum": ["TRUE", "FALSE", "UNKNOWN", "CONFLICTED", "STALE"]},
           "source": {"type": "string"},
           "observed_at": {"type": "string"},
+          "negative_authority": {"type": "boolean", "default": false},
           "details": {}
         },
         "additionalProperties": true
