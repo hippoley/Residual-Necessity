@@ -67,12 +67,22 @@ def validate_typed_evidence(report: dict[str, Any]) -> None:
         raise ValueError("typed evidence must disclaim policy verdict authority")
 
 
-def target_write_observation(report: dict[str, Any], target: str) -> dict[str, str]:
+def target_write_observation(
+    report: dict[str, Any],
+    effect_target: str,
+    *,
+    predicate_id: str,
+    target_identity: str,
+    target_revision: str | None = None,
+) -> dict[str, Any]:
     validate_typed_evidence(report)
 
     health = report["collection_health"]
     if health["state"] != "complete":
-        return {"status": "UNKNOWN", "reason": f"collection_health={health['state']}"}
+        return {
+            "status": "UNKNOWN",
+            "reason": f"collection_health={health['state']}",
+        }
 
     unsupported = set(report.get("unsupported_capabilities") or [])
     if CAPABILITY in unsupported:
@@ -87,8 +97,26 @@ def target_write_observation(report: dict[str, Any], target: str) -> dict[str, s
             continue
         if (
             effect.get("proposition") == "file_fd_write_effect_observed"
-            and effect.get("target") == target
+            and effect.get("target") == effect_target
         ):
-            return {"status": "TRUE", "reason": "matching effect observed"}
+            scope = {
+                "predicate_id": predicate_id,
+                "target_identity": target_identity,
+            }
+            if target_revision is not None:
+                scope["target_revision"] = target_revision
+
+            return {
+                "status": "TRUE",
+                "reason": "matching effect observed",
+                "source": "execsurface:typed_observation_evidence",
+                "positive_authority": {
+                    "scope": scope,
+                    "basis": "matching_typed_runtime_effect",
+                    "evidence_ref": (
+                        f"execsurface:{report.get('backend', {}).get('implementation_version', 'unknown')}"
+                    ),
+                },
+            }
 
     return {"status": "UNKNOWN", "reason": "absence is not negative evidence"}
