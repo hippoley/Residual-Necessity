@@ -98,11 +98,13 @@ A system that refuses everything has failed.
 
 A necessity receipt records:
 
-- proposed intervention;
-- current target identity;
+- proposed intervention plus explicit `justified_by` reality predicates;
+- current target identity **and revision/state token**;
 - required necessity predicates;
-- observations for those predicates;
-- freshness / unresolved evidence state;
+- observations scoped to the same predicate + target + revision;
+- positive authority for evidence that can justify ACT;
+- bounded negative authority / completeness witness before FALSE may justify ABSTAIN;
+- unresolved evidence state;
 - verdict: `ACT | ABSTAIN | INVESTIGATE | ESCALATE`.
 
 See `schema/necessity.schema.json`.
@@ -116,7 +118,7 @@ python src/gate.py examples/residual-act.json
 Expected:
 
 ```text
-ACT: all required necessity predicates are currently witnessed
+ACT: all required evidence is scoped and intervention justification is currently witnessed
 ```
 
 ## Evaluate paired outcomes
@@ -144,7 +146,20 @@ This project treats neighboring work as constraints, not validation:
 
 Residual Necessity should survive only if it remains distinct from those layers and produces independent measurable value.
 
-See `docs/POSITIONING.md` and `docs/LANDSCAPE.md`.
+See `docs/POSITIONING.md`, `docs/LANDSCAPE.md`, and `docs/USER_STORY_AUDIT.md`.
+
+## Conformance vectors
+
+Draft executable cases live in `conformance/core-cases.json`. They currently cover:
+
+- residual violation after a partial fix → ACT;
+- already-resolved request → ABSTAIN with bounded negative authority;
+- retry after a successful prior transition → ABSTAIN;
+- positive evidence from the wrong revision → INVESTIGATE;
+- absence without negative authority → INVESTIGATE;
+- human-only resolution → ESCALATE.
+
+These are draft conformance vectors, not a stable standard or released compatibility promise.
 
 ## Kill criterion
 
