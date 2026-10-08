@@ -1,0 +1,21 @@
+name: ACS end to end
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  native-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Microsoft ACS Python SDK
+        run: python -m pip install agent-control-specification
+
+      - name: Run Residual Necessity through ACS native runtime
+        run: python experiments/acs_e2e.py
