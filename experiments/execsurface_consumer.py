@@ -73,7 +73,7 @@ def target_write_observation(
     *,
     predicate_id: str,
     target_identity: str,
-    target_revision: str | None = None,
+    target_revision: str,
 ) -> dict[str, Any]:
     validate_typed_evidence(report)
 
@@ -103,8 +103,7 @@ def target_write_observation(
                 "predicate_id": predicate_id,
                 "target_identity": target_identity,
             }
-            if target_revision is not None:
-                scope["target_revision"] = target_revision
+            scope["target_revision"] = target_revision
 
             return {
                 "status": "TRUE",
