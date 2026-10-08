@@ -18,13 +18,57 @@ bridge = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bridge)
 
 
+def authority(predicate_id: str) -> dict[str, Any]:
+    return {
+        "scope": {
+            "predicate_id": predicate_id,
+            "target_identity": "resource:/tmp/demo",
+            "target_revision": "r1",
+        },
+        "basis": "acs_e2e_probe",
+        "evidence_ref": f"e2e:{predicate_id}:r1",
+    }
+
+
+def receipt(status: str) -> dict[str, Any]:
+    violation_observation: dict[str, Any] = {"status": status}
+    if status == "TRUE":
+        violation_observation["positive_authority"] = authority("residual_violation_exists")
+
+    return {
+        "schema_version": "0.2",
+        "intervention": {
+            "id": "dangerous-write",
+            "kind": "write",
+            "description": "write the demo target only when a residual violation remains",
+            "justified_by": ["residual_violation_exists"],
+        },
+        "target": {"identity": "resource:/tmp/demo", "revision": "r1"},
+        "predicates": [
+            {
+                "id": "residual_violation_exists",
+                "required": True,
+                "kind": "reality",
+            },
+            {
+                "id": "target_is_current",
+                "required": True,
+                "kind": "freshness",
+            },
+        ],
+        "observations": {
+            "residual_violation_exists": violation_observation,
+            "target_is_current": {
+                "status": "TRUE",
+                "positive_authority": authority("target_is_current"),
+            },
+        },
+    }
+
+
 def make_control(status: str) -> AgentControl:
     def provider(_: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "status": status,
-            "predicate_id": "residual_violation_exists",
-            "source": "acs_e2e",
-        }
+        return receipt(status)
 
     return AgentControl.from_path(
         str(MANIFEST_PATH),
