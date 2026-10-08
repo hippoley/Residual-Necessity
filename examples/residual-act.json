@@ -1,9 +1,10 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "intervention": {
     "id": "patch-residual-issue-42",
     "kind": "modify_code",
-    "description": "Patch only the residual failure remaining after a partial fix"
+    "description": "Patch only the residual failure remaining after a partial fix",
+    "justified_by": ["residual_failure_exists"]
   },
   "target": {
     "identity": "repo:example/project",
@@ -19,12 +20,42 @@
     "residual_failure_exists": {
       "status": "TRUE",
       "source": "test:residual-repro-42",
+      "positive_authority": {
+        "scope": {
+          "predicate_id": "residual_failure_exists",
+          "target_identity": "repo:example/project",
+          "target_revision": "main@partial789"
+        },
+        "basis": "current_revision_test",
+        "evidence_ref": "test:residual-repro-42"
+      },
       "details": {"violated_property": "P2"}
     },
-    "target_is_current": {"status": "TRUE", "source": "git:partial789"},
+    "target_is_current": {
+      "status": "TRUE",
+      "source": "git:partial789",
+      "positive_authority": {
+        "scope": {
+          "predicate_id": "target_is_current",
+          "target_identity": "repo:example/project",
+          "target_revision": "main@partial789"
+        },
+        "basis": "revision_identity",
+        "evidence_ref": "git:partial789"
+      }
+    },
     "residual_scope_is_unambiguous": {
       "status": "TRUE",
-      "source": "diagnostic:residual-P2"
+      "source": "diagnostic:residual-P2",
+      "positive_authority": {
+        "scope": {
+          "predicate_id": "residual_scope_is_unambiguous",
+          "target_identity": "repo:example/project",
+          "target_revision": "main@partial789"
+        },
+        "basis": "bounded_diagnostic",
+        "evidence_ref": "diagnostic:residual-P2"
+      }
     },
     "historical_failure_still_reproduces": {
       "status": "FALSE",
