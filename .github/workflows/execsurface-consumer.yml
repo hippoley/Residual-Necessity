@@ -50,6 +50,33 @@ jobs:
           "$GITHUB_WORKSPACE/$EXE" init --command "python -m pytest -q" --github-actions
           ls -la
 
+      - name: Capture typed runtime evidence
+        shell: bash
+        run: |
+          set +e
+          EXE="$GITHUB_WORKSPACE/$(cat /tmp/execsurface-path)"
+          cd "$GITHUB_WORKSPACE"
+          "$EXE" observe --evidence-output /tmp/execsurface-evidence.json -- python -m pytest -q
+          RC=$?
+          echo "observe_exit_code=$RC"
+          if [ -f /tmp/execsurface-evidence.json ]; then
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("/tmp/execsurface-evidence.json")
+          data = json.loads(p.read_text())
+          print("schema_version=", data.get("schema_version"))
+          print("report_kind=", data.get("report_kind"))
+          print("collection_health=", data.get("collection_health"))
+          print("unsupported_capabilities=", data.get("unsupported_capabilities"))
+          raw = data.get("raw_observation") or {}
+          print("raw_complete=", raw.get("complete"))
+          print("raw_warnings=", raw.get("warnings"))
+          print("effects=", len(data.get("effects") or []))
+          PY
+          fi
+          exit 0
+
       - name: Learn Residual Necessity workload
         shell: bash
         run: |
@@ -85,5 +112,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: execsurface-residual-necessity-report
-          path: /tmp/execsurface-report.json
+          path: |
+            /tmp/execsurface-report.json
+            /tmp/execsurface-evidence.json
           if-no-files-found: warn
