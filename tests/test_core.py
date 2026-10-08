@@ -52,6 +52,7 @@ def test_investigate_does_not_count_as_success() -> None:
 
 def test_false_without_negative_authority_investigates() -> None:
     receipt = {
+        "target": {"identity": "service:payments", "revision": "r1"},
         "predicates": [
             {"id": "violation_exists", "required": True, "kind": "reality"},
         ],
@@ -65,6 +66,7 @@ def test_false_without_negative_authority_investigates() -> None:
 
 def test_false_with_negative_authority_abstains() -> None:
     receipt = {
+        "target": {"identity": "service:payments", "revision": "r1"},
         "predicates": [
             {"id": "violation_exists", "required": True, "kind": "reality"},
         ],
@@ -72,9 +74,67 @@ def test_false_with_negative_authority_abstains() -> None:
             "violation_exists": {
                 "status": "FALSE",
                 "source": "authoritative_check",
-                "negative_authority": True,
+                "negative_authority": {
+                    "scope": {
+                        "predicate_id": "violation_exists",
+                        "target_identity": "service:payments",
+                        "target_revision": "r1",
+                    },
+                    "basis": "authoritative_query",
+                    "evidence_ref": "sha256:test",
+                },
             },
         },
     }
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "ABSTAIN"
+
+
+def test_negative_authority_for_wrong_target_does_not_abstain() -> None:
+    receipt = {
+        "target": {"identity": "service:payments", "revision": "r1"},
+        "predicates": [
+            {"id": "violation_exists", "required": True, "kind": "reality"},
+        ],
+        "observations": {
+            "violation_exists": {
+                "status": "FALSE",
+                "negative_authority": {
+                    "scope": {
+                        "predicate_id": "violation_exists",
+                        "target_identity": "service:other",
+                        "target_revision": "r1",
+                    },
+                    "basis": "authoritative_query",
+                    "evidence_ref": "sha256:test",
+                },
+            },
+        },
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_negative_authority_for_wrong_revision_does_not_abstain() -> None:
+    receipt = {
+        "target": {"identity": "service:payments", "revision": "r2"},
+        "predicates": [
+            {"id": "violation_exists", "required": True, "kind": "reality"},
+        ],
+        "observations": {
+            "violation_exists": {
+                "status": "FALSE",
+                "negative_authority": {
+                    "scope": {
+                        "predicate_id": "violation_exists",
+                        "target_identity": "service:payments",
+                        "target_revision": "r1",
+                    },
+                    "basis": "authoritative_query",
+                    "evidence_ref": "sha256:test",
+                },
+            },
+        },
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
