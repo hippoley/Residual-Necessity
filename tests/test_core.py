@@ -270,3 +270,27 @@ def test_unknown_top_level_field_fails_closed_at_runtime() -> None:
     receipt["metadata"] = {"unexpected": True}
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "INVESTIGATE"
+
+
+def test_investigate_on_required_action_counts_as_false_abstention() -> None:
+    result = metrics.evaluate([
+        {"expected": "ACT", "actual": "INVESTIGATE"},
+    ])
+    assert result["false_abstention_rate"] == 1.0
+    assert result["act_recall"] == 0.0
+
+
+def test_escalate_on_required_action_counts_as_false_abstention() -> None:
+    result = metrics.evaluate([
+        {"expected": "ACT", "actual": "ESCALATE"},
+    ])
+    assert result["false_abstention_rate"] == 1.0
+    assert result["act_recall"] == 0.0
+
+
+def test_act_recall_is_one_when_required_actions_execute() -> None:
+    result = metrics.evaluate([
+        {"expected": "ACT", "actual": "ACT"},
+        {"expected": "ABSTAIN", "actual": "ABSTAIN"},
+    ])
+    assert result["act_recall"] == 1.0
