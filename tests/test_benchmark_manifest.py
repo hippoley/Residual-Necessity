@@ -22,3 +22,20 @@ def test_single_total_score_is_rejected() -> None:
     data["aggregation"]["single_total_score"]=True
     errors=validator.validate(data)
     assert any("aggregate score" in error for error in errors)
+
+
+def test_manifest_preserves_nopatch_protocol_baseline() -> None:
+    data=json.loads(MANIFEST.read_text(encoding="utf-8"))
+    track=next(t for t in data["tracks"] if t["id"]=="B-residual-partial-fix")
+    names={x["name"] for x in track.get("protocol_baselines",[])}
+    assert "NoPatch Prove First" in names
+
+
+def test_manifest_keeps_three_semantic_tracks() -> None:
+    data=json.loads(MANIFEST.read_text(encoding="utf-8"))
+    ids={t["id"] for t in data["tracks"]}
+    assert {
+        "A-runtime-necessity",
+        "B-residual-partial-fix",
+        "C-evidence-support-boundary",
+    }.issubset(ids)
