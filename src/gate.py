@@ -160,8 +160,8 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
             return "INVESTIGATE", f"intervention justification must reference a necessity predicate: {pid}"
 
     unresolved: list[str] = []
-    false_reality: list[str] = []
-    false_freshness_or_scope: list[str] = []
+    false_necessity: list[str] = []
+    false_constraints: list[str] = []
 
     for predicate in required:
         pid = predicate["id"]
@@ -212,14 +212,13 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
                 continue
 
             kind = predicate.get("kind")
-            if kind == "reality":
-                false_reality.append(pid)
-            elif kind in {"freshness", "scope"}:
-                false_freshness_or_scope.append(pid)
+            role = predicate.get("role")
+            if role == "necessity":
+                false_necessity.append(pid)
             elif kind == "authority":
-                return "ESCALATE", f"authority predicate false: {pid}"
+                return "ESCALATE", f"authority constraint false: {pid}"
             else:
-                unresolved.append(pid)
+                false_constraints.append(pid)
 
         elif status in {"UNKNOWN", "CONFLICTED", "STALE", None}:
             unresolved.append(pid)
@@ -229,15 +228,15 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
     if unresolved:
         return "INVESTIGATE", "required evidence unresolved: " + ", ".join(sorted(unresolved))
 
-    if false_freshness_or_scope:
+    if false_constraints:
         return (
             "INVESTIGATE",
-            "required freshness/scope predicates false: "
-            + ", ".join(sorted(false_freshness_or_scope)),
+            "required constraints false without disproving necessity: "
+            + ", ".join(sorted(false_constraints)),
         )
 
-    if false_reality:
-        return "ABSTAIN", "necessity predicates false: " + ", ".join(sorted(false_reality))
+    if false_necessity:
+        return "ABSTAIN", "necessity predicates false: " + ", ".join(sorted(false_necessity))
 
     for pid in justified_by:
         observation = observations.get(pid) or {}
