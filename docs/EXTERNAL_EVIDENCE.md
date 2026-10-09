@@ -270,3 +270,31 @@ What this does **not** establish:
 - that FixedBench partial-fix cases have been integrated.
 
 This closes the need for synthetic-only partial-fix semantics evidence. The harder agentic question remains separate.
+
+
+## AgentAbstain frozen development / holdout split
+
+Before any predicate-specific method is tuned, the 97 opaque runtime pair IDs were split **without gold labels** using the deterministic pair-level split in `freeze_pair_split.py`.
+
+Public run: **37876394319**
+
+Frozen split:
+- total pairs: **97**
+- development: **64 pairs**
+- holdout: **33 pairs**
+- holdout percentage target: 30%
+- gold used to assign split: **false**
+
+Manifest SHA-256:
+
+`97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79`
+
+Preserved artifact:
+- name: `agentabstain-pair-split`
+- artifact id: **11591769261**
+
+Research rule from this point forward:
+
+> Predicate-specific probe/evidence semantics may be developed against the development partition. Holdout pair outcomes must not be used to tune the method and should only be scored after a candidate method is frozen.
+
+Both variants of a pair share the same partition because assignment is pair-level.
