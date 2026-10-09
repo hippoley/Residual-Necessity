@@ -85,6 +85,16 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
     if not _has_only_keys(target, {"identity", "revision", "environment"}):
         return "INVESTIGATE", "unknown target field"
 
+    if (
+        not isinstance(intervention.get("id"), str)
+        or not intervention.get("id")
+        or not isinstance(intervention.get("kind"), str)
+        or not intervention.get("kind")
+        or not isinstance(intervention.get("description"), str)
+        or not intervention.get("description")
+    ):
+        return "INVESTIGATE", "intervention id/kind/description must be non-empty strings"
+
     justified_by = intervention.get("justified_by")
     if (
         not isinstance(justified_by, list)
@@ -101,11 +111,28 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
         ):
             return "INVESTIGATE", "malformed or unknown predicate field"
         pid = predicate.get("id")
-        if not isinstance(pid, str) or not pid:
-            continue
+        if (
+            not isinstance(pid, str)
+            or not pid
+            or not isinstance(predicate.get("required"), bool)
+            or predicate.get("kind") not in {"reality", "freshness", "scope", "authority"}
+            or (
+                "human_only" in predicate
+                and not isinstance(predicate.get("human_only"), bool)
+            )
+        ):
+            return "INVESTIGATE", "malformed predicate declaration"
         if pid in predicate_map:
             return "INVESTIGATE", f"duplicate predicate id: {pid}"
         predicate_map[pid] = predicate
+
+    unknown_observations = set(observations) - set(predicate_map)
+    if unknown_observations:
+        return (
+            "INVESTIGATE",
+            "observations reference undeclared predicates: "
+            + ", ".join(sorted(unknown_observations)),
+        )
 
     required = [
         p for p in predicate_map.values()
