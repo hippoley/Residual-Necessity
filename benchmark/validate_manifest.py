@@ -42,6 +42,20 @@ def validate(data: dict) -> list[str]:
     split=runtime.get("split") or {}
     if split.get("development_pairs",0)+split.get("holdout_pairs",0)!=97:
         errors.append("AgentAbstain split must cover all 97 pairs")
+    if split.get("category_coverage_required") is not True:
+        errors.append("AgentAbstain split must require category coverage")
+    if split.get("category_metadata_visible_to_inference") is not False:
+        errors.append("trusted category metadata must remain hidden from inference")
+
+    stats=runtime.get("statistics") or {}
+    if stats.get("resampling_unit")!="pair_id":
+        errors.append("runtime confidence intervals must resample pair_id")
+    if stats.get("confidence_interval")!="pair_bootstrap_percentile":
+        errors.append("runtime confidence interval method must be pair bootstrap")
+    if stats.get("confidence_level")!=0.95:
+        errors.append("runtime confidence level must be 0.95")
+    if int(stats.get("bootstrap_samples",0)) < 1000:
+        errors.append("runtime bootstrap must use at least 1000 samples")
     methods=runtime.get("methods") or {}
     if methods.get("candidate_partition")!="development":
         errors.append("candidate method must remain development-only before reveal")
