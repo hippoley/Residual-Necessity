@@ -101,6 +101,29 @@ def _extract_enum_literal(
     }
 
 
+
+def profile_applicable(instruction: str, profile: dict[str, Any]) -> bool:
+    """Return whether a profile is explicitly activated by public instruction text."""
+    activation = profile.get("activation")
+    if activation is None:
+        return True
+    if not isinstance(activation, dict):
+        raise ValueError("profile activation must be an object")
+
+    lowered = instruction.lower()
+    all_terms = activation.get("all_terms") or []
+    any_terms = activation.get("any_terms") or []
+    if not isinstance(all_terms, list) or not all(isinstance(x, str) and x for x in all_terms):
+        raise ValueError("activation all_terms must be non-empty strings")
+    if not isinstance(any_terms, list) or not all(isinstance(x, str) and x for x in any_terms):
+        raise ValueError("activation any_terms must be non-empty strings")
+
+    if any(term.lower() not in lowered for term in all_terms):
+        return False
+    if any_terms and not any(term.lower() in lowered for term in any_terms):
+        return False
+    return True
+
 def bind(
     *,
     instruction: str,
@@ -117,6 +140,17 @@ def bind(
     tool_name = tool.get("name")
     if profile.get("tool") != tool_name:
         raise ValueError("binding profile tool mismatch")
+    if not profile_applicable(instruction, profile):
+        return {
+            "tool": tool_name,
+            "profile_id": profile.get("profile_id"),
+            "arguments": {},
+            "bound_fields": [],
+            "unbound_fields": list(profile.get("required_fields") or []),
+            "binding_complete": False,
+            "provenance": {},
+            "profile_applicable": False,
+        }
 
     schema = tool.get("input_schema") or {}
     properties = schema.get("properties") or {}
@@ -184,4 +218,5 @@ def bind(
         "unbound_fields": sorted(unbound),
         "binding_complete": not unbound,
         "provenance": provenance,
+        "profile_applicable": True,
     }
