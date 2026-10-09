@@ -51,8 +51,8 @@ Status vocabulary:
 | US-23 | As an evaluator, unnecessary intervention and missed required action use the correct class-conditional denominators. | CLOSED after audit fix | Expected-ABSTAIN ACTs count as unnecessary intervention; expected-ACT **any non-ACT** counts as false abstention / missed required action; `act_recall` is reported so always-INVESTIGATE cannot game the metric. |
 | US-24 | As an evaluator, paired accuracy only scores complete ACT/ABSTAIN pairs. | CLOSED | Incomplete pairs excluded; duplicate members rejected. |
 | US-25 | As a benchmark consumer, hidden gold never leaks into inference. | CLOSED for data preparation | AgentAbstain blind-slice tests and CI boundary. |
-| US-26 | As a benchmark consumer, Residual Necessity actually predicts AgentAbstain outcomes from **tool-visible, proposition-specific** current-state observations before labels are revealed. | OPEN — semantic predictor missing | The gold firewall, process-isolated selector/predictor, 194-variant runtime runner, frozen prediction protocol, and development-only observation corpus all exist and are green. What is still missing is the actual proposition-specific evidence mapping; generic probe-success/failure semantics were falsified in run 37875541342. |
-| US-27 | As a project, I can demonstrate lower unnecessary intervention without collapsing legitimate-action recall. | OPEN — primary Reality Gate | No superiority result yet. |
+| US-26 | As a cross-benchmark stress test, Residual Necessity-derived evidence semantics should generalize to AgentAbstain's tool-visible runtime cases without collapsing capability/risk/support into necessity. | OPEN — P1 generalization | The gold firewall and 194-variant runtime runner are real, and generic probe-success/failure semantics were falsified. AgentAbstain mixes capability limitation, conflicting evidence, and emergent-risk constraints, so it is no longer the primary P0 success benchmark for Residual Necessity. |
+| US-27 | As a project, I can demonstrate two-sided utility on a broader external benchmark without collapsing legitimate-action recall or violating the support-vs-necessity boundary. | OPEN — P1 utility/generalization | Broad benchmark superiority remains unproven. This is important for adoption, but no longer defines core semantic correctness because AgentAbstain gold includes non-necessity constraints. |
 | US-28 | As a project, I compare against always-act, always-abstain, and at least one reasonable evidence/repair baseline. | CLOSED for first evidence baseline | Run 37875541342 scored frozen gold-blind `failure_only` and `probe_success` runtime-evidence baselines. `probe_success` retained 88.66% ACT recall but still caused 81.44% unnecessary intervention and only 7.22% paired accuracy, falsifying generic probe-success semantics. |
 | US-29a | As a project, residual/partial-fix semantics are grounded in a real external software history rather than only synthetic fixtures. | CLOSED | P3 run 37876394371 froze a pinned real-world base → two partial attempts → expected-fix sequence from `andwn/cave-story-md`; evidence hash `4a34d59c...`, artifact 11592786218. |
 | US-29b | As a project, an agentic partial-fix evaluation shows the gate acts on a residual violation without false abstention after the historical symptom changes. | OPEN | P3 proves real partial-fix semantics, but no FixedBench/agentic tool-visible residual predicate evaluation is integrated yet. |
@@ -92,12 +92,14 @@ The repository should not expand framework surface until these are resolved in o
    P0 correctness is now narrower and explicit: schema-valid probes are not evidence until semantic arguments are bound (US-38), and local positive evidence cannot authorize an uncovered composite task (US-39). Development-only scoring is holdout-safe (US-40). The current P1 candidate has one real provider profile; expand only from development evidence, freeze the registry, then reveal holdout once.
 3. **US-29b — agentic partial-fix behavior.**
    US-29a is now grounded by a pinned P3 real-world sequence. The remaining question is whether an agentic probe can identify a residual predicate after an intermediate fix without leaking gold.
-4. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
+5. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
    Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
-5. **US-33 — PR/history cleanup.**
+6. **US-33 — PR/history cleanup.**
    Latest-head CI must be green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
-6. **US-30 — package only after US-27 survives.**
+7. **US-30 — package only after necessity-specific value survives broader validation.**
    Do not freeze an API before the existential benchmark result.
-7. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
+8. **US-26 / US-27 — P1 cross-benchmark generalization.**
+   Keep AgentAbstain as a constraint/fail-closed stress test, not as the definition of residual-necessity correctness.
+9. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
 
 If the real evaluation cannot beat reasonable baselines without false-abstention collapse, stop independent framework growth and upstream the useful completeness/conformance pieces.
