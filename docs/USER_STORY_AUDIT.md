@@ -54,7 +54,8 @@ Status vocabulary:
 | US-26 | As a benchmark consumer, Residual Necessity actually predicts AgentAbstain outcomes from **tool-visible** current-state observations before labels are revealed. | OPEN — implementation debt, not data unavailability | AgentAbstain publicly ships the executable environments and runtime export path. Directly reading hidden initial state or gold task fields is disallowed; a read/verify-tool probe runner is still missing. |
 | US-27 | As a project, I can demonstrate lower unnecessary intervention without collapsing legitimate-action recall. | OPEN — primary Reality Gate | No superiority result yet. |
 | US-28 | As a project, I compare against always-act, always-abstain, and at least one reasonable evidence/repair baseline. | CLOSED for first evidence baseline | Run 37875541342 scored frozen gold-blind `failure_only` and `probe_success` runtime-evidence baselines. `probe_success` retained 88.66% ACT recall but still caused 81.44% unnecessary intervention and only 7.22% paired accuracy, falsifying generic probe-success semantics. |
-| US-29 | As a project, partial-fix cases are present in the real evaluation, not only synthetic fixtures. | OPEN | Current partial-fix conformance vector is synthetic; external FixedBench artifact path remains unresolved. |
+| US-29a | As a project, residual/partial-fix semantics are grounded in a real external software history rather than only synthetic fixtures. | CLOSED | P3 run 37876394371 froze a pinned real-world base → two partial attempts → expected-fix sequence from `andwn/cave-story-md`; evidence hash `4a34d59c...`, artifact 11592786218. |
+| US-29b | As a project, an agentic partial-fix evaluation shows the gate acts on a residual violation without false abstention after the historical symptom changes. | OPEN | P3 proves real partial-fix semantics, but no FixedBench/agentic tool-visible residual predicate evaluation is integrated yet. |
 
 ## Product / dependency surface
 
@@ -84,8 +85,8 @@ The repository should not expand framework surface until these are resolved in o
 
 1. **US-26 / US-27 / US-28 — blinded AgentAbstain prediction and measurement.**
    US-37 now proves one read/verify-only external observation path. The next existential step is to turn tool-visible observations into frozen predictions across paired cases, then reveal labels and measure both error directions.
-2. **US-29 — real partial-fix evidence.**
-   FixedBench confirms the failure mode, but no directly consumable public partial-fix executable corpus is currently integrated.
+2. **US-29b — agentic partial-fix behavior.**
+   US-29a is now grounded by a pinned P3 real-world sequence. The remaining question is whether an agentic probe can identify a residual predicate after an intermediate fix without leaking gold.
 3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
    Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
 4. **US-33 — PR/history cleanup.**
