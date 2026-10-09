@@ -14,6 +14,8 @@ from pathlib import Path
 from typing import Any
 import re
 
+from probe_binding import bind as bind_probe
+
 
 def _tokens(value: str) -> set[str]:
     return {token for token in re.findall(r"[a-z0-9]+", value.lower()) if len(token) >= 3}
@@ -22,6 +24,7 @@ def _tokens(value: str) -> set[str]:
 def choose_zero_arg_probe(
     tool_catalog: list[dict[str, Any]],
     instruction: str = "",
+    profiles: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     """Choose one deterministic zero-argument probe from the visible surface.
 
@@ -30,7 +33,16 @@ def choose_zero_arg_probe(
     """
 
     instruction_tokens = _tokens(instruction)
-    candidates: list[tuple[int, str, dict[str, Any]]] = []
+    profile_by_tool: dict[str, dict[str, Any]] = {}
+    for profile in profiles or []:
+        if not isinstance(profile, dict) or not isinstance(profile.get("tool"), str):
+            raise ValueError("binding profiles must be objects with tool")
+        tool_name = profile["tool"]
+        if tool_name in profile_by_tool:
+            raise ValueError(f"duplicate binding profile for tool: {tool_name}")
+        profile_by_tool[tool_name] = profile
+
+    candidates: list[tuple[int, int, str, dict[str, Any]]] = []
     for tool in tool_catalog:
         if not isinstance(tool, dict):
             continue
@@ -41,31 +53,52 @@ def choose_zero_arg_probe(
         if not isinstance(input_schema, dict):
             continue
         required = input_schema.get("required") or []
-        if required:
-            continue
+        if not isinstance(required, list):
+            raise ValueError(f"tool {name!r} schema required must be a list")
         properties = input_schema.get("properties") or {}
         if not isinstance(properties, dict):
             properties = {}
-        projected = {
-            "name": name,
-            "kind": tool.get("kind"),
-            "description": str(tool.get("description") or ""),
-            "input_schema": input_schema,
-            "arguments": {},
-            "bound_fields": [],
-            "unbound_fields": sorted(str(key) for key in properties),
-            "binding_complete": not bool(properties),
-        }
+
+        profile = profile_by_tool.get(name)
+        if profile is not None:
+            bound = bind_probe(
+                instruction=instruction,
+                tool=tool,
+                profile=profile,
+            )
+            projected = {
+                "name": name,
+                "kind": tool.get("kind"),
+                "description": str(tool.get("description") or ""),
+                "input_schema": input_schema,
+                **bound,
+            }
+        else:
+            if required:
+                continue
+            projected = {
+                "name": name,
+                "kind": tool.get("kind"),
+                "description": str(tool.get("description") or ""),
+                "input_schema": input_schema,
+                "profile_id": None,
+                "arguments": {},
+                "bound_fields": [],
+                "unbound_fields": sorted(str(key) for key in properties),
+                "binding_complete": not bool(properties),
+                "provenance": {},
+            }
         tool_tokens = _tokens(name.replace(".", " ").replace("_", " "))
         tool_tokens |= _tokens(projected["description"])
         score = len(instruction_tokens & tool_tokens)
-        candidates.append((score, name, projected))
+        complete = 1 if projected["binding_complete"] else 0
+        candidates.append((complete, score, name, projected))
 
     if not candidates:
         return None
 
-    candidates.sort(key=lambda item: (-item[0], item[1]))
-    return candidates[0][2]
+    candidates.sort(key=lambda item: (-item[0], -item[1], item[2]))
+    return candidates[0][3]
 
 
 def main() -> int:
@@ -78,16 +111,22 @@ def main() -> int:
     if isinstance(payload, list):
         catalog = payload
         instruction = ""
+        profiles = []
     elif isinstance(payload, dict):
         catalog = payload.get("tools")
         instruction = payload.get("instruction") or ""
+        profiles = payload.get("profiles") or []
     else:
         raise ValueError("catalog input must be a JSON list or object")
 
-    if not isinstance(catalog, list) or not isinstance(instruction, str):
+    if (
+        not isinstance(catalog, list)
+        or not isinstance(instruction, str)
+        or not isinstance(profiles, list)
+    ):
         raise ValueError("invalid blind selector input")
 
-    selected = choose_zero_arg_probe(catalog, instruction)
+    selected = choose_zero_arg_probe(catalog, instruction, profiles)
     args.out.write_text(
         json.dumps(selected, sort_keys=True, ensure_ascii=False) + "\n",
         encoding="utf-8",
