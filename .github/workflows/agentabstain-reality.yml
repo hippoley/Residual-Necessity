@@ -151,7 +151,9 @@ jobs:
             --tasks-jsonl /tmp/agentabstain-data/tasks.jsonl \
             --predictions-out /tmp/runtime-evidence-predictions.json \
             --labels-out /tmp/runtime-evidence-labels.json \
-            --summary-out /tmp/runtime-evidence-summary.json
+            --summary-out /tmp/runtime-evidence-summary.json \
+            --development-observations-out /tmp/runtime-development-observations.json \
+            --development-labels-out /tmp/runtime-development-labels.json
 
           python - <<'PY'
           import json
@@ -167,6 +169,17 @@ jobs:
               assert row["failure_only"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
               assert row["probe_success"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
           print("RUNTIME_EVIDENCE_PREDICTIONS=", len(predictions))
+
+          dev_obs = json.load(open("/tmp/runtime-development-observations.json"))
+          dev_labels = json.load(open("/tmp/runtime-development-labels.json"))
+          assert len(dev_obs) == len(dev_labels) == 128, (len(dev_obs), len(dev_labels))
+          assert {row["case_id"] for row in dev_obs} == {row["case_id"] for row in dev_labels}
+          for row in dev_obs:
+              assert "task_type" not in row
+              assert "category" not in row
+              assert "abstention_trigger" not in row
+          print("DEVELOPMENT_VARIANTS_EXPORTED=", len(dev_obs))
+          print("HOLDOUT_OBSERVATION_PAYLOAD_EXPORTED=false")
           PY
 
       - name: Freeze predictions before gold scoring
@@ -189,4 +202,6 @@ jobs:
             /tmp/runtime-evidence-predictions.sha256
             /tmp/runtime-evidence-summary.json
             /tmp/runtime-evidence-scores.json
+            /tmp/runtime-development-observations.json
+            /tmp/runtime-development-labels.json
           if-no-files-found: error
