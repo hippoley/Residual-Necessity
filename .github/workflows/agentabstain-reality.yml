@@ -126,3 +126,51 @@ jobs:
           name: agentabstain-tool-visible-probe
           path: /tmp/agentabstain-probe.json
           if-no-files-found: error
+
+      - name: Run blinded runtime-evidence baselines
+        run: |
+          python experiments/agentabstain/probe_runtime_batch.py \
+            --agentabstain-root /tmp/agentabstain \
+            --data-dir /tmp/agentabstain-data \
+            --tasks-jsonl /tmp/agentabstain-data/tasks.jsonl \
+            --predictions-out /tmp/runtime-evidence-predictions.json \
+            --labels-out /tmp/runtime-evidence-labels.json \
+            --summary-out /tmp/runtime-evidence-summary.json
+
+          python - <<'PY'
+          import json
+          predictions = json.load(open("/tmp/runtime-evidence-predictions.json"))
+          assert predictions, "expected frozen predictions"
+          forbidden = {
+              "task_type", "abstention_trigger", "execution_dag",
+              "critical_actions", "category", "transformation_dimension",
+              "source_pair_id"
+          }
+          for row in predictions:
+              assert forbidden.isdisjoint(row), row
+              assert row["failure_only"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
+              assert row["probe_success"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
+          print("RUNTIME_EVIDENCE_PREDICTIONS=", len(predictions))
+          PY
+
+      - name: Freeze predictions before gold scoring
+        run: |
+          sha256sum /tmp/runtime-evidence-predictions.json | tee /tmp/runtime-evidence-predictions.sha256
+
+      - name: Reveal labels and score runtime-evidence baselines
+        run: |
+          python experiments/agentabstain/score_runtime_baselines.py \
+            --predictions /tmp/runtime-evidence-predictions.json \
+            --labels /tmp/runtime-evidence-labels.json \
+            --out /tmp/runtime-evidence-scores.json
+
+      - name: Preserve runtime-evidence Reality Gate artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-runtime-evidence-baselines
+          path: |
+            /tmp/runtime-evidence-predictions.json
+            /tmp/runtime-evidence-predictions.sha256
+            /tmp/runtime-evidence-summary.json
+            /tmp/runtime-evidence-scores.json
+          if-no-files-found: error
