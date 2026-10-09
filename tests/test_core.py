@@ -330,7 +330,7 @@ def test_false_with_positive_authority_fails_closed() -> None:
     receipt = base_receipt()
     receipt["observations"]["violation_exists"] = {
         "status": "FALSE",
-        "positive_authority": positive_authority("violation_exists"),
+        "positive_authority": base_receipt()["observations"]["violation_exists"]["positive_authority"],
         "negative_authority": negative_authority("violation_exists"),
     }
     verdict, _ = gate.evaluate(receipt)
