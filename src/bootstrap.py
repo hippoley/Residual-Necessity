@@ -15,6 +15,10 @@ METRICS = (
     "act_recall",
     "investigate_rate",
     "escalate_rate",
+    "decision_coverage",
+    "decisive_accuracy",
+    "act_precision",
+    "abstain_precision",
     "paired_accuracy",
 )
 
