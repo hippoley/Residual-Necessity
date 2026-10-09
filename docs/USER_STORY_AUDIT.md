@@ -40,7 +40,7 @@ Status vocabulary:
 | --- | --- | --- | --- |
 | US-18 | As an ACS host, policy decisions must inherit the same core gate semantics instead of trusting a naked status. | CLOSED in code/tests | ACS annotator now consumes a full receipt and calls `gate.evaluate()`. |
 | US-19 | As an Agent Hooks host, scoped ACT permits while ABSTAIN/unresolved evidence blocks before the side effect. | CLOSED for canonical control contract | Agent Hooks Beta E2E is green on push and PR runs using the real InterceptionEmitter. |
-| US-20 | As an ACS/audit consumer, each verdict is bound to the exact receipt used for the decision. | CLOSED in bridge | Annotation includes receipt SHA-256 digest; ACS evidence artefact references it. |
+| US-20 | As an ACS/audit consumer, each verdict is bound to the exact receipt used for the decision. | CLOSED in bridge | Annotation includes receipt SHA-256 digest; ACS evidence artefact references it. Released ACS 0.3.1b1 PRE_TOOL_CALL compatibility is green. |
 | US-21 | As an external project, I can independently reproduce a real Residual-Necessity workload result. | CLOSED for one upstream evidence record | ExecSurface maintainers independently qualified one run as genuine external real-workload evidence. |
 | US-22 | As a standards implementer, I can use an executable conformance pack rather than prose examples. | PARTIAL | `conformance/core-cases.json` exists and is executed in tests; Agent Hooks interoperability is green, but no upstream CTK/conformance claim exists yet. |
 
