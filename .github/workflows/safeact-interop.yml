@@ -26,6 +26,13 @@ jobs:
           git checkout 841816cf1e376e6fbf8600cffac5df1736e1d369
           test "$(git rev-parse HEAD)" = "841816cf1e376e6fbf8600cffac5df1736e1d369"
 
+      - name: Verify pinned SafeAct licensing
+        run: |
+          grep -q "MIT License" /tmp/safeact/LICENSE
+          grep -q "Creative Commons Attribution 4.0 International License" /tmp/safeact/LICENSE-DATA
+          echo "SAFEACT_CODE_LICENSE=MIT"
+          echo "SAFEACT_DATA_LICENSE=CC-BY-4.0"
+
       - name: Verify SafeAct upstream contract module
         run: |
           python experiments/safeact_upstream_contract.py \
