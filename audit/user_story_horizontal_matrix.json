@@ -59,7 +59,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -120,7 +120,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -181,7 +181,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -242,7 +242,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -303,7 +303,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -364,7 +364,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -425,7 +425,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -486,7 +486,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -547,7 +547,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -608,7 +608,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -669,7 +669,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -730,7 +730,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -791,7 +791,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -852,7 +852,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -913,7 +913,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -1035,7 +1035,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
