@@ -37,7 +37,9 @@
       "source": {
         "upstream": "AntiQuality/agentabstain",
         "version_or_commit": "cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3",
-        "contract_basis": "tool schema and complete returned result fields on development-only runtime observations"
+        "contract_basis": "tool schema and complete returned result fields on development-only runtime observations",
+        "contract_type": "pinned_fixture_contract",
+        "contract_ref": "development-only complete result fields observed under pinned AgentAbstain runtime cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3; authority intentionally partial and fixture-bounded"
       },
       "non_claims": [
         "Does not establish global task necessity outside the declared intervention scope.",
