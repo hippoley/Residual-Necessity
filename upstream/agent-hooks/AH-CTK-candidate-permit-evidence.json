@@ -1,17 +1,28 @@
 {
-  "candidate_only": true,
-  "proposed_id": "AH-CTK-XXX-permit-evidence-attribution",
+  "id": "AH-CTK-999-permit-evidence-attribution",
   "title": "run_all: per-interceptor permit evidence remains attributable in the record",
   "spec_clause": "5.3, 7.3, 10.3",
   "part": "record/permit_evidence_attribution",
-  "capabilities": ["model_calls", "tool_calls"],
-  "composition": {"profile": "sequential/run_all"},
+  "capabilities": [
+    "model_calls",
+    "tool_calls"
+  ],
+  "composition": {
+    "profile": "sequential/run_all"
+  },
   "scenario": {
-    "input": {"content": "go", "role": "user"},
+    "input": {
+      "content": "go",
+      "role": "user"
+    },
     "tools": [
       {
         "name": "write_state",
-        "behavior": [{"return": "ok"}]
+        "behavior": [
+          {
+            "return": "ok"
+          }
+        ]
       }
     ],
     "model_script": [
@@ -19,7 +30,11 @@
         "respond": {
           "content": null,
           "tool_calls": [
-            {"id": "tc-1", "name": "write_state", "args": {}}
+            {
+              "id": "tc-1",
+              "name": "write_state",
+              "args": {}
+            }
           ],
           "finish_reason": "tool_calls"
         }
@@ -40,7 +55,9 @@
         "return": {
           "decision": "allow",
           "reason": "candidate:first",
-          "evidence": {"artefact": "sha256:first"}
+          "evidence": {
+            "artefact": "sha256:first"
+          }
         }
       }
     ],
@@ -50,19 +67,41 @@
         "return": {
           "decision": "allow",
           "reason": "candidate:second",
-          "evidence": {"artefact": "sha256:second"}
+          "evidence": {
+            "artefact": "sha256:second"
+          }
         }
       }
     ]
   ],
-  "expect_if_adopted": {
-    "run_outcome": "completed",
-    "record_assertions": {
-      "verdict.decision": "allow",
-      "verdicts[0].decision": "allow",
-      "verdicts[0].evidence.artefact": "sha256:first",
-      "verdicts[1].decision": "allow",
-      "verdicts[1].evidence.artefact": "sha256:second"
-    }
+  "expect": {
+    "sequence_strict": false,
+    "interceptions": [
+      {
+        "interception_point": "pre_tool_call"
+      }
+    ],
+    "tool_invocations": [
+      {
+        "name": "write_state",
+        "args": {}
+      }
+    ],
+    "records": [
+      {
+        "interception_point": "pre_tool_call",
+        "assert": {
+          "verdict.decision": "allow",
+          "composition.profile": "sequential/run_all",
+          "verdicts[0].decision": "allow",
+          "verdicts[0].reason": "candidate:first",
+          "verdicts[0].evidence.artefact": "sha256:first",
+          "verdicts[1].decision": "allow",
+          "verdicts[1].reason": "candidate:second",
+          "verdicts[1].evidence.artefact": "sha256:second"
+        }
+      }
+    ],
+    "run_outcome": "completed"
   }
 }
