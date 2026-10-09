@@ -221,9 +221,18 @@ jobs:
           assert report["holdout_labels_consumed"] is False
           assert report["development_variants"] == 128
           assert report["development_pairs"] == 64
+          expected_categories = {
+              "critical_tool_failure",
+              "conflicting_evidence",
+              "emergent_risk_discovery",
+          }
+          assert set(report["by_category"]) == expected_categories, report["by_category"].keys()
           print("DEVELOPMENT_CANDIDATE_PAIRED_ACCURACY=", report["paired_accuracy"])
           print("DEVELOPMENT_CANDIDATE_ACT_RECALL=", report["act_recall"])
+          print("DEVELOPMENT_CANDIDATE_ABSTAIN_RECALL=", report["abstain_recall"])
+          print("DEVELOPMENT_CANDIDATE_DECISION_COVERAGE=", report["decision_coverage"])
           print("DEVELOPMENT_CANDIDATE_UNNECESSARY_INTERVENTION=", report["unnecessary_intervention_rate"])
+          print("DEVELOPMENT_CANDIDATE_PAIR_OUTCOMES=", report["pair_outcomes"])
           PY
 
       - name: Freeze predictions before gold scoring
