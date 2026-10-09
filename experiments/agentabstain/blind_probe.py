@@ -13,6 +13,10 @@ import json
 from pathlib import Path
 from typing import Any
 import re
+import sys
+
+MODULE_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(MODULE_DIR))
 
 from probe_binding import bind as bind_probe
 
