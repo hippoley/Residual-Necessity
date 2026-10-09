@@ -294,3 +294,24 @@ def test_act_recall_is_one_when_required_actions_execute() -> None:
         {"expected": "ABSTAIN", "actual": "ABSTAIN"},
     ])
     assert result["act_recall"] == 1.0
+
+
+def test_missing_intervention_identity_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["intervention"]["id"] = ""
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_malformed_predicate_declaration_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["predicates"].append({"id": "bad", "required": "yes", "kind": "reality"})
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_observation_for_undeclared_predicate_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["observations"]["ghost"] = {"status": "UNKNOWN"}
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
