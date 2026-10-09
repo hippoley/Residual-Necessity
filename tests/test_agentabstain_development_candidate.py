@@ -55,8 +55,8 @@ def test_development_scorer_never_needs_holdout_labels() -> None:
         },
     ]
     labels = [
-        {"case_id": "a", "pair_id": dev_pair, "task_type": "act"},
-        {"case_id": "b", "pair_id": dev_pair, "task_type": "abstain"},
+        {"case_id": "a", "pair_id": dev_pair, "task_type": "act", "category": "conflicting_evidence"},
+        {"case_id": "b", "pair_id": dev_pair, "task_type": "abstain", "category": "conflicting_evidence"},
     ]
 
     report = scorer.score(predictions, labels)
@@ -66,6 +66,8 @@ def test_development_scorer_never_needs_holdout_labels() -> None:
     assert report["development_pairs"] == 1
     assert report["paired_accuracy"] == 1.0
     assert report["profile_counts"] == {"profile/v1": 2}
+    assert set(report["by_category"]) == {"conflicting_evidence"}
+    assert report["by_category"]["conflicting_evidence"]["paired_accuracy"] == 1.0
     assert report["profiled_variants"] == 2
     assert report["provider_profile_coverage"] == 1.0
     assert report["complete_binding_coverage"] == 1.0
@@ -83,7 +85,7 @@ def test_development_scorer_rejects_holdout_label() -> None:
         }
     ]
     labels = [
-        {"case_id": "h", "pair_id": holdout_pair, "task_type": "act"},
+        {"case_id": "h", "pair_id": holdout_pair, "task_type": "act", "category": "critical_tool_failure"},
     ]
 
     with pytest.raises(ValueError, match="non-development pair leaked"):
