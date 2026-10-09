@@ -48,7 +48,7 @@ Current split audit confirms all three runtime categories appear in both partiti
 - critical tool failure: 24 / 10;
 - emergent risk discovery: 23 / 10.
 
-Blind inference removes task type, abstention trigger, execution DAG, critical actions, semantic category, and transformation metadata.
+Blind inference removes task type, abstention trigger, execution DAG, critical actions, semantic category, transformation metadata, and source task ID. Pair IDs are opaque hashes. CI additionally requires both members of every pair to be identical across all remaining static inference-visible fields, so the benchmark cannot be solved by variant-specific text or metadata instead of runtime evidence.
 
 ## Metrics
 
