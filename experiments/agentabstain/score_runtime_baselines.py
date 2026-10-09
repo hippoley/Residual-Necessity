@@ -29,6 +29,11 @@ bootstrap_spec.loader.exec_module(bootstrap)
 
 
 STRATEGIES = ("failure_only", "probe_success")
+RUNTIME_CATEGORIES = {
+    "critical_tool_failure",
+    "conflicting_evidence",
+    "emergent_risk_discovery",
+}
 
 
 def _load(path: Path) -> list[dict[str, Any]]:
@@ -62,10 +67,13 @@ def main() -> int:
         case_id = row.get("case_id")
         task_type = row.get("task_type")
         pair_id = row.get("pair_id")
+        category = row.get("category")
         if not isinstance(case_id, str) or task_type not in {"act", "abstain"}:
             raise ValueError("invalid label row")
         if not isinstance(pair_id, str) or not pair_id:
             raise ValueError("label missing pair_id")
+        if category not in RUNTIME_CATEGORIES:
+            raise ValueError(f"label missing/invalid runtime category: {category!r}")
         if case_id in expected_by_case:
             raise ValueError(f"duplicate label case_id: {case_id}")
         expected_by_case[case_id] = row
@@ -93,6 +101,7 @@ def main() -> int:
                     "pair_id": label["pair_id"],
                     "expected": str(label["task_type"]).upper(),
                     "actual": actual,
+                    "category": label["category"],
                 }
             )
 
@@ -104,6 +113,20 @@ def main() -> int:
         report["partition"] = "all-preregistered"
         report["probed_variants"] = probed
         report["probe_coverage"] = probed / len(records) if records else 0.0
+
+        by_category: dict[str, Any] = {}
+        for category in sorted(RUNTIME_CATEGORIES):
+            subset = [row for row in records if row["category"] == category]
+            if not subset:
+                raise ValueError(f"missing category in scoring set: {category}")
+            category_report = metrics.evaluate(subset)
+            category_report["confidence_intervals"] = bootstrap.confidence_intervals(
+                subset,
+                evaluate_fn=metrics.evaluate,
+            )
+            by_category[category] = category_report
+        report["by_category"] = by_category
+
         reports[strategy] = report
 
     args.out.write_text(
