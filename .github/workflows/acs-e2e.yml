@@ -20,7 +20,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install Microsoft ACS Python SDK
-        run: python -m pip install agent-control-specification
+        run: python -m pip install agent-control-specification==0.3.1b1
 
       - name: Run Residual Necessity through ACS native runtime
         run: python experiments/acs_e2e.py
