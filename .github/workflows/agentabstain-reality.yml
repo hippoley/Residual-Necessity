@@ -100,6 +100,7 @@ jobs:
           assert record["raw_state_exposed_to_selector"] is False
           assert record["selection_module"] == "blind_probe.choose_zero_arg_probe"
           assert record["trusted_harness_knows_variant"] is True
+          assert record["selection_process_isolated"] is True
           assert "/" not in record["case_id"]
           print(json.dumps(record, indent=2, sort_keys=True))
           PY
