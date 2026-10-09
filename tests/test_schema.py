@@ -69,3 +69,10 @@ def test_authority_scope_requires_target_revision() -> None:
     authority["scope"].pop("target_revision")
     errors = list(VALIDATOR.iter_errors(receipt))
     assert errors
+
+
+def test_predicate_role_is_required_by_schema() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    receipt["predicates"][0].pop("role")
+    errors = list(VALIDATOR.iter_errors(receipt))
+    assert errors
