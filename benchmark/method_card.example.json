@@ -1,0 +1,28 @@
+{
+  "schema_version": "rn-method-card/0.1",
+  "method_id": "example-proposition-specific-v0",
+  "track_id": "A-runtime-necessity",
+  "code_commit": "0000000000000000000000000000000000000000",
+  "provider_profile_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "development_report_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "prediction_protocol": "freeze_before_holdout_reveal",
+  "holdout_status": "sealed",
+  "holdout_release_commit": null,
+  "dependencies": [
+    {
+      "name": "AgentAbstain",
+      "version_or_commit": "cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3",
+      "license": "MIT",
+      "purpose": "runtime evaluation substrate"
+    }
+  ],
+  "claims": {
+    "intended_claim": "Demonstrate proposition-specific necessity decisions on the development partition before any holdout reveal.",
+    "non_claims": [
+      "This example card is not a benchmark result.",
+      "This example card does not authorize holdout access.",
+      "Support or permission evidence is not treated as necessity authority."
+    ]
+  },
+  "development_metrics": {}
+}
