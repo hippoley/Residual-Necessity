@@ -67,7 +67,7 @@ Status vocabulary:
 | US-34 | As a maintainer, latest commits cancel superseded CI so one PR does not accumulate stale runs. | CLOSED | Workflow concurrency + cancel-in-progress added. |
 | US-35 | As a runtime integrator, unknown or misspelled control fields cannot silently change semantics even when JSON Schema validation is bypassed. | CLOSED after audit fix | Schema core objects are closed and `gate.evaluate()` independently fails closed on unknown fields, malformed predicates/interventions, and orphan observations. |
 | US-36 | As an Agent Hooks audit consumer, evidence supporting a permit remains attributable after verdict composition. | OPEN upstream-contract gap | Real Beta E2E shows interceptor permit evidence is not preserved on synthesized combined allow; reproduction is frozen in `docs/AGENT_HOOKS_PERMIT_EVIDENCE_NOTE.md`. No upstream acceptance yet. |
-| US-37 | As a Reality Gate runner, I can obtain AgentAbstain observations without reading hidden initial state or gold task metadata. | OPEN | Public environments make this feasible; a probe runner restricted to lookup/verify tool surface still needs implementation and CI proof. |
+| US-37 | As a Reality Gate runner, I can obtain AgentAbstain observations without reading hidden initial state or gold task metadata. | CLOSED for one real external path | Public CI run 37871728936 used pinned AgentAbstain runtime commit `cfc3faf...`, called only `security_and_privacy_admin.search_breach_records` (kind=`lookup`), produced one execution-log entry, exposed no gold fields, read no raw state, and preserved artifact 11590222305. This proves the observation boundary, not predictive value. |
 
 ## Claims deliberately de-scoped
 
@@ -82,8 +82,8 @@ Status vocabulary:
 
 The repository should not expand framework surface until these are resolved in order:
 
-1. **US-37 → US-26 / US-27 / US-28 — tool-visible AgentAbstain Reality Gate.**
-   Public runtime availability is no longer the blocker. Prove the read/verify-only probe boundary, then derive blinded predictions and measure both error directions.
+1. **US-26 / US-27 / US-28 — blinded AgentAbstain prediction and measurement.**
+   US-37 now proves one read/verify-only external observation path. The next existential step is to turn tool-visible observations into frozen predictions across paired cases, then reveal labels and measure both error directions.
 2. **US-29 — real partial-fix evidence.**
    FixedBench confirms the failure mode, but no directly consumable public partial-fix executable corpus is currently integrated.
 3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
