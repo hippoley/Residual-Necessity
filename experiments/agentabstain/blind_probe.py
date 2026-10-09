@@ -43,10 +43,18 @@ def choose_zero_arg_probe(
         required = input_schema.get("required") or []
         if required:
             continue
+        properties = input_schema.get("properties") or {}
+        if not isinstance(properties, dict):
+            properties = {}
         projected = {
             "name": name,
+            "kind": tool.get("kind"),
             "description": str(tool.get("description") or ""),
             "input_schema": input_schema,
+            "arguments": {},
+            "bound_fields": [],
+            "unbound_fields": sorted(str(key) for key in properties),
+            "binding_complete": not bool(properties),
         }
         tool_tokens = _tokens(name.replace(".", " ").replace("_", " "))
         tool_tokens |= _tokens(projected["description"])
