@@ -76,7 +76,7 @@ def _predict_in_blind_subprocess(observation: dict[str, Any]) -> dict[str, str]:
         value = json.loads(out_path.read_text(encoding="utf-8"))
         if not isinstance(value, dict):
             raise ValueError("blind predictor output must be an object")
-        allowed = {"failure_only", "probe_success"}
+        allowed = {"failure_only", "probe_success", "proposition_specific"}
         if set(value) != allowed:
             raise ValueError(f"unexpected blind predictor keys: {sorted(value)}")
         for prediction in value.values():
@@ -154,6 +154,8 @@ def main() -> int:
                 "error": None,
                 "result": None,
                 "arguments": {},
+                "profile_id": None,
+                "provider_profile": None,
                 "binding_complete": False,
                 "unbound_fields": [],
             }
@@ -204,7 +206,10 @@ def main() -> int:
                 "error": error,
                 "result": _jsonable(result),
                 "tool": observed_tool,
+                "tool_kind": observed_kind,
                 "arguments": arguments,
+                "profile_id": selected.get("profile_id"),
+                "provider_profile": selected.get("provider_profile"),
                 "binding_complete": binding_complete,
                 "unbound_fields": unbound_fields,
             }
@@ -224,6 +229,7 @@ def main() -> int:
                 "unbound_fields": observation.get("unbound_fields") or [],
                 "failure_only": blind_predictions["failure_only"],
                 "probe_success": blind_predictions["probe_success"],
+                "proposition_specific": blind_predictions["proposition_specific"],
             }
         )
 
