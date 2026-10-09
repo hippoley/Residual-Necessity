@@ -196,6 +196,10 @@ jobs:
             --labels /tmp/runtime-development-labels.json \
             --out /tmp/runtime-development-profile.json
 
+      - name: Freeze proposition-provider profile registry
+        run: |
+          sha256sum experiments/agentabstain/probe_binding_profiles.json | tee /tmp/proposition-provider-profiles.sha256
+
       - name: Score proposition candidate on development only
         run: |
           python experiments/agentabstain/score_development_candidate.py \
@@ -238,4 +242,5 @@ jobs:
             /tmp/runtime-development-labels.json
             /tmp/runtime-development-profile.json
             /tmp/runtime-development-candidate-score.json
+            /tmp/proposition-provider-profiles.sha256
           if-no-files-found: error
