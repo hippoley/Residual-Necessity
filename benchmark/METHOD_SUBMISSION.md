@@ -7,15 +7,20 @@ Before any Track A holdout release, freeze a JSON Method Card conforming to
 
 - method identity;
 - exact code commit;
+- benchmark manifest hash;
+- frozen pair-split manifest hash;
+- method configuration hash (prompt/rules/model settings or equivalent);
 - proposition/provider-profile hash;
 - development report hash;
 - external dependencies and versions;
 - the claim being tested and explicit non-claims;
 - whether holdout remains sealed.
 
-The Method Card is intentionally separate from model-specific configuration.
-A method may use deterministic code, a model, or a hybrid system, but evidence
-authority must still come from the benchmark's tool-visible/provider contracts.
+The Method Card is intentionally model-agnostic, but the exact model/prompt/rule
+configuration must be materialized separately and frozen by
+`method_config_sha256`. A method may use deterministic code, a model, or a
+hybrid system, but evidence authority must still come from the benchmark's
+tool-visible/provider contracts.
 
 ## Holdout rule
 
