@@ -1,4 +1,4 @@
-# Residual Necessity Reality Benchmark — Dataset Card
+# Residual Necessity Reality Benchmark 0.2 — Dataset Card
 
 ## Summary
 
@@ -117,7 +117,7 @@ External source licenses remain upstream. In particular, the SafeAct repository 
 ## Third-party method submissions
 
 Track A candidates use the machine-readable contract in `benchmark/method_submission.schema.json`.
-A candidate must freeze its exact code commit, provider-profile hash and development-report hash before holdout release. The one-shot holdout governance lives in `benchmark/holdout_policy.json`.
+A candidate must freeze the Benchmark manifest hash, pair-split hash, exact code commit, materialized method-configuration hash, provider-profile hash, and development-report hash before holdout access. Holdout predictions must then be frozen and hashed before gold scoring. The one-shot holdout governance lives in `benchmark/holdout_policy.json`.
 
 ## Machine-readable metadata
 
