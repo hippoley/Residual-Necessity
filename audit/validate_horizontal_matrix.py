@@ -29,16 +29,49 @@ def validate(data: dict) -> list[str]:
                 errors.append(f"{sid}/{name}: {status} requires evidence")
         for dep in story.get("dependencies",[]):
             if dep==sid: errors.append(f"{sid}: self dependency")
+
+        statuses=[item["status"] for item in story["dimensions"].values()]
+        if "blocked" in statuses:
+            expected_horizontal="blocked"
+        elif "open" in statuses:
+            expected_horizontal="open"
+        elif "partial" in statuses:
+            expected_horizontal="partial"
+        else:
+            expected_horizontal="verified"
+
+        if story.get("horizontal_status") != expected_horizontal:
+            errors.append(
+                f"{sid}: horizontal_status={story.get('horizontal_status')!r} "
+                f"expected {expected_horizontal!r}"
+            )
+
+        if story["vertical_status"]=="closed" and expected_horizontal=="verified":
+            expected_closure="verified_closed"
+        elif story["vertical_status"]=="blocked" or expected_horizontal=="blocked":
+            expected_closure="blocked"
+        elif story["vertical_status"]=="open" or expected_horizontal=="open":
+            expected_closure="open"
+        else:
+            expected_closure="partial"
+
+        if story.get("closure_status") != expected_closure:
+            errors.append(
+                f"{sid}: closure_status={story.get('closure_status')!r} "
+                f"expected {expected_closure!r}"
+            )
     for story in data["stories"]:
         for dep in story.get("dependencies",[]):
             if dep not in ids: errors.append(f"{story['id']}: unknown dependency {dep}")
-        if story["vertical_status"]=="closed":
-            blockers=[
+        if story.get("closure_status")=="verified_closed":
+            nonverified=[
                 name for name,item in story["dimensions"].items()
-                if item["status"] in {"open","blocked"}
+                if item["status"] not in {"verified","not_applicable"}
             ]
-            if blockers:
-                errors.append(f"{story['id']}: closed vertically but horizontal blockers remain: {blockers}")
+            if nonverified:
+                errors.append(
+                    f"{story['id']}: verified_closed with nonverified dimensions: {nonverified}"
+                )
     return errors
 
 if __name__=="__main__":
