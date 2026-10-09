@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+"""Gold-blind selection logic for AgentAbstain runtime probes.
+
+This module intentionally has no AgentAbstain imports and receives no task
+metadata, task type, raw state, or gold labels. It operates only on a
+sanitized list of tool descriptors prepared by the trusted harness.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+
+def choose_zero_arg_probe(tool_catalog: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Choose one deterministic zero-required-argument probe.
+
+    The trusted harness is responsible for ensuring the catalog contains
+    only read-only lookup/verify tools. This function cannot see tool kind,
+    benchmark variant labels, or environment state.
+    """
+
+    candidates: list[dict[str, Any]] = []
+    for tool in tool_catalog:
+        if not isinstance(tool, dict):
+            continue
+        name = tool.get("name")
+        input_schema = tool.get("input_schema") or {}
+        if not isinstance(name, str) or not name:
+            continue
+        if not isinstance(input_schema, dict):
+            continue
+        required = input_schema.get("required") or []
+        if required:
+            continue
+        candidates.append(
+            {
+                "name": name,
+                "description": str(tool.get("description") or ""),
+                "input_schema": input_schema,
+            }
+        )
+
+    if not candidates:
+        return None
+
+    candidates.sort(key=lambda item: item["name"])
+    return candidates[0]
