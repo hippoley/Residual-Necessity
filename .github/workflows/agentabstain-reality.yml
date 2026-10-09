@@ -27,6 +27,22 @@ jobs:
           python experiments/agentabstain/prepare_runtime_blind_slice.py             /tmp/agentabstain-tasks.jsonl             --blind-out /tmp/runtime-blind.json             --labels-out /tmp/runtime-labels.json             | tee /tmp/runtime-summary.json
       - name: Inspect blind runtime shape
         run: python experiments/agentabstain/inspect_blind_shape.py /tmp/runtime-blind.json
+
+      - name: Freeze gold-free development holdout split
+        run: |
+          python experiments/agentabstain/freeze_pair_split.py \
+            /tmp/runtime-blind.json \
+            --out /tmp/runtime-pair-split.json
+          sha256sum /tmp/runtime-pair-split.json | tee /tmp/runtime-pair-split.sha256
+
+      - name: Preserve Reality Gate split manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-pair-split
+          path: |
+            /tmp/runtime-pair-split.json
+            /tmp/runtime-pair-split.sha256
+          if-no-files-found: error
       - name: Score preregistered trivial baselines
         run: |
           python experiments/agentabstain/baselines.py /tmp/runtime-labels.json | tee /tmp/runtime-baselines.json
