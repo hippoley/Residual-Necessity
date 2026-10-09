@@ -22,7 +22,7 @@ metrics = load_module("residual_eval", ROOT / "src" / "eval.py")
 
 def base_receipt() -> dict:
     return {
-        "schema_version": "0.2",
+        "schema_version": "0.3",
         "intervention": {
             "id": "fix-payment",
             "kind": "modify_state",
@@ -31,8 +31,8 @@ def base_receipt() -> dict:
         },
         "target": {"identity": "service:payments", "revision": "r1"},
         "predicates": [
-            {"id": "violation_exists", "required": True, "kind": "reality"},
-            {"id": "target_is_current", "required": True, "kind": "freshness"},
+            {"id": "violation_exists", "required": True, "kind": "reality", "role": "necessity"},
+            {"id": "target_is_current", "required": True, "kind": "freshness", "role": "constraint"},
         ],
         "observations": {
             "violation_exists": {
@@ -175,7 +175,7 @@ def test_false_freshness_investigates_instead_of_abstaining() -> None:
 def test_human_only_predicate_escalates() -> None:
     receipt = base_receipt()
     receipt["predicates"].append(
-        {"id": "human_confirmation", "required": True, "kind": "reality", "human_only": True}
+        {"id": "human_confirmation", "required": True, "kind": "reality", "role": "constraint", "human_only": True}
     )
     receipt["observations"]["human_confirmation"] = {"status": "UNKNOWN"}
     verdict, _ = gate.evaluate(receipt)
@@ -239,7 +239,7 @@ def test_missing_target_revision_investigates() -> None:
 def test_false_scope_investigates_instead_of_abstaining() -> None:
     receipt = base_receipt()
     receipt["predicates"].append(
-        {"id": "scope_is_valid", "required": True, "kind": "scope"}
+        {"id": "scope_is_valid", "required": True, "kind": "scope", "role": "constraint"}
     )
     receipt["observations"]["scope_is_valid"] = {
         "status": "FALSE",
@@ -305,7 +305,7 @@ def test_missing_intervention_identity_fails_closed() -> None:
 
 def test_malformed_predicate_declaration_fails_closed() -> None:
     receipt = base_receipt()
-    receipt["predicates"].append({"id": "bad", "required": "yes", "kind": "reality"})
+    receipt["predicates"].append({"id": "bad", "required": "yes", "kind": "reality", "role": "necessity"})
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "INVESTIGATE"
 
@@ -342,3 +342,72 @@ def test_non_object_target_environment_fails_closed() -> None:
     receipt["target"]["environment"] = "prod"
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "INVESTIGATE"
+
+
+def test_supported_constraint_cannot_justify_action() -> None:
+    receipt = base_receipt()
+    receipt["predicates"].append(
+        {
+            "id": "action_supported",
+            "required": True,
+            "kind": "reality",
+            "role": "constraint",
+        }
+    )
+    receipt["observations"]["action_supported"] = {
+        "status": "TRUE",
+        "positive_authority": {
+            "scope": {
+                "predicate_id": "action_supported",
+                "target_identity": "service:payments",
+                "target_revision": "r1",
+            },
+            "basis": "safeact_style_support_check",
+            "evidence_ref": "sha256:supported",
+        },
+    }
+    receipt["intervention"]["justified_by"] = ["action_supported"]
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_non_reality_predicate_cannot_be_necessity_role() -> None:
+    receipt = base_receipt()
+    receipt["predicates"][1]["role"] = "necessity"
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_legacy_02_receipt_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["schema_version"] = "0.2"
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_false_reality_constraint_does_not_disprove_necessity() -> None:
+    receipt = base_receipt()
+    receipt["predicates"].append(
+        {
+            "id": "action_supported",
+            "required": True,
+            "kind": "reality",
+            "role": "constraint",
+        }
+    )
+    receipt["observations"]["action_supported"] = {
+        "status": "FALSE",
+        "negative_authority": negative_authority("action_supported"),
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_only_false_necessity_can_abstain() -> None:
+    receipt = base_receipt()
+    receipt["observations"]["violation_exists"] = {
+        "status": "FALSE",
+        "negative_authority": negative_authority("violation_exists"),
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "ABSTAIN"

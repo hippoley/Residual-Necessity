@@ -2,8 +2,10 @@
 """Obtain one tool-visible AgentAbstain runtime observation without gold access.
 
 Run this script inside a checkout of the public AgentAbstain repository.
-The caller provides the dataset directory. The probe logic never reads
-MultiEnvironment.state and never calls commit-class tools.
+The caller provides the dataset directory. The trusted harness instantiates the benchmark environment, but the blind
+selector receives only a sanitized read-only tool catalog. The selector has no
+AgentAbstain imports and no access to task type, task metadata, or raw state.
+The harness verifies that no commit-class tool is executed.
 
 It scans runtime-phase categories for the first task variant exposing a
 zero-required-argument lookup/verify tool, calls exactly one such tool, and
@@ -16,9 +18,14 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
+
+BLIND_SELECTOR = Path(__file__).resolve().with_name("blind_probe.py")
+BINDING_PROFILES = Path(__file__).resolve().with_name("probe_binding_profiles.json")
 
 
 RUNTIME_CATEGORIES = (
@@ -62,7 +69,13 @@ def _apply_runtime_surface(bundle: Any, menv: Any) -> set[str] | None:
     return allowed
 
 
-def _candidate_schemas(menv: Any, allowed: set[str] | None) -> list[dict[str, Any]]:
+def _safe_catalog(menv: Any, allowed: set[str] | None) -> list[dict[str, Any]]:
+    """Trusted-harness projection of the public read-only tool surface.
+
+    Tool kind is used only here to prevent commit-class tools from reaching the
+    blind selector. The projected catalog intentionally omits kind and all
+    benchmark metadata.
+    """
     out: list[dict[str, Any]] = []
     for schema in menv.get_tool_schemas():
         name = schema.get("name")
@@ -70,12 +83,73 @@ def _candidate_schemas(menv: Any, allowed: set[str] | None) -> list[dict[str, An
             continue
         if schema.get("kind") not in SAFE_KINDS:
             continue
-        input_schema = schema.get("input_schema") or {}
-        required = input_schema.get("required") or []
-        if required:
-            continue
-        out.append(schema)
+        out.append(
+            {
+                "name": name,
+                "kind": schema.get("kind"),
+                "description": schema.get("description") or "",
+                "input_schema": schema.get("input_schema") or {},
+            }
+        )
     return out
+
+
+
+def _load_binding_profiles() -> list[dict[str, Any]]:
+    value = json.loads(BINDING_PROFILES.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError("binding profile registry must be an object")
+    if value.get("schema_version") != "probe-binding-profiles/0.1":
+        raise ValueError("unsupported binding profile registry version")
+    profiles = value.get("profiles")
+    if not isinstance(profiles, list) or not all(isinstance(x, dict) for x in profiles):
+        raise ValueError("binding profile registry profiles must be objects")
+    return profiles
+
+
+def _select_in_blind_subprocess(
+    catalog: list[dict[str, Any]],
+    instruction: str = "",
+    profiles: list[dict[str, Any]] | None = None,
+) -> dict[str, Any] | None:
+    """Run selector in a separate process with a deliberately minimal environment."""
+    with tempfile.TemporaryDirectory(prefix="rn-blind-probe-") as tmp:
+        tmp_path = Path(tmp)
+        catalog_path = tmp_path / "catalog.json"
+        out_path = tmp_path / "selected.json"
+        catalog_path.write_text(
+            json.dumps(
+                {
+                    "instruction": instruction,
+                    "tools": catalog,
+                    "profiles": profiles or [],
+                },
+                sort_keys=True,
+                ensure_ascii=False,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        subprocess.run(
+            [
+                sys.executable,
+                str(BLIND_SELECTOR),
+                "--catalog",
+                str(catalog_path),
+                "--out",
+                str(out_path),
+            ],
+            check=True,
+            cwd=str(tmp_path),
+            env={
+                "PYTHONIOENCODING": "utf-8",
+                "PYTHONDONTWRITEBYTECODE": "1",
+            },
+        )
+        selected = json.loads(out_path.read_text(encoding="utf-8"))
+        if selected is not None and not isinstance(selected, dict):
+            raise ValueError("blind selector output must be an object or null")
+        return selected
 
 
 def _iter_variants(data_dir: Path):
@@ -105,68 +179,91 @@ def main() -> int:
     from abstention_factory.runtime.multi import build_multi_environment
 
     attempts: list[str] = []
+    profiles = _load_binding_profiles()
 
     for category, task_id, task_type in _iter_variants(args.data_dir):
         bundle = BaseAgent.load_task_bundle(category, task_id, task_type)
         menv = build_multi_environment(bundle.env_types, bundle.initial_states)
         allowed = _apply_runtime_surface(bundle, menv)
 
-        for schema in _candidate_schemas(menv, allowed):
-            tool_name = str(schema["name"])
-            kind = str(schema["kind"])
-            if kind not in SAFE_KINDS:
-                raise AssertionError("probe selected a non-read-only tool")
+        catalog = _safe_catalog(menv, allowed)
+        instruction = str(bundle.task_yaml.get("instruction") or "")
+        selected = _select_in_blind_subprocess(catalog, instruction, profiles)
+        if selected is None:
+            attempts.append(f"{category}/{task_id}/{task_type}: no zero-arg safe tool")
+            continue
 
-            success = True
-            error = None
-            result: Any = None
-            try:
-                result = menv.call_tool(tool_name)
-            except Exception as exc:  # tool failure is itself runtime evidence
-                success = False
-                error = f"{type(exc).__name__}: {exc}"
+        tool_name = str(selected["name"])
+        arguments = selected.get("arguments") or {}
+        if not isinstance(arguments, dict):
+            raise ValueError("blind selector arguments must be an object")
+        binding_complete = selected.get("binding_complete") is True
+        unbound_fields = selected.get("unbound_fields") or []
+        if not isinstance(unbound_fields, list):
+            raise ValueError("blind selector unbound_fields must be a list")
 
-            log = menv.get_execution_log()
-            if not log:
-                attempts.append(f"{tool_name}: no execution log")
-                continue
+        success = True
+        error = None
+        result: Any = None
+        try:
+            result = menv.call_tool(tool_name, **arguments)
+        except Exception as exc:  # tool failure is itself runtime evidence
+            success = False
+            error = f"{type(exc).__name__}: {exc}"
 
-            last = log[-1]
-            observed_tool = str(last.get("tool"))
-            observed_kind = menv.tool_kinds.get(observed_tool)
-            if observed_kind not in SAFE_KINDS:
-                raise AssertionError(
-                    f"probe executed forbidden tool kind: {observed_tool}={observed_kind}"
-                )
-            if any(menv.tool_kinds.get(str(entry.get("tool"))) == "commit" for entry in log):
-                raise AssertionError("commit-class tool appeared in probe execution log")
+        log = menv.get_execution_log()
+        if not log:
+            attempts.append(f"{tool_name}: no execution log")
+            continue
 
-            case_key = f"{category}/{task_id}/{task_type}"
-            record = {
-                "schema_version": "agentabstain-tool-probe/0.1",
-                "case_id": _opaque(case_key),
-                "tool": observed_tool,
-                "tool_kind": observed_kind,
-                "success": success,
-                "error": error,
-                "result": _jsonable(result),
-                "execution_log_length": len(log),
-                "gold_fields_exposed": False,
-                "raw_state_read": False,
-            }
-            args.out.write_text(
-                json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
-                encoding="utf-8",
+        last = log[-1]
+        observed_tool = str(last.get("tool"))
+        observed_kind = menv.tool_kinds.get(observed_tool)
+        if observed_kind not in SAFE_KINDS:
+            raise AssertionError(
+                f"probe executed forbidden tool kind: {observed_tool}={observed_kind}"
             )
-            print(json.dumps({
-                "case_id": record["case_id"],
-                "tool": observed_tool,
-                "tool_kind": observed_kind,
-                "success": success,
-                "raw_state_read": False,
-                "gold_fields_exposed": False,
-            }, sort_keys=True))
-            return 0
+        if any(menv.tool_kinds.get(str(entry.get("tool"))) == "commit" for entry in log):
+            raise AssertionError("commit-class tool appeared in probe execution log")
+
+        case_key = f"{category}/{task_id}/{task_type}"
+        record = {
+            "schema_version": "agentabstain-tool-probe/0.2",
+            "case_id": _opaque(case_key),
+            "tool": observed_tool,
+            "tool_kind": observed_kind,
+            "success": success,
+            "error": error,
+            "result": _jsonable(result),
+            "arguments": arguments,
+            "profile_id": selected.get("profile_id"),
+            "binding_provenance": selected.get("provenance") or {},
+            "binding_complete": binding_complete,
+            "unbound_fields": unbound_fields,
+            "execution_log_length": len(log),
+            "selection_module": "blind_probe.py",
+            "selection_process_isolated": True,
+            "trusted_harness_knows_variant": True,
+            "gold_fields_exposed_to_selector": False,
+            "raw_state_exposed_to_selector": False,
+        }
+        args.out.write_text(
+            json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        print(json.dumps({
+            "case_id": record["case_id"],
+            "tool": observed_tool,
+            "tool_kind": observed_kind,
+            "success": success,
+            "binding_complete": binding_complete,
+            "unbound_fields": unbound_fields,
+            "selection_process_isolated": True,
+            "trusted_harness_knows_variant": True,
+            "gold_fields_exposed_to_selector": False,
+            "raw_state_exposed_to_selector": False,
+        }, sort_keys=True))
+        return 0
 
     raise SystemExit(
         "no zero-required-argument lookup/verify probe found; attempts="

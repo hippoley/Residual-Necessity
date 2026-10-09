@@ -23,7 +23,8 @@
           "type": "object",
           "required": [
             "predicate_id",
-            "target_identity"
+            "target_identity",
+            "target_revision"
           ],
           "properties": {
             "predicate_id": {
@@ -35,7 +36,8 @@
               "minLength": 1
             },
             "target_revision": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "additionalProperties": false
@@ -54,7 +56,7 @@
   },
   "properties": {
     "schema_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "intervention": {
       "type": "object",
@@ -118,7 +120,8 @@
         "required": [
           "id",
           "required",
-          "kind"
+          "kind",
+          "role"
         ],
         "properties": {
           "id": {
@@ -139,9 +142,36 @@
           "human_only": {
             "type": "boolean",
             "default": false
+          },
+          "role": {
+            "enum": [
+              "necessity",
+              "constraint"
+            ]
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "role": {
+                  "const": "necessity"
+                }
+              },
+              "required": [
+                "role"
+              ]
+            },
+            "then": {
+              "properties": {
+                "kind": {
+                  "const": "reality"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "observations": {

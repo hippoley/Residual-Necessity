@@ -1,0 +1,52 @@
+name: Agent Hooks upstream candidate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: residual-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-upstream-shape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Checkout pinned Agent Hooks upstream
+        run: |
+          git clone https://github.com/responsibleai/agent-hooks.git /tmp/agent-hooks
+          cd /tmp/agent-hooks
+          git checkout ccab5e571e82268c80c54d887130c59c5aff88e2
+          test "$(git rev-parse HEAD)" = "ccab5e571e82268c80c54d887130c59c5aff88e2"
+
+      - name: Install same schema validator as upstream CI
+        run: npm install -g ajv-cli@5.0.0 ajv-formats@3.0.1
+
+      - name: Validate candidate with upstream CTK schema
+        run: |
+          cp upstream/agent-hooks/AH-CTK-candidate-permit-evidence.json             /tmp/agent-hooks/conformance/vectors/AH-CTK-999-permit-evidence-attribution.json
+          cd /tmp/agent-hooks
+          ajv validate --spec=draft2020 -c ajv-formats             -s conformance/vectors.schema.json             -r 'spec/schema/*.json'             -r 'spec/schema/agent-context/*.json'             -d conformance/vectors/AH-CTK-999-permit-evidence-attribution.json
+
+      - name: Freeze proposal and vector hashes
+        run: |
+          sha256sum upstream/agent-hooks/PERMIT_EVIDENCE_PROPOSAL_CANDIDATE.md             | tee /tmp/agent-hooks-proposal.sha256
+          sha256sum upstream/agent-hooks/AH-CTK-candidate-permit-evidence.json             | tee /tmp/agent-hooks-vector.sha256
+
+      - name: Preserve upstream-ready material
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-hooks-upstream-candidate
+          path: |
+            upstream/agent-hooks/PERMIT_EVIDENCE_PROPOSAL_CANDIDATE.md
+            upstream/agent-hooks/AH-CTK-candidate-permit-evidence.json
+            /tmp/agent-hooks-proposal.sha256
+            /tmp/agent-hooks-vector.sha256
+          if-no-files-found: error

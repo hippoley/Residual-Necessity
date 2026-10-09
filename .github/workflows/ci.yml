@@ -22,5 +22,26 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install pytest==9.1.1 jsonschema==4.26.0
       - run: pytest -q
+      - run: python audit/validate_horizontal_matrix.py
+      - run: python benchmark/validate_manifest.py
+      - run: python audit/validate_schema_migration.py
+      - run: python audit/impact.py US-25 --json
+      - run: |
+          python conformance/run_external.py \
+            --evaluator "python conformance/reference_stdio.py" \
+            --out /tmp/rn-conformance-report.json
+      - if: matrix.python-version == '3.11'
+        run: |
+          python conformance/freeze_pack.py \
+            --out /tmp/rn-conformance-lock.json
+          cat /tmp/rn-conformance-lock.json
+      - if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rn-conformance-pack-lock
+          path: |
+            /tmp/rn-conformance-report.json
+            /tmp/rn-conformance-lock.json
+          if-no-files-found: error
       - run: python src/gate.py examples/residual-act.json
       - run: python src/eval.py examples/paired-eval.json

@@ -60,7 +60,7 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
     ):
         return "INVESTIGATE", "unknown top-level receipt field"
 
-    if receipt.get("schema_version") != "0.2":
+    if receipt.get("schema_version") != "0.3":
         return "INVESTIGATE", "unsupported or missing schema_version"
 
     predicates = receipt.get("predicates")
@@ -109,7 +109,7 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
     for predicate in predicates:
         if not _has_only_keys(
             predicate,
-            {"id", "required", "kind", "human_only"},
+            {"id", "required", "kind", "role", "human_only"},
         ):
             return "INVESTIGATE", "malformed or unknown predicate field"
         pid = predicate.get("id")
@@ -118,6 +118,11 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
             or not pid
             or not isinstance(predicate.get("required"), bool)
             or predicate.get("kind") not in {"reality", "freshness", "scope", "authority"}
+            or predicate.get("role") not in {"necessity", "constraint"}
+            or (
+                predicate.get("role") == "necessity"
+                and predicate.get("kind") != "reality"
+            )
             or (
                 "human_only" in predicate
                 and not isinstance(predicate.get("human_only"), bool)
@@ -151,10 +156,12 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
             return "INVESTIGATE", f"intervention justification predicate is not required: {pid}"
         if predicate.get("kind") != "reality":
             return "INVESTIGATE", f"intervention justification must reference a reality predicate: {pid}"
+        if predicate.get("role") != "necessity":
+            return "INVESTIGATE", f"intervention justification must reference a necessity predicate: {pid}"
 
     unresolved: list[str] = []
-    false_reality: list[str] = []
-    false_freshness_or_scope: list[str] = []
+    false_necessity: list[str] = []
+    false_constraints: list[str] = []
 
     for predicate in required:
         pid = predicate["id"]
@@ -205,14 +212,13 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
                 continue
 
             kind = predicate.get("kind")
-            if kind == "reality":
-                false_reality.append(pid)
-            elif kind in {"freshness", "scope"}:
-                false_freshness_or_scope.append(pid)
+            role = predicate.get("role")
+            if role == "necessity":
+                false_necessity.append(pid)
             elif kind == "authority":
-                return "ESCALATE", f"authority predicate false: {pid}"
+                return "ESCALATE", f"authority constraint false: {pid}"
             else:
-                unresolved.append(pid)
+                false_constraints.append(pid)
 
         elif status in {"UNKNOWN", "CONFLICTED", "STALE", None}:
             unresolved.append(pid)
@@ -222,15 +228,15 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
     if unresolved:
         return "INVESTIGATE", "required evidence unresolved: " + ", ".join(sorted(unresolved))
 
-    if false_freshness_or_scope:
+    if false_constraints:
         return (
             "INVESTIGATE",
-            "required freshness/scope predicates false: "
-            + ", ".join(sorted(false_freshness_or_scope)),
+            "required constraints false without disproving necessity: "
+            + ", ".join(sorted(false_constraints)),
         )
 
-    if false_reality:
-        return "ABSTAIN", "necessity predicates false: " + ", ".join(sorted(false_reality))
+    if false_necessity:
+        return "ABSTAIN", "necessity predicates false: " + ", ".join(sorted(false_necessity))
 
     for pid in justified_by:
         observation = observations.get(pid) or {}

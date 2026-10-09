@@ -1,0 +1,168 @@
+from __future__ import annotations
+
+import importlib.util
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+MODULE = ROOT / "experiments" / "agentabstain" / "blind_probe.py"
+
+spec = importlib.util.spec_from_file_location("agentabstain_blind_probe", MODULE)
+assert spec and spec.loader
+blind = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(blind)
+
+
+def test_blind_selector_chooses_deterministic_zero_arg_tool() -> None:
+    catalog = [
+        {
+            "name": "z.lookup",
+            "description": "read",
+            "input_schema": {"type": "object", "required": []},
+        },
+        {
+            "name": "a.verify",
+            "description": "verify",
+            "input_schema": {"type": "object"},
+        },
+    ]
+    selected = blind.choose_zero_arg_probe(catalog)
+    assert selected is not None
+    assert selected["name"] == "a.verify"
+    assert selected["arguments"] == {}
+    assert selected["binding_complete"] is True
+    assert selected["unbound_fields"] == []
+
+
+def test_blind_selector_rejects_required_argument_tools() -> None:
+    catalog = [
+        {
+            "name": "lookup.by_id",
+            "description": "read",
+            "input_schema": {"type": "object", "required": ["id"]},
+        }
+    ]
+    assert blind.choose_zero_arg_probe(catalog) is None
+
+
+def test_blind_module_has_no_gold_or_hidden_state_dependencies() -> None:
+    source = MODULE.read_text(encoding="utf-8")
+    forbidden = {
+        "AntiQuality",
+        "agentabstain",
+        "BaseAgent",
+        "TaskBundle",
+        "task_type",
+        "execution_dag",
+        "abstention_trigger",
+        "critical_actions",
+        "initial_states",
+        "raw_state",
+    }
+    for token in forbidden:
+        assert token not in source, f"blind probe leaked forbidden dependency token: {token}"
+
+
+def test_blind_selector_cli_runs_in_minimal_subprocess(tmp_path: Path) -> None:
+    catalog = [
+        {
+            "name": "safe.lookup",
+            "description": "read",
+            "input_schema": {"type": "object", "required": []},
+        }
+    ]
+    catalog_path = tmp_path / "catalog.json"
+    out_path = tmp_path / "selected.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(MODULE),
+            "--catalog",
+            str(catalog_path),
+            "--out",
+            str(out_path),
+        ],
+        check=True,
+        cwd=str(tmp_path),
+        env={
+            "PYTHONIOENCODING": "utf-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+        },
+    )
+
+    selected = json.loads(out_path.read_text(encoding="utf-8"))
+    assert selected["name"] == "safe.lookup"
+
+
+def test_blind_selector_marks_optional_parameter_surface_unbound() -> None:
+    catalog = [
+        {
+            "name": "calendar.verify_calendar_events",
+            "kind": "verify",
+            "description": "verify calendar events",
+            "input_schema": {
+                "type": "object",
+                "required": [],
+                "properties": {
+                    "date": {"type": "string"},
+                    "title": {"type": "string"},
+                },
+            },
+        }
+    ]
+    selected = blind.choose_zero_arg_probe(catalog, "Check my dentist appointment on 2026-05-07")
+    assert selected is not None
+    assert selected["arguments"] == {}
+    assert selected["binding_complete"] is False
+    assert selected["unbound_fields"] == ["date", "title"]
+
+
+def test_complete_profile_can_select_required_argument_verify() -> None:
+    catalog = [
+        {
+            "name": "generic.lookup",
+            "kind": "lookup",
+            "description": "look up general records",
+            "input_schema": {"type": "object", "required": [], "properties": {}},
+        },
+        {
+            "name": "bank.verify_account",
+            "kind": "verify",
+            "description": "verify an account number",
+            "input_schema": {
+                "type": "object",
+                "required": ["account_number"],
+                "properties": {"account_number": {"type": "string"}},
+            },
+        },
+    ]
+    profiles = [
+        {
+            "profile_id": "bank-account/v1",
+            "tool": "bank.verify_account",
+            "required_fields": ["account_number"],
+            "extractors": {
+                "account_number": {
+                    "kind": "regex",
+                    "pattern": r"account\s+(?P<value>\d{10})",
+                }
+            },
+        }
+    ]
+
+    selected = blind.choose_zero_arg_probe(
+        catalog,
+        "Please verify account 5540119283 before sending.",
+        profiles,
+    )
+    assert selected is not None
+    assert selected["name"] == "bank.verify_account"
+    assert selected["arguments"] == {"account_number": "5540119283"}
+    assert selected["binding_complete"] is True
+    assert selected["profile_id"] == "bank-account/v1"
