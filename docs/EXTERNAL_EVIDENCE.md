@@ -439,3 +439,51 @@ Receipt hashes from the same run:
 - final: `e01d9dd398fe7b9dad89ec34b5dfef61ae668cd9c2bfdab74dbf25b5945453c2`
 
 This closes the **cross-module control-plane integration** gap for one bounded real external partial-fix case. It still does not establish a general agent capability to discover arbitrary residual predicates automatically.
+
+
+## Benchmark integrity / corpus coverage checkpoint — 2026-10-09
+
+The multi-track benchmark hardening is now backed by successful public CI on the same branch head.
+
+### Track A — AgentAbstain
+
+- 97 paired runtime cases / 194 variants.
+- Static inference-view equivalence audit: **97/97 pairs pass**, **0 differing pairs** after hiding gold/identity metadata including `task_id`.
+- Development / holdout: 64 / 33 pairs, pair-level and gold-free.
+- Category-stratified scoring covers all three runtime triggers.
+- Current proposition candidate remains a negative result:
+  - provider-profile coverage 1.56%;
+  - complete-binding coverage 21.875%;
+  - decision coverage 0.78125%;
+  - ACT recall 0%;
+  - ABSTAIN recall 1.5625%;
+  - paired accuracy 0%;
+  - two-sided recall geometric mean 0;
+  - pair outcomes: 1 abstain-only correct, 63 neither correct.
+
+This makes the previous 100% decisive accuracy explicitly non-headline: it arose from one decisive prediction out of 128 development variants.
+
+### Track B — P3
+
+Pinned corpus inventory:
+- 187 partial-fix tasks;
+- 85 unique repositories;
+- 187 reconstructable revision chains;
+- reconstructable fraction 1.0;
+- attempt-count distribution spans 1–11 attempts.
+
+The corpus inventory makes no oracle-coverage claim. Residual Necessity verdict authority remains bounded to the separately verified cave-story-md issue #169 oracle pair.
+
+### Track C — SafeAct
+
+Pinned corpus adapter audit:
+- 277 materialized evidence files;
+- 277 projected constraint predicates;
+- 176 positive-authority constraints;
+- **0 negative-authority constraints**;
+- output status distribution: 176 TRUE / 93 UNKNOWN / 7 STALE / 1 CONFLICTED;
+- SafeAct source status distribution: 181 SUPPORTED / 53 MISSING / 42 VIOLATED / 1 UNAVAILABLE_IN_ENV.
+
+Every corpus projection remained `role=constraint`; SafeAct support was never promoted to residual necessity, and MISSING/DEFER never granted negative authority.
+
+These results establish benchmark integrity and external-corpus coverage, not Track A superiority. Holdout remains sealed.
