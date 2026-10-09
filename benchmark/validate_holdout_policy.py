@@ -38,6 +38,7 @@ def validate_policy(policy: dict[str, Any]) -> list[str]:
                 "candidate_code_commit",
                 "provider_profile_sha256",
                 "development_report_sha256",
+                "method_card_sha256",
             ):
                 value = released.get(key)
                 if not isinstance(value, str) or not value:
