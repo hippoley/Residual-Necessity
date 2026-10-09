@@ -67,6 +67,11 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         "unnecessary_intervention_rate": (
             unnecessary / expected_abstain if expected_abstain else None
         ),
+        "missed_required_action_rate": (
+            false_abstain / expected_act if expected_act else None
+        ),
+        # Backward-compatible alias. Semantically this now means any
+        # non-ACT outcome on an expected-ACT case, not only explicit ABSTAIN.
         "false_abstention_rate": (
             false_abstain / expected_act if expected_act else None
         ),
