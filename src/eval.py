@@ -37,7 +37,10 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
             unnecessary += actual == "ACT"
         else:
             expected_act += 1
-            false_abstain += actual == "ABSTAIN"
+            # Any non-ACT outcome withholds a required intervention.
+            # Counting only explicit ABSTAIN would let an always-INVESTIGATE
+            # system report zero false-abstention while never acting.
+            false_abstain += actual != "ACT"
 
         pair_id = record.get("pair_id")
         if isinstance(pair_id, str) and pair_id:
@@ -66,6 +69,9 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "false_abstention_rate": (
             false_abstain / expected_act if expected_act else None
+        ),
+        "act_recall": (
+            (expected_act - false_abstain) / expected_act if expected_act else None
         ),
         "investigate_rate": investigate / total,
         "escalate_rate": escalate / total,
