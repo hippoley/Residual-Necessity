@@ -24,8 +24,13 @@ jobs:
       - run: pytest -q
       - run: python audit/validate_horizontal_matrix.py
       - run: python benchmark/validate_manifest.py
+      - run: python benchmark/validate_holdout_policy.py
       - run: python audit/validate_schema_migration.py
       - run: python audit/impact.py US-25 --json
+      - if: matrix.python-version == '3.11'
+        run: python -m pip install mlcroissant==1.1.0
+      - if: matrix.python-version == '3.11'
+        run: mlcroissant validate --jsonld benchmark/croissant.json
       - run: |
           python conformance/run_external.py \
             --evaluator "python conformance/reference_stdio.py" \
