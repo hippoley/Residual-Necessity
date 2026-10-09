@@ -47,6 +47,23 @@ def validate(data: dict) -> list[str]:
     if split.get("category_metadata_visible_to_inference") is not False:
         errors.append("trusted category metadata must remain hidden from inference")
 
+    leakage=runtime.get("leakage_controls") or {}
+    hidden=set(leakage.get("hidden_inference_fields") or [])
+    required_hidden={
+        "task_type","abstention_trigger","execution_dag","critical_actions",
+        "category","transformation_dimension","task_id",
+    }
+    if not required_hidden.issubset(hidden):
+        errors.append("runtime leakage controls missing required hidden fields")
+    if leakage.get("opaque_pair_id") is not True:
+        errors.append("runtime pair ids must remain opaque")
+    if leakage.get("static_pair_equivalence_required") is not True:
+        errors.append("runtime blind pairs must require static equivalence")
+    if leakage.get("category_visible_only_to_trusted_scoring") is not True:
+        errors.append("runtime category must remain scoring-only")
+    if leakage.get("source_task_identity_visible_to_inference") is not False:
+        errors.append("runtime task identity must remain hidden from inference")
+
     stats=runtime.get("statistics") or {}
     if stats.get("resampling_unit")!="pair_id":
         errors.append("runtime confidence intervals must resample pair_id")
