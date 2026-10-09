@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -58,3 +62,36 @@ def test_blind_module_has_no_gold_or_hidden_state_dependencies() -> None:
     }
     for token in forbidden:
         assert token not in source, f"blind probe leaked forbidden dependency token: {token}"
+
+
+def test_blind_selector_cli_runs_in_minimal_subprocess(tmp_path: Path) -> None:
+    catalog = [
+        {
+            "name": "safe.lookup",
+            "description": "read",
+            "input_schema": {"type": "object", "required": []},
+        }
+    ]
+    catalog_path = tmp_path / "catalog.json"
+    out_path = tmp_path / "selected.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(MODULE),
+            "--catalog",
+            str(catalog_path),
+            "--out",
+            str(out_path),
+        ],
+        check=True,
+        cwd=str(tmp_path),
+        env={
+            "PYTHONIOENCODING": "utf-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+        },
+    )
+
+    selected = json.loads(out_path.read_text(encoding="utf-8"))
+    assert selected["name"] == "safe.lookup"
