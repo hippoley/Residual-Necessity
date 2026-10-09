@@ -39,10 +39,10 @@ Status vocabulary:
 | ID | User story | Status | Acceptance evidence |
 | --- | --- | --- | --- |
 | US-18 | As an ACS host, policy decisions must inherit the same core gate semantics instead of trusting a naked status. | CLOSED in code/tests | ACS annotator now consumes a full receipt and calls `gate.evaluate()`. |
-| US-19 | As an ACS host, ACT allows tool execution; unresolved necessity blocks/escalates before the side effect. | PARTIAL | Native-runtime E2E exists; latest GitHub Actions verification is still pending. |
+| US-19 | As an Agent Hooks host, scoped ACT permits while ABSTAIN/unresolved evidence blocks before the side effect. | CLOSED for canonical control contract | Agent Hooks Beta E2E is green on push and PR runs using the real InterceptionEmitter. |
 | US-20 | As an ACS/audit consumer, each verdict is bound to the exact receipt used for the decision. | CLOSED in bridge | Annotation includes receipt SHA-256 digest; ACS evidence artefact references it. |
 | US-21 | As an external project, I can independently reproduce a real Residual-Necessity workload result. | CLOSED for one upstream evidence record | ExecSurface maintainers independently qualified one run as genuine external real-workload evidence. |
-| US-22 | As a standards implementer, I can use a stable conformance pack rather than prose examples. | PARTIAL | `conformance/core-cases.json` exists and is executed in tests; no released/stable version yet. |
+| US-22 | As a standards implementer, I can use an executable conformance pack rather than prose examples. | PARTIAL | `conformance/core-cases.json` exists and is executed in tests; Agent Hooks interoperability is green, but no upstream CTK/conformance claim exists yet. |
 
 ## Evaluation / Reality Gate
 
@@ -81,8 +81,8 @@ The repository should not expand framework surface until these are resolved in o
 
 1. **US-26 / US-27 / US-28 / US-29 — real paired evaluation.**
    This is the project’s existential gate.
-2. **US-19 — real ACS native-runtime verification.**
-   Integration claims remain provisional until the external runtime passes.
+2. **Agent Hooks upstream/conformance reality.**
+   Canonical runtime interoperability is now proven locally/CI; external maintainer discussion or CTK contribution is still absent.
 3. **US-33 — PR/history cleanup.**
    Public history must become reviewable before merge.
 4. **US-32 — canonical license hygiene.**
