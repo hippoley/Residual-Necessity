@@ -75,6 +75,16 @@ def validate(data: dict) -> list[str]:
         errors.append("runtime confidence level must be 0.95")
     if int(stats.get("bootstrap_samples",0)) < 1000:
         errors.append("runtime bootstrap must use at least 1000 samples")
+    engine=runtime.get("provider_expression_engine") or {}
+    if engine.get("implementation")!="cel-expr-python":
+        errors.append("runtime provider expression engine must be cel-expr-python")
+    if engine.get("version")!="0.1.3":
+        errors.append("runtime CEL provider engine must remain pinned to 0.1.3")
+    if engine.get("license")!="Apache-2.0":
+        errors.append("runtime CEL provider engine license must remain Apache-2.0")
+    if "never grants authority" not in str(engine.get("authority_boundary","")):
+        errors.append("runtime CEL provider engine must preserve profile authority boundary")
+
     methods=runtime.get("methods") or {}
     reporting=runtime.get("reporting_policy") or {}
     required_headline={
