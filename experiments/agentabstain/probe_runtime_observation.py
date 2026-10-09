@@ -99,7 +99,7 @@ def _load_binding_profiles() -> list[dict[str, Any]]:
     value = json.loads(BINDING_PROFILES.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
         raise ValueError("binding profile registry must be an object")
-    if value.get("schema_version") != "probe-binding-profiles/0.1":
+    if value.get("schema_version") != "probe-binding-profiles/0.2":
         raise ValueError("unsupported binding profile registry version")
     profiles = value.get("profiles")
     if not isinstance(profiles, list) or not all(isinstance(x, dict) for x in profiles):
