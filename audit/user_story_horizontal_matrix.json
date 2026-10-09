@@ -2037,8 +2037,7 @@
       "priority": "P2",
       "vertical_status": "blocked",
       "dependencies": [
-        "US-22",
-        "US-33"
+        "US-22"
       ],
       "summary": "Versioned installable stable API",
       "dimensions": {
@@ -2069,7 +2068,7 @@
         },
         "maintainability": {
           "status": "blocked",
-          "evidence": "API freeze remains deferred until US-22 external consumption and US-33 public reviewability mature.",
+          "evidence": "API freeze remains deferred until US-22 has independent external consumption or upstream acceptance; public reviewability is now closed by PR #6.",
           "reason": null
         },
         "observability_traceability": {
@@ -2084,7 +2083,7 @@
         },
         "user_value": {
           "status": "blocked",
-          "evidence": "Stable packaging should follow an independently consumable conformance contract and a reviewable public checkpoint, not a superseded AgentAbstain benchmark target.",
+          "evidence": "Stable packaging should follow an independently consumable conformance/upstream contract; reviewability is no longer a blocker.",
           "reason": null
         },
         "external_compatibility": {
@@ -2160,13 +2159,13 @@
     {
       "id": "US-33",
       "priority": "P1",
-      "vertical_status": "partial",
+      "vertical_status": "closed",
       "dependencies": [],
       "summary": "Public PR/history tells one reviewable story",
       "dimensions": {
         "functional": {
-          "status": "partial",
-          "evidence": "PR narrative reframed but branch is very large",
+          "status": "verified",
+          "evidence": "PR #6 reduced the checkpoint to one commit and was squash-merged to main as a26d5978...",
           "reason": null
         },
         "state": {
@@ -2190,8 +2189,8 @@
           "reason": "Repository governance."
         },
         "maintainability": {
-          "status": "partial",
-          "evidence": "90+ commit draft should squash at merge",
+          "status": "verified",
+          "evidence": "experimental 303-commit PR #5 was explicitly superseded by one-commit PR #6",
           "reason": null
         },
         "observability_traceability": {
@@ -2205,18 +2204,18 @@
           "reason": null
         },
         "user_value": {
-          "status": "partial",
-          "evidence": "review burden remains high",
+          "status": "verified",
+          "evidence": "reviewers now have a single checkpoint PR and one mainline squash commit",
           "reason": null
         },
         "external_compatibility": {
-          "status": "partial",
-          "evidence": "external reviewer usability not yet proven",
+          "status": "verified",
+          "evidence": "PR #6 re-ran CI, AgentAbstain, Agent Hooks, ACS, ExecSurface, SafeAct, P3 and upstream-candidate validation before merge",
           "reason": null
         }
       },
-      "horizontal_status": "partial",
-      "closure_status": "partial"
+      "horizontal_status": "verified",
+      "closure_status": "verified_closed"
     },
     {
       "id": "US-34",
