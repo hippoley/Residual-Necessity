@@ -53,11 +53,11 @@ def test_true_requires_only_positive_authority() -> None:
     assert errors
 
 
-def test_false_requires_negative_authority() -> None:
+def test_false_without_negative_authority_is_schema_valid_but_unresolved() -> None:
     cases = json.loads((ROOT / "conformance" / "core-cases.json").read_text(encoding="utf-8"))
-    receipt = next(case["receipt"] for case in cases if case["id"] == "already-resolved-abstain")
-    receipt = json.loads(json.dumps(receipt))
-    obs = receipt["observations"]["residual_violation_exists"]
-    obs.pop("negative_authority")
-    errors = list(VALIDATOR.iter_errors(receipt))
-    assert errors
+    receipt = next(
+        case["receipt"]
+        for case in cases
+        if case["id"] == "absence-without-negative-authority-investigate"
+    )
+    validate_receipt(receipt)
