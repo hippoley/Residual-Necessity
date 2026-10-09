@@ -32,3 +32,25 @@ def test_method_card_rejects_unpinned_code_commit() -> None:
     value=json.loads(json.dumps(EXAMPLE))
     value["code_commit"]="main"
     assert errors(value)
+
+
+def test_method_card_requires_benchmark_and_config_hashes() -> None:
+    for key in (
+        "benchmark_manifest_sha256",
+        "split_manifest_sha256",
+        "method_config_sha256",
+    ):
+        value=json.loads(json.dumps(EXAMPLE))
+        value.pop(key)
+        assert errors(value), key
+
+
+def test_released_method_card_requires_frozen_holdout_prediction() -> None:
+    value=json.loads(json.dumps(EXAMPLE))
+    value["holdout_status"]="released"
+    value["holdout_release_commit"]="1"*40
+    value["holdout_prediction_sha256"]=None
+    assert errors(value)
+
+    value["holdout_prediction_sha256"]="2"*64
+    assert errors(value)==[]
