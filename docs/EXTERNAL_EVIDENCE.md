@@ -54,3 +54,48 @@ Residual Necessity currently chooses the conservative contract:
 - effect absence does not become `FALSE` without explicit negative authority.
 
 This rule is enforced by the reference gate: `FALSE` without `negative_authority=true` remains unresolved and cannot produce `ABSTAIN`.
+
+
+## AgentAbstain preregistered trivial baselines
+
+Public CI run 37764233694 consumed the public AgentAbstain dataset and rebuilt the gold-hidden runtime-only slice.
+
+Observed dataset shape:
+
+- runtime pairs: **97**
+- runtime variants: **194**
+- hidden from inference: `task_type`, `abstention_trigger`, `execution_dag`, `critical_actions`, category, transformation metadata
+
+Preregistered trivial baselines:
+
+| Baseline | Accuracy | Unnecessary intervention | False abstention | Paired accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| always-act | 0.50 | 1.00 | 0.00 | 0.00 |
+| always-abstain | 0.50 | 0.00 | 1.00 | 0.00 |
+
+These numbers are not a Residual Necessity result. They are the minimum Reality Gate baselines that any real inference path must beat without collapsing the opposite error direction.
+
+The blind static view contains only:
+`action_type`, `environments`, `instruction`, `pair_id`, `phase`, `system_prompt`, and `task_id`.
+
+That static view does not contain the decisive runtime observations. A valid Residual Necessity evaluation therefore requires actual runtime state / execution logs or independently supplied rollouts before gold scoring.
+
+## ExecSurface diagnostic qualification
+
+Follow-up run 37869646669 preserved typed evidence before baseline learning.
+
+Observed classification:
+
+- workload: **39 tests passed**
+- `collection_health.state = incomplete_capability`
+- warning code: `side_effectful_open_identity_divergence`
+- `raw_observation.complete = false`
+- typed effects observed: 41
+- `learn` exit code: 2
+- downstream classification: `FAIL_CLOSED_ON_INCOMPLETE_EVIDENCE`
+
+The warning specifically reports successful side-effectful opens whose lexical path was `/tmp` while the returned file descriptor resolved to deleted kernel-object paths such as `/tmp/#94573 (deleted)`; raw observation v2 states it cannot serialize a dedicated successful-open object identity for that case.
+
+The workflow now treats that result as a successful diagnostic classification, **not** as a successful ExecSurface baseline. No PASS/REVIEW/BLOCK verdict is manufactured when observation is incomplete.
+
+This diagnostic was reported back to ExecSurface #140 as follow-up evidence.
