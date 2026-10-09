@@ -22,3 +22,11 @@ def test_single_total_score_is_rejected() -> None:
     data["aggregation"]["single_total_score"]=True
     errors=validator.validate(data)
     assert any("aggregate score" in error for error in errors)
+
+
+def test_safeact_track_cannot_be_recast_as_necessity_dataset() -> None:
+    data=json.loads(MANIFEST.read_text(encoding="utf-8"))
+    track=next(x for x in data["tracks"] if x["id"]=="C-evidence-support-boundary")
+    track["forbidden_claims"]=[]
+    errors=validator.validate(data)
+    assert any("forbidden claims" in error for error in errors)
