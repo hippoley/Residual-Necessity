@@ -44,14 +44,17 @@ def _evaluate_cel(result: Any, expression: str) -> dict[str, Any]:
     except Exception as exc:
         return {
             "status": "UNKNOWN",
-            "reason": "cel_evaluation_error",
+            "reason": "cel_no_boolean_result",
+            "diagnostic": "evaluation_error",
             "error": f"{type(exc).__name__}: {exc}",
         }
 
     if not isinstance(value, bool):
         return {
             "status": "UNKNOWN",
-            "reason": "cel_expression_not_boolean",
+            "reason": "cel_no_boolean_result",
+            "diagnostic": "non_boolean_value",
+            "value_type": type(value).__name__,
         }
 
     return {
