@@ -84,6 +84,8 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
         return "INVESTIGATE", "unknown intervention field"
     if not _has_only_keys(target, {"identity", "revision", "environment"}):
         return "INVESTIGATE", "unknown target field"
+    if "environment" in target and not isinstance(target.get("environment"), dict):
+        return "INVESTIGATE", "target environment must be an object"
 
     if (
         not isinstance(intervention.get("id"), str)
@@ -179,6 +181,11 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
             continue
 
         status = observation.get("status")
+
+        if status == "TRUE" and "negative_authority" in observation:
+            return "INVESTIGATE", f"contradictory authority on TRUE observation: {pid}"
+        if status == "FALSE" and "positive_authority" in observation:
+            return "INVESTIGATE", f"contradictory authority on FALSE observation: {pid}"
 
         if status == "TRUE":
             if not _authority_matches(
