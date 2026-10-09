@@ -73,9 +73,13 @@ def confidence_intervals(
 
     for _ in range(samples):
         sampled: list[dict[str, Any]] = []
-        for _ in range(len(blocks)):
+        for draw_index in range(len(blocks)):
             block = blocks[rng.randrange(len(blocks))]
-            sampled.extend(block)
+            synthetic_pair_id = f"bootstrap_pair_{draw_index}"
+            for row in block:
+                copied = dict(row)
+                copied["pair_id"] = synthetic_pair_id
+                sampled.append(copied)
         report = evaluate_fn(sampled)
         for metric in METRICS:
             value = report.get(metric)
