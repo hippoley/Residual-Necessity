@@ -37,6 +37,10 @@ The first milestone is intentionally modest:
 1. consume the external public dataset directly in CI;
 2. verify the blind runtime slice can be produced without gold leakage;
 3. freeze an inference interface;
-4. only then implement current-state probes and compare predictions against hidden labels.
+4. obtain tool-visible runtime observations through a trusted harness while keeping the selector blind to task type, gold metadata, and raw state;
+5. convert those observations into frozen necessity predictions;
+6. only then compare against hidden labels.
 
-Until step 4 exists, this is **dataset interoperability**, not evidence that Residual Necessity improves abstention.
+The trusted benchmark harness necessarily knows which dataset variant it starts; the **selector does not**. The blind selector receives only a sanitized read-only tool catalog. Direct reads of benchmark initial state or gold task fields are not a valid inference path.
+
+Until step 5 exists, this is **runtime interoperability plus a probe firewall**, not evidence that Residual Necessity improves abstention.
