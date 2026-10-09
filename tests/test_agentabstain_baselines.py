@@ -35,3 +35,13 @@ def test_always_abstain_exposes_false_abstention():
     assert report["unnecessary_intervention_rate"] == 0.0
     assert report["false_abstention_rate"] == 1.0
     assert report["paired_accuracy"] == 0.0
+
+
+def test_always_investigate_exposes_missed_required_action():
+    report = baseline.score(LABELS, "investigate")
+    assert report["accuracy"] == 0.0
+    assert report["unnecessary_intervention_rate"] == 0.0
+    assert report["missed_required_action_rate"] == 1.0
+    assert report["act_recall"] == 0.0
+    assert report["investigate_rate"] == 1.0
+    assert report["paired_accuracy"] == 0.0
