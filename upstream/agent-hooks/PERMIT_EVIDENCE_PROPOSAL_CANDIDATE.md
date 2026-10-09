@@ -1,19 +1,15 @@
-# Agent Hooks upstream candidate: preserve per-interceptor permit evidence
+# P-XXX: Preserve permit-side evidence attribution across composition
 
-Status: **downstream candidate only**. This is not an Agent Hooks proposal number, not a CTK vector, and not an upstream-accepted interpretation.
+**Status:** **Downstream draft** — not submitted upstream; proposal number intentionally unassigned.
+**Raised by:** downstream Agent Hooks consumer `hippoley/Residual-Necessity`, based on a reproducible Beta interoperability case.
 
-## Problem
+## Gap
 
-AGENT-HOOKS-0.1 permits an interceptor verdict to carry `evidence` (§5.3).
+AGENT-HOOKS-0.1 §5.3 allows an interceptor verdict to carry an `evidence` artefact pointer.
 
-Composition (§7.3) selects one winning verdict and unions only:
+For multi-interceptor composition, §7.3 synthesizes a combined verdict and unions selected metadata such as warnings and permit result labels. §10.3 records payload-free per-interceptor summaries in `verdicts[]`.
 
-- `warnings`;
-- permit `result_labels`.
-
-For multi-verdict profiles, §10.3 records payload-free per-interceptor summaries in `verdicts[]`.
-
-A downstream interoperability test found that an interceptor may return:
+A real downstream interceptor can therefore return:
 
 ```json
 {
@@ -23,19 +19,44 @@ A downstream interoperability test found that an interceptor may return:
 }
 ```
 
-while the synthesized all-allow combined verdict does not preserve that evidence pointer.
+and the host correctly proceeds, while the durable composed record no longer retains the evidence pointer that justified that individual permit.
 
-This means the host correctly proceeds but the durable record cannot later identify the evidence that caused an individual permitting interceptor to allow the action.
+The motivating downstream case is an evidence-dependent state-transition control: the action may proceed only because a current-world receipt established a required proposition. The control result is preserved as an allow, but the artefact that justified the allow is not attributable after composition.
 
-## Why not union evidence onto the combined verdict
+This is an audit/record question, not an enforcement bug. The current host behavior remains fail-closed where required.
 
-`Verdict.evidence` is singular. Combining multiple unrelated evidence artefacts into one pointer would require a new container/manifest semantics and would change the verdict algebra.
+## Options
 
-That is unnecessary for the audit requirement.
+### Option A — Evidence is winning-verdict-only
 
-## Minimal candidate
+Define that `Verdict.evidence` belongs only to the verdict that survives composition. Interceptor evidence on non-winning or synthesized permit results is intentionally ephemeral.
 
-Extend each per-interceptor `verdicts[]` summary with an optional payload-free evidence pointer:
+**Pros**
+- no wire change;
+- no additional record growth;
+- simplest semantics.
+
+**Cons**
+- evidence-dependent permits become unauditable after composition;
+- downstream controls must invent another attribution channel;
+- a single-interceptor all-allow path can lose its evidence even though no competing verdict replaced it.
+
+### Option B — Compose permit evidence onto the combined verdict
+
+Extend composition so evidence from permitting interceptors is represented by the combined verdict.
+
+**Pros**
+- all permit evidence is visible in one place.
+
+**Cons**
+- current `Verdict.evidence` is singular;
+- requires a new evidence collection/manifest model;
+- changes verdict algebra and aggregation semantics;
+- higher compatibility and implementation cost.
+
+### Option C — Preserve evidence on per-interceptor record summaries
+
+Extend each §10.3 `verdicts[]` summary with an optional evidence pointer:
 
 ```json
 {
@@ -46,43 +67,50 @@ Extend each per-interceptor `verdicts[]` summary with an optional payload-free e
 }
 ```
 
-Properties:
+The combined verdict is unchanged.
 
-- does not change the winning/combined verdict;
-- does not change enforcement obligations;
-- does not require evidence contents to be understood by Agent Hooks;
-- preserves the existing offline-verification pointer model from §5.3;
-- allows permit-side justification to remain attributable after composition;
-- applies equally to allow/deny/transform if the project prefers uniform summaries.
+**Pros**
+- preserves attribution without changing enforcement or winner selection;
+- reuses the existing §5.3 out-of-band evidence pointer;
+- avoids inventing evidence-union semantics;
+- naturally supports multiple interceptors with independent evidence.
 
-## Security / privacy constraint
+**Cons**
+- changes the record shape;
+- requires spec/schema/CTK updates across all SDKs;
+- increases record size slightly.
 
-Only the evidence pointer should be copied. Evidence payloads remain out of band. The same limits/redaction expectations that already apply to §5.3 evidence should apply to the record summary.
+## Recommendation
 
-## Candidate CTK behavior
+**Option C.**
 
-For a multi-interceptor all-allow emission:
+The record already preserves per-interceptor decision/reason summaries. Evidence attribution is the same category of provenance: it explains the basis of an individual control result without changing the aggregate decision.
 
-- interceptor 0 returns allow + evidence A;
-- interceptor 1 returns allow + evidence B;
-- action proceeds;
-- combined verdict remains allow;
-- `verdicts[0].evidence.artefact == A`;
-- `verdicts[1].evidence.artefact == B`.
+Only the evidence pointer should be copied. Evidence payloads remain out of band.
 
-This candidate intentionally does **not** require `verdict.evidence` on the combined allow.
+## Security and privacy
 
-## Downstream reproduction
+- Do not inline evidence payloads.
+- Apply existing evidence-pointer size/redaction requirements.
+- A host must not treat the presence of an evidence pointer as trust in the referenced content.
+- The change is audit-only and must not alter composition severity or enforcement.
 
-Residual Necessity's Agent Hooks Beta interoperability test already demonstrates the motivating case:
+## Conformance impact
 
-- a current-state receipt is positively witnessed;
-- the interceptor returns allow + receipt-digest evidence;
-- `InterceptionEmitter` proceeds;
-- the combined pure allow does not retain the receipt digest.
+If adopted, add a CTK vector for an all-allow multi-interceptor composition where each interceptor returns a distinct evidence artefact. The record should preserve both pointers under the corresponding `verdicts[]` entries while the combined verdict remains `allow`.
 
-See `docs/AGENT_HOOKS_PERMIT_EVIDENCE_NOTE.md`.
+A downstream schema-valid candidate is maintained at:
 
-## Upstream decision still required
+`upstream/agent-hooks/AH-CTK-candidate-permit-evidence.json`
 
-Agent Hooks maintainers may instead decide that permit-side evidence is intentionally ephemeral or that only the winning verdict's evidence belongs in the record. If so, the specification should state that explicitly and downstream controls must not assume permit evidence survives composition.
+## Reproduction
+
+Residual Necessity runs as a real Agent Hooks Beta interceptor and returns allow + receipt-digest evidence for a positively witnessed necessity receipt. The canonical emitter proceeds, but the composed all-allow record does not retain that evidence pointer on the combined verdict or per-interceptor summary.
+
+The same repository now also exercises a real external P3 partial/final revision pair through the Agent Hooks control plane.
+
+## Decision needed
+
+- [ ] Is permit-side interceptor evidence intentionally ephemeral after composition?
+- [ ] If not, should attribution live in the combined verdict or in `verdicts[]`?
+- [ ] If per-interceptor attribution is preferred, should the optional field apply uniformly to allow/deny/transform summaries?
