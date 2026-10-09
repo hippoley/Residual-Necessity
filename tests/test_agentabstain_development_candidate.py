@@ -66,6 +66,9 @@ def test_development_scorer_never_needs_holdout_labels() -> None:
     assert report["development_pairs"] == 1
     assert report["paired_accuracy"] == 1.0
     assert report["profile_counts"] == {"profile/v1": 2}
+    assert report["profiled_variants"] == 2
+    assert report["provider_profile_coverage"] == 1.0
+    assert report["complete_binding_coverage"] == 1.0
 
 
 def test_development_scorer_rejects_holdout_label() -> None:
