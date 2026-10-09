@@ -225,6 +225,7 @@ def main() -> int:
                 "probed": observation["probed"],
                 "tool": selected_tool,
                 "tool_kind": observed_kind,
+                "profile_id": observation.get("profile_id"),
                 "binding_complete": observation.get("binding_complete") is True,
                 "unbound_fields": observation.get("unbound_fields") or [],
                 "failure_only": blind_predictions["failure_only"],
