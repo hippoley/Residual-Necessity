@@ -8,8 +8,10 @@ PATH=ROOT/"benchmark"/"manifest.json"
 
 def validate(data: dict) -> list[str]:
     errors=[]
-    if data.get("schema_version")!="residual-necessity-benchmark/0.1":
+    if data.get("schema_version")!="residual-necessity-benchmark/0.2":
         errors.append("unsupported benchmark schema_version")
+    if data.get("benchmark_version")!="0.2":
+        errors.append("benchmark_version must be 0.2")
     tracks=data.get("tracks")
     if not isinstance(tracks,list) or not tracks:
         errors.append("tracks must be non-empty")
