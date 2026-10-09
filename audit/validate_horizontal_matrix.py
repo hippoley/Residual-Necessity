@@ -1,11 +1,49 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import json
+import re
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 PATH=ROOT/"audit"/"user_story_horizontal_matrix.json"
+AUDIT_PATH=ROOT/"docs"/"USER_STORY_AUDIT.md"
 VALID={"verified","partial","open","blocked","not_applicable"}
+
+
+def _audit_story_ids() -> set[str]:
+    text=AUDIT_PATH.read_text(encoding="utf-8")
+    return set(re.findall(r"\|\s*(US-\d+[a-z]?)\s*\|", text))
+
+
+def _dependency_cycle(stories: list[dict]) -> list[str] | None:
+    graph={story["id"]: list(story.get("dependencies",[])) for story in stories}
+    visiting:set[str]=set()
+    visited:set[str]=set()
+    stack:list[str]=[]
+
+    def visit(node: str) -> list[str] | None:
+        if node in visiting:
+            i=stack.index(node)
+            return stack[i:]+[node]
+        if node in visited:
+            return None
+        visiting.add(node)
+        stack.append(node)
+        for dep in graph.get(node,[]):
+            cycle=visit(dep)
+            if cycle:
+                return cycle
+        stack.pop()
+        visiting.remove(node)
+        visited.add(node)
+        return None
+
+    for node in sorted(graph):
+        cycle=visit(node)
+        if cycle:
+            return cycle
+    return None
+
 
 def validate(data: dict) -> list[str]:
     errors=[]
@@ -60,6 +98,17 @@ def validate(data: dict) -> list[str]:
                 f"{sid}: closure_status={story.get('closure_status')!r} "
                 f"expected {expected_closure!r}"
             )
+    matrix_ids={story["id"] for story in data["stories"]}
+    audit_ids=_audit_story_ids()
+    if matrix_ids != audit_ids:
+        missing=sorted(audit_ids-matrix_ids)
+        extra=sorted(matrix_ids-audit_ids)
+        errors.append(f"story ledger mismatch: missing_from_matrix={missing} extra_in_matrix={extra}")
+
+    cycle=_dependency_cycle(data["stories"])
+    if cycle:
+        errors.append("dependency cycle: " + " -> ".join(cycle))
+
     for story in data["stories"]:
         for dep in story.get("dependencies",[]):
             if dep not in ids: errors.append(f"{story['id']}: unknown dependency {dep}")
