@@ -131,21 +131,53 @@ def classify(
         overall = "TRUE"
         reason = "all_profile_propositions_true"
 
+    decision_scope = profile.get("decision_scope")
+    if not isinstance(decision_scope, dict):
+        return {
+            "status": "UNKNOWN",
+            "reason": "profile_has_no_decision_scope",
+            "profile_id": profile.get("profile_id"),
+            "propositions": evaluated,
+        }
+
+    task_coverage = decision_scope.get("task_coverage")
+    intervention = decision_scope.get("intervention")
+    if task_coverage not in {"partial", "complete"}:
+        raise ValueError("decision_scope.task_coverage must be partial or complete")
+    if not isinstance(intervention, str) or not intervention:
+        raise ValueError("decision_scope.intervention must be a non-empty string")
+
     return {
         "status": overall,
         "reason": reason,
         "profile_id": profile.get("profile_id"),
+        "decision_scope": {
+            "intervention": intervention,
+            "task_coverage": task_coverage,
+        },
         "propositions": evaluated,
     }
 
 
-def decision_for(status: str) -> str:
-    if status == "TRUE":
-        return "ACT"
+def decision_for(evidence: dict[str, Any] | str) -> str:
+    if isinstance(evidence, str):
+        status = evidence
+        coverage = "complete"
+    elif isinstance(evidence, dict):
+        status = evidence.get("status")
+        scope = evidence.get("decision_scope")
+        coverage = scope.get("task_coverage") if isinstance(scope, dict) else None
+    else:
+        raise ValueError("evidence must be a status string or evidence object")
+
     if status == "FALSE":
         return "ABSTAIN"
     if status == "UNKNOWN":
         return "INVESTIGATE"
+    if status == "TRUE":
+        # Positive evidence for one sub-intervention is not authority for every
+        # other requested mutation in a composite task.
+        return "ACT" if coverage == "complete" else "INVESTIGATE"
     raise ValueError(f"unsupported proposition status: {status!r}")
 
 
