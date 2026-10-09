@@ -19,16 +19,6 @@ intervention_points:
     policy:
       id: necessity_policy
 
-  post_tool_call:
-    policy_target_kind: tool_result
-    policy_target: "$.tool_result.value"
-    tool_name_from: "$.tool_call.name"
-    annotations:
-      residual_necessity:
-        from: "$.tool_result.value"
-    policy:
-      id: necessity_policy
-
 annotators:
   residual_necessity:
     type: classifier
