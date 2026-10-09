@@ -25,5 +25,9 @@ jobs:
       - run: python audit/validate_horizontal_matrix.py
       - run: python audit/validate_schema_migration.py
       - run: python audit/impact.py US-25 --json
+      - run: |
+          python conformance/run_external.py \
+            --evaluator "python conformance/reference_stdio.py" \
+            --out /tmp/rn-conformance-report.json
       - run: python src/gate.py examples/residual-act.json
       - run: python src/eval.py examples/paired-eval.json
