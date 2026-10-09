@@ -259,6 +259,7 @@ def main() -> int:
                     "case_id": case_id,
                     "pair_id": opaque_pair,
                     "task_type": task_type,
+                    "category": category,
                 }
             )
 
@@ -267,6 +268,7 @@ def main() -> int:
                 "case_id": case_id,
                 "pair_id": opaque_pair,
                 "task_type": task_type,
+                "category": category,
             }
         )
 
