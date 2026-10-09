@@ -1,0 +1,106 @@
+{
+  "schema_version": "residual-necessity-benchmark/0.1",
+  "benchmark_name": "Residual Necessity Reality Benchmark",
+  "design_principles": [
+    "No single aggregate leaderboard score across semantically different tracks.",
+    "Predictions must be frozen before gold reveal.",
+    "Support/permission evidence may be reused as constraints but never promoted to necessity authority.",
+    "Holdout is pair-level and may not be used for method tuning.",
+    "External source versions are pinned and provenance is retained."
+  ],
+  "tracks": [
+    {
+      "id": "A-runtime-necessity",
+      "title": "Runtime necessity under paired agent environments",
+      "purpose": "Measure whether tool-visible, proposition-specific evidence can reduce unnecessary action without collapsing required-action recall.",
+      "source": {
+        "name": "AgentAbstain",
+        "repository": "AntiQuality/agentabstain",
+        "runtime_commit": "cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3",
+        "dataset_revision": "842228426c2a703347396501af61c7890972c7ee",
+        "license": "MIT"
+      },
+      "split": {
+        "unit": "pair_id",
+        "development_pairs": 64,
+        "holdout_pairs": 33,
+        "manifest_sha256": "97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79"
+      },
+      "methods": {
+        "preregistered_baselines": [
+          "always-act",
+          "always-abstain",
+          "always-investigate",
+          "failure_only",
+          "probe_success"
+        ],
+        "candidate": "proposition_specific",
+        "candidate_partition": "development",
+        "holdout_reveal_requires_frozen_method": true
+      },
+      "metrics": [
+        "accuracy",
+        "unnecessary_intervention_rate",
+        "false_abstention_rate",
+        "act_recall",
+        "investigate_rate",
+        "paired_accuracy",
+        "probe_coverage"
+      ],
+      "authority_rule": "Tool success/availability alone is never proposition authority."
+    },
+    {
+      "id": "B-residual-partial-fix",
+      "title": "Residual violation across real partial-fix history",
+      "purpose": "Verify that an intermediate incomplete fix can still justify ACT while a later final fix justifies ABSTAIN.",
+      "source": {
+        "name": "P3",
+        "repository": "sosy-lab/research/data/partial-fix-dataset",
+        "dataset_commit": "bfd73658",
+        "external_project": "andwn/cave-story-md",
+        "issue": "https://github.com/andwn/cave-story-md/issues/169",
+        "license_status": "source-specific; benchmark metadata reuse allowed by project access, original project licensing must be preserved"
+      },
+      "cases": {
+        "partial_revision": "62d8c669e0aa335eed9c50f4fd7b753dd75f3676",
+        "final_revision": "2c11d40fd1338f17cc84da46005fa29cbf37ca77"
+      },
+      "metrics": [
+        "partial_revision_verdict",
+        "final_revision_verdict",
+        "bounded_oracle_coverage"
+      ],
+      "expected": {
+        "partial_revision_verdict": "ACT",
+        "final_revision_verdict": "ABSTAIN"
+      },
+      "authority_rule": "Oracle is bounded to the issue-derived CMD_BSL zero-branch proposition and may not claim global bug absence."
+    },
+    {
+      "id": "C-evidence-support-boundary",
+      "title": "Evidence support versus necessity authority",
+      "purpose": "Verify that mature action-support evidence can be reused without being promoted to residual necessity.",
+      "source": {
+        "name": "SafeAct",
+        "repository": "caoshidong66/safeact",
+        "commit": "841816cf1e376e6fbf8600cffac5df1736e1d369",
+        "code_license": "MIT",
+        "data_license": "CC BY 4.0"
+      },
+      "cases": {
+        "supported": "SAB-V1-009",
+        "missing": "SAB-V0-001"
+      },
+      "metrics": [
+        "supported_maps_to_constraint_true",
+        "missing_maps_to_unknown",
+        "support_cannot_enter_justified_by"
+      ],
+      "authority_rule": "SafeAct support is constraint evidence only; MISSING/DEFER does not grant negative necessity authority."
+    }
+  ],
+  "aggregation": {
+    "single_total_score": false,
+    "rationale": "Tracks test distinct semantics and failure modes; one weighted score could hide a safety failure in another track."
+  }
+}
