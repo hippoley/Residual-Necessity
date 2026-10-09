@@ -99,3 +99,37 @@ The warning specifically reports successful side-effectful opens whose lexical p
 The workflow now treats that result as a successful diagnostic classification, **not** as a successful ExecSurface baseline. No PASS/REVIEW/BLOCK verdict is manufactured when observation is incomplete.
 
 This diagnostic was reported back to ExecSurface #140 as follow-up evidence.
+
+
+## Agent Hooks canonical control-contract interoperability
+
+Residual Necessity now runs as a real interceptor on the public Agent Hooks Beta Python SDK.
+
+Verified CI:
+- workflow: `Agent Hooks end to end`
+- successful runs: 37870271897 (push) and 37870276997 (pull request)
+- SDK: `agent-hooks-sdk==0.1.0b1`
+- spec surface: AGENT-HOOKS-0.1
+
+The E2E uses the canonical `AgentContextBuilder`, `InterceptionEmitter`, `InterceptionBlocked`, and standard Agent Hooks `Verdict/Evidence` types.
+
+Verified behavior:
+- scoped authoritative TRUE → combined permit;
+- scoped authoritative FALSE → block;
+- UNKNOWN necessity → fail closed as a liftable deny;
+- positive evidence bound to the wrong target revision → fail closed.
+
+The interceptor reads a receipt from the namespaced extension:
+`extensions.residual_necessity.receipt`
+
+and routes every decision through the same `src/gate.py` semantics.
+
+This establishes **runtime interoperability with the Agent Hooks control contract**. It does not establish upstream adoption, a conformance claim, or endorsement by the Agent Hooks maintainers.
+
+### Permit-evidence composition finding
+
+The E2E also exposed a standards-level question: an individual interceptor can return allow + evidence, but the default all-permit composition synthesizes a new combined allow and unions warnings/result labels, not evidence.
+
+The individual interceptor's reason survives in the per-interceptor record summary, while its evidence pointer is not preserved on the combined permit verdict.
+
+The finding is documented in `docs/AGENT_HOOKS_PERMIT_EVIDENCE_NOTE.md`. An attempt to open the upstream issue was blocked by the current GitHub integration's external-write permission, so no upstream discussion is claimed yet.
