@@ -137,9 +137,18 @@
       "metrics": [
         "supported_maps_to_constraint_true",
         "missing_maps_to_unknown",
-        "support_cannot_enter_justified_by"
+        "support_cannot_enter_justified_by",
+        "corpus_materialized_files",
+        "corpus_predicate_count",
+        "corpus_projection_failures",
+        "corpus_negative_authority_count"
       ],
-      "authority_rule": "SafeAct support is constraint evidence only; MISSING/DEFER does not grant negative necessity authority."
+      "authority_rule": "SafeAct support is constraint evidence only; MISSING/DEFER does not grant negative necessity authority.",
+      "corpus_audit": {
+        "scope": "all pinned SafeAct materialized_evidence JSON documents",
+        "invariant": "all projected predicates remain constraints; missing/defer never grants negative authority",
+        "required": true
+      }
     }
   ],
   "aggregation": {
