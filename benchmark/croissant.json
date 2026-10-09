@@ -1,0 +1,183 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "arrayShape": "cr:arrayShape",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "containedIn": "cr:containedIn",
+    "cr": "http://mlcommons.org/croissant/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isArray": "cr:isArray",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "prov": "http://www.w3.org/ns/prov#",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "equivalentProperty": "cr:equivalentProperty",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "samplingRate": "cr:samplingRate"
+  },
+  "@type": "sc:Dataset",
+  "conformsTo": "http://mlcommons.org/croissant/1.1",
+  "name": "Residual Necessity Reality Benchmark",
+  "alternateName": [
+    "Residual Necessity Benchmark",
+    "RN Reality Benchmark"
+  ],
+  "description": "A multi-track evaluation contract for determining whether current, externally grounded evidence still justifies a proposed state transition. Version 0.2 hardens static-leakage controls, pair-level holdout governance, two-sided/category-stratified scoring, provider-profile provenance, P3 corpus breadth auditing, and SafeAct corpus-level support-versus-necessity boundary checks. Raw upstream datasets are not redistributed.",
+  "version": "0.2",
+  "datePublished": "2026-10-09",
+  "creator": {
+    "@type": "sc:Person",
+    "name": "hippoley",
+    "url": "https://github.com/hippoley"
+  },
+  "publisher": {
+    "@type": "sc:Organization",
+    "name": "Residual Necessity project",
+    "url": "https://github.com/hippoley/Residual-Necessity"
+  },
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "url": "https://github.com/hippoley/Residual-Necessity",
+  "keywords": [
+    "agent safety",
+    "agent evaluation",
+    "tool-using agents",
+    "abstention",
+    "state transition",
+    "evidence authority",
+    "partial fix",
+    "conformance",
+    "benchmark",
+    "Croissant"
+  ],
+  "isLiveDataset": false,
+  "prov:wasDerivedFrom": [
+    {
+      "@type": "prov:Entity",
+      "@id": "agentabstain",
+      "prov:locatedAt": "https://github.com/AntiQuality/agentabstain",
+      "description": "Track A source; runtime commit and dataset revision are pinned in benchmark/manifest.json."
+    },
+    {
+      "@type": "prov:Entity",
+      "@id": "p3",
+      "prov:locatedAt": "https://gitlab.com/sosy-lab/research/data/partial-fix-dataset",
+      "description": "Track B source; pinned dataset commit and external project revisions are recorded in benchmark/manifest.json."
+    },
+    {
+      "@type": "prov:Entity",
+      "@id": "safeact",
+      "prov:locatedAt": "https://github.com/caoshidong66/safeact",
+      "description": "Track C source; pinned commit and license boundary are recorded in benchmark/manifest.json."
+    }
+  ],
+  "prov:wasGeneratedBy": {
+    "@type": "prov:Activity",
+    "@id": "rn-reality-gate",
+    "description": "Pinned external sources are transformed into gold-hidden slices, bounded evidence receipts, frozen predictions, confidence intervals, and preserved CI artifacts. Holdout pair outcomes are not used for candidate tuning."
+  },
+  "citeAs": "Residual Necessity Reality Benchmark, version 0.2 (2026). https://github.com/hippoley/Residual-Necessity",
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "benchmark_tracks",
+      "name": "Residual Necessity benchmark tracks",
+      "description": "Three semantically separate benchmark tracks. Raw external datasets remain upstream and are referenced through provenance rather than redistributed here.",
+      "key": {
+        "@id": "benchmark_tracks/track_id"
+      },
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "benchmark_tracks/track_id",
+          "dataType": "sc:Text"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "benchmark_tracks/source_name",
+          "dataType": "sc:Text"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "benchmark_tracks/source_uri",
+          "dataType": "sc:Text"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "benchmark_tracks/source_version",
+          "dataType": "sc:Text"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "benchmark_tracks/purpose",
+          "dataType": "sc:Text"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "benchmark_tracks/authority_rule",
+          "dataType": "sc:Text"
+        }
+      ],
+      "data": [
+        {
+          "benchmark_tracks/track_id": "A-runtime-necessity",
+          "benchmark_tracks/source_name": "AgentAbstain",
+          "benchmark_tracks/source_uri": "https://github.com/AntiQuality/agentabstain",
+          "benchmark_tracks/source_version": "runtime cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3; dataset 842228426c2a703347396501af61c7890972c7ee",
+          "benchmark_tracks/purpose": "Paired runtime necessity under tool-visible evidence.",
+          "benchmark_tracks/authority_rule": "Tool success or availability alone is never proposition authority."
+        },
+        {
+          "benchmark_tracks/track_id": "B-residual-partial-fix",
+          "benchmark_tracks/source_name": "P3 + cave-story-md",
+          "benchmark_tracks/source_uri": "https://gitlab.com/sosy-lab/research/data/partial-fix-dataset",
+          "benchmark_tracks/source_version": "P3 bfd73658; partial 62d8c669e0aa335eed9c50f4fd7b753dd75f3676; final 2c11d40fd1338f17cc84da46005fa29cbf37ca77",
+          "benchmark_tracks/purpose": "Residual violation across a real partial-fix history.",
+          "benchmark_tracks/authority_rule": "The bounded oracle covers only the issue-derived CMD_BSL zero-branch proposition."
+        },
+        {
+          "benchmark_tracks/track_id": "C-evidence-support-boundary",
+          "benchmark_tracks/source_name": "SafeAct",
+          "benchmark_tracks/source_uri": "https://github.com/caoshidong66/safeact",
+          "benchmark_tracks/source_version": "841816cf1e376e6fbf8600cffac5df1736e1d369",
+          "benchmark_tracks/purpose": "Action-support evidence versus residual-necessity authority.",
+          "benchmark_tracks/authority_rule": "SafeAct support is constraint evidence only; MISSING/DEFER grants no negative necessity authority."
+        }
+      ]
+    }
+  ]
+}
