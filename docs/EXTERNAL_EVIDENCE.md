@@ -232,3 +232,41 @@ The next independent-project experiment must therefore be **predicate-specific**
 - freeze the resulting receipt/verdict before gold scoring.
 
 This result is evidence **against** generic evidence heuristics, not evidence that Residual Necessity already improves AgentAbstain.
+
+
+## P3 real-world partial-fix sequence
+
+Public workflow run **37876394371** consumed the external SoSy-Lab P3 partial-fix dataset at pinned commit:
+
+`bfd73658`
+
+A real task classified by the P3 schema as `partial fix` was normalized and frozen:
+
+- source task: `partial-fixes/andwn_cave-story-md/partial_2/task.yml`
+- repository: `https://github.com/andwn/cave-story-md`
+- related issue: `https://github.com/andwn/cave-story-md/issues/169`
+- base revision: `af62a60ad322bfa1258449acbef936daeedb6973`
+- partial attempt 1: `814ddfad88e27c5734d6725341a984c791073b24`
+- partial attempt 2: `62d8c669e0aa335eed9c50f4fd7b753dd75f3676`
+- expected/final fix: `2c11d40fd1338f17cc84da46005fa29cbf37ca77`
+
+Normalized evidence SHA-256:
+
+`4a34d59cc9608e5737739fc0bf887d95969f6f7c06eb1fe469636ecc7e5ae39b`
+
+Preserved artifact:
+- name: `p3-real-partial-fix`
+- artifact id: **11592786218**
+
+What this establishes:
+
+> The project now has a pinned, independently curated, real-world sequence in which one or more intermediate fixes are explicitly classified as incomplete before a later expected fix.
+
+What this does **not** establish:
+
+- that Residual Necessity can automatically discover the residual violated predicate;
+- that its ACT/ABSTAIN gate improves an agent benchmark;
+- that the P3 task exposes a tool-visible runtime predicate compatible with AgentAbstain;
+- that FixedBench partial-fix cases have been integrated.
+
+This closes the need for synthetic-only partial-fix semantics evidence. The harder agentic question remains separate.
