@@ -14,6 +14,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from experiments.agentabstain.freeze_pair_split import assign as split_assignment
+
 
 ROOT = Path(__file__).resolve().parents[2]
 EVAL_PATH = ROOT / "src" / "eval.py"
@@ -60,6 +62,10 @@ def score(
             or task_type not in {"act", "abstain"}
         ):
             raise ValueError("invalid development label row")
+        if split_assignment(pair_id) != "development":
+            raise ValueError(
+                f"non-development pair leaked into candidate scoring: {pair_id}"
+            )
 
         prediction = prediction_by_case.get(case_id)
         if prediction is None:
