@@ -11,7 +11,8 @@
     "development_report_sha256": "required",
     "prediction_protocol": "freeze predictions before reading holdout labels",
     "statistics_protocol": "pair-preserving 95% bootstrap confidence intervals",
-    "one_public_release_commit": true
+    "one_public_release_commit": true,
+    "method_card_sha256": "required"
   },
   "released_candidate": null,
   "notes": [
