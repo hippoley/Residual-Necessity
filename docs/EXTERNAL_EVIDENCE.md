@@ -487,3 +487,52 @@ Pinned corpus adapter audit:
 Every corpus projection remained `role=constraint`; SafeAct support was never promoted to residual necessity, and MISSING/DEFER never granted negative authority.
 
 These results establish benchmark integrity and external-corpus coverage, not Track A superiority. Holdout remains sealed.
+
+
+## Agent Hooks official CTK cross-contract evidence
+
+Public workflow run **37919563212** installed the official Agent Hooks CTK extra:
+
+`agent-hooks-sdk[ctk]==0.1.0b1`
+
+and executed two layers of validation in the same pinned control-contract environment.
+
+### Official CTK reference corpus
+
+The official `ReferenceHarness` was driven through the SDK's own CTK runner:
+
+- vectors: **51**
+- pass: **47**
+- skip: **4**
+- fail: **0**
+
+The four skips are the capability-gated incremental streaming vectors, consistent with the official buffered reference surface.
+
+### Residual Necessity interceptor seam
+
+Against the same pinned Agent Hooks SDK:
+
+- scoped authoritative TRUE → allow;
+- scoped authoritative FALSE → deny;
+- UNKNOWN → deny / investigate;
+- wrong-revision TRUE → deny / investigate.
+
+All four cases passed.
+
+The preserved report explicitly states:
+
+`claim_type = interceptor_compatibility_not_host_conformance`
+
+and:
+
+`host_conformance_claimed = false`
+
+Residual Necessity is an interceptor/evidence primitive, not a complete Agent Hooks host adapter. This run therefore **does not claim §13 host conformance**.
+
+Preserved artifact:
+
+- name: `agent-hooks-official-ctk-cross-contract`
+- artifact id: **11611410861**
+- artifact zip SHA-256: `3e43af5d17dffa6ff2afb261be0f9d4d4a9db592e199cb86bd477355bafa507d`
+
+This closes the gap between hand-written SDK compatibility tests and the official Agent Hooks CTK semantics, while preserving the upstream claim boundary.
