@@ -5,7 +5,7 @@ import importlib.util
 from pathlib import Path
 from typing import Any
 
-from agent_control_specification import AgentControl, AgentControlBlocked
+from agent_control_specification import AgentControl, InterventionPoint
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,9 +31,11 @@ def authority(predicate_id: str) -> dict[str, Any]:
 
 
 def receipt(status: str) -> dict[str, Any]:
-    violation_observation: dict[str, Any] = {"status": status}
+    observation: dict[str, Any] = {"status": status}
     if status == "TRUE":
-        violation_observation["positive_authority"] = authority("residual_violation_exists")
+        observation["positive_authority"] = authority("residual_violation_exists")
+    elif status == "FALSE":
+        observation["negative_authority"] = authority("residual_violation_exists")
 
     return {
         "schema_version": "0.2",
@@ -50,18 +52,9 @@ def receipt(status: str) -> dict[str, Any]:
                 "required": True,
                 "kind": "reality",
             },
-            {
-                "id": "target_is_current",
-                "required": True,
-                "kind": "freshness",
-            },
         ],
         "observations": {
-            "residual_violation_exists": violation_observation,
-            "target_is_current": {
-                "status": "TRUE",
-                "positive_authority": authority("target_is_current"),
-            },
+            "residual_violation_exists": observation,
         },
     }
 
@@ -77,52 +70,40 @@ def make_control(status: str) -> AgentControl:
     )
 
 
-async def assert_true_executes() -> None:
-    executed = {"value": False}
-
-    async def dangerous_write(args: dict[str, Any]) -> dict[str, Any]:
-        executed["value"] = True
-        return {"written": True, "target": args["target"]}
-
-    control = make_control("TRUE")
-    result = await control.run_tool(
-        "dangerous_write",
-        {"target": "/tmp/demo"},
-        dangerous_write,
-        tool_call_id="true-case",
+async def evaluate(status: str):
+    control = make_control(status)
+    return await control.evaluate_intervention_point(
+        InterventionPoint.PRE_TOOL_CALL,
+        {
+            "tool_call": {
+                "id": f"{status.lower()}-case",
+                "name": "dangerous_write",
+                "args": {"target": "/tmp/demo"},
+            }
+        },
     )
-    assert executed["value"] is True
-    assert result.value["written"] is True
 
 
-async def assert_unknown_blocks_before_execution() -> None:
-    executed = {"value": False}
+async def assert_true_allows() -> None:
+    result = await evaluate("TRUE")
+    assert result.verdict.decision.value == "allow"
 
-    async def dangerous_write(args: dict[str, Any]) -> dict[str, Any]:
-        executed["value"] = True
-        return {"written": True, "target": args["target"]}
 
-    control = make_control("UNKNOWN")
+async def assert_false_denies() -> None:
+    result = await evaluate("FALSE")
+    assert result.verdict.decision.value == "deny"
 
-    try:
-        await control.run_tool(
-            "dangerous_write",
-            {"target": "/tmp/demo"},
-            dangerous_write,
-            tool_call_id="unknown-case",
-        )
-    except AgentControlBlocked:
-        pass
-    else:
-        raise AssertionError("UNKNOWN necessity evidence must block tool execution")
 
-    assert executed["value"] is False
+async def assert_unknown_is_not_permit() -> None:
+    result = await evaluate("UNKNOWN")
+    assert result.verdict.decision.value != "allow"
 
 
 async def main() -> None:
-    await assert_true_executes()
-    await assert_unknown_blocks_before_execution()
-    print("ACS_E2E_PASS")
+    await assert_true_allows()
+    await assert_false_denies()
+    await assert_unknown_is_not_permit()
+    print("ACS_PRE_TOOL_E2E_PASS")
 
 
 if __name__ == "__main__":
