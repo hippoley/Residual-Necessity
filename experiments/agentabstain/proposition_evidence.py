@@ -86,7 +86,12 @@ def classify(
         return {"status": "UNKNOWN", "reason": "incomplete_argument_binding"}
 
     if observation.get("success") is not True:
-        return {"status": "UNKNOWN", "reason": "probe_unavailable"}
+        reason = (
+            "verification_tool_unavailable"
+            if observation.get("tool_kind") == "verify"
+            else "probe_unavailable"
+        )
+        return {"status": "UNKNOWN", "reason": reason}
 
     if profile is None:
         reason = (
