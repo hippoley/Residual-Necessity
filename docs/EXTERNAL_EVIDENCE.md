@@ -403,3 +403,39 @@ Therefore US-26 and US-27 are **Superseded by Evidence**, not silently abandoned
 - SafeAct for mature evidence/support constraints (US-38),
 - P3/real current-state sources for actual residual necessity (US-39),
 - implementation-neutral conformance + upstream control-plane integration for adoption (US-22/US-36).
+
+
+## P3 → Agent Hooks control-plane E2E
+
+Public run **37897404767** upgraded the real P3 residual pair from a gate-only check to a composed control-plane path:
+
+```text
+real cave-story-md revision
+        ↓
+issue-derived bounded current-revision oracle
+        ↓
+Residual Necessity 0.3 receipt
+        ↓
+ResidualNecessityInterceptor
+        ↓
+Agent Hooks InterceptionEmitter
+```
+
+Verified on the same external issue/revisions:
+
+- partial revision `62d8c669...`
+  - bounded residual predicate = TRUE
+  - RN gate = ACT
+  - Agent Hooks = ALLOW / proceeds
+- final revision `2c11d40f...`
+  - bounded residual predicate = FALSE
+  - RN gate = ABSTAIN
+  - Agent Hooks = DENY / blocks
+
+Both paths emitted `P3_AGENT_HOOKS_E2E_PASS` in the public workflow.
+
+Receipt hashes from the same run:
+- partial: `70ca3e0562cf65accb7c217934fd5ffb898a25c80dc6d5e8b7c71aeacf1cbb75`
+- final: `e01d9dd398fe7b9dad89ec34b5dfef61ae668cd9c2bfdab74dbf25b5945453c2`
+
+This closes the **cross-module control-plane integration** gap for one bounded real external partial-fix case. It still does not establish a general agent capability to discover arbitrary residual predicates automatically.
