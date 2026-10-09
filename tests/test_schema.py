@@ -28,3 +28,18 @@ def test_all_conformance_receipts_match_schema() -> None:
             validate_receipt(case["receipt"])
         except AssertionError as exc:
             raise AssertionError(f"{case['id']}: {exc}") from exc
+
+
+def test_unknown_predicate_field_is_rejected_by_schema() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    receipt["predicates"][0]["human_ony"] = True
+    errors = list(VALIDATOR.iter_errors(receipt))
+    assert errors
+
+
+def test_unknown_observation_field_is_rejected_by_schema() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    first = next(iter(receipt["observations"].values()))
+    first["positive_authorit"] = first.get("positive_authority")
+    errors = list(VALIDATOR.iter_errors(receipt))
+    assert errors
