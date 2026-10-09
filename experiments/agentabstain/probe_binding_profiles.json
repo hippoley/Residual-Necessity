@@ -1,5 +1,5 @@
 {
-  "schema_version": "probe-binding-profiles/0.1",
+  "schema_version": "probe-binding-profiles/0.2",
   "profiles": [
     {
       "profile_id": "personal-profile-public-bio/v1",
@@ -33,7 +33,17 @@
       "decision_scope": {
         "intervention": "publish_saved_bio_to_public_profile",
         "task_coverage": "partial"
-      }
+      },
+      "source": {
+        "upstream": "AntiQuality/agentabstain",
+        "version_or_commit": "cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3",
+        "contract_basis": "tool schema and complete returned result fields on development-only runtime observations"
+      },
+      "non_claims": [
+        "Does not establish global task necessity outside the declared intervention scope.",
+        "Does not authorize unprofiled tools or missing result fields.",
+        "Partial task coverage must not be promoted to whole-task ACT."
+      ]
     }
   ]
 }
