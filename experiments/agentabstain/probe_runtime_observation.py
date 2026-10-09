@@ -1,0 +1,178 @@
+#!/usr/bin/env python3
+"""Obtain one tool-visible AgentAbstain runtime observation without gold access.
+
+Run this script inside a checkout of the public AgentAbstain repository.
+The caller provides the dataset directory. The probe logic never reads
+MultiEnvironment.state and never calls commit-class tools.
+
+It scans runtime-phase categories for the first task variant exposing a
+zero-required-argument lookup/verify tool, calls exactly one such tool, and
+emits a sanitized observation record with an opaque case id.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import sys
+from pathlib import Path
+from typing import Any
+
+
+RUNTIME_CATEGORIES = (
+    "critical_tool_failure",
+    "conflicting_evidence",
+    "emergent_risk_discovery",
+)
+SAFE_KINDS = {"lookup", "verify"}
+
+
+def _opaque(value: str) -> str:
+    return "case_" + hashlib.sha256(value.encode("utf-8")).hexdigest()[:20]
+
+
+def _jsonable(value: Any) -> Any:
+    if hasattr(value, "to_dict") and callable(value.to_dict):
+        return _jsonable(value.to_dict())
+    if hasattr(value, "model_dump") and callable(value.model_dump):
+        return _jsonable(value.model_dump())
+    if isinstance(value, dict):
+        return {str(k): _jsonable(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(v) for v in value]
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    return repr(value)
+
+
+def _apply_runtime_surface(bundle: Any, menv: Any) -> set[str] | None:
+    for broken in bundle.task_yaml.get("tool_overrides", {}).get("broken_tools", []):
+        menv.break_tool(broken["name"], broken.get("error", "Service unavailable"))
+
+    available = bundle.task_yaml.get("available_tools")
+    if available is None:
+        return None
+
+    allowed = {t["name"] if isinstance(t, dict) else t for t in available}
+    for schema in menv.get_tool_schemas():
+        if schema["name"] not in allowed:
+            menv.hide_tool(schema["name"])
+    return allowed
+
+
+def _candidate_schemas(menv: Any, allowed: set[str] | None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for schema in menv.get_tool_schemas():
+        name = schema.get("name")
+        if allowed is not None and name not in allowed:
+            continue
+        if schema.get("kind") not in SAFE_KINDS:
+            continue
+        input_schema = schema.get("input_schema") or {}
+        required = input_schema.get("required") or []
+        if required:
+            continue
+        out.append(schema)
+    return out
+
+
+def _iter_variants(data_dir: Path):
+    tasks_root = data_dir / "tasks"
+    for category in RUNTIME_CATEGORIES:
+        category_dir = tasks_root / category
+        if not category_dir.exists():
+            continue
+        for task_dir in sorted(p for p in category_dir.iterdir() if p.is_dir()):
+            for task_type in ("act", "abstain"):
+                variant = task_dir / task_type
+                if variant.exists():
+                    yield category, task_dir.name, task_type
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--agentabstain-root", type=Path, required=True)
+    parser.add_argument("--data-dir", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+
+    os.environ["AGENTABSTAIN_DATA"] = str(args.data_dir)
+    sys.path.insert(0, str(args.agentabstain_root.resolve()))
+
+    from src.types.BaseAgent import BaseAgent
+    from abstention_factory.runtime.multi import build_multi_environment
+
+    attempts: list[str] = []
+
+    for category, task_id, task_type in _iter_variants(args.data_dir):
+        bundle = BaseAgent.load_task_bundle(category, task_id, task_type)
+        menv = build_multi_environment(bundle.env_types, bundle.initial_states)
+        allowed = _apply_runtime_surface(bundle, menv)
+
+        for schema in _candidate_schemas(menv, allowed):
+            tool_name = str(schema["name"])
+            kind = str(schema["kind"])
+            if kind not in SAFE_KINDS:
+                raise AssertionError("probe selected a non-read-only tool")
+
+            success = True
+            error = None
+            result: Any = None
+            try:
+                result = menv.call_tool(tool_name)
+            except Exception as exc:  # tool failure is itself runtime evidence
+                success = False
+                error = f"{type(exc).__name__}: {exc}"
+
+            log = menv.get_execution_log()
+            if not log:
+                attempts.append(f"{tool_name}: no execution log")
+                continue
+
+            last = log[-1]
+            observed_tool = str(last.get("tool"))
+            observed_kind = menv.tool_kinds.get(observed_tool)
+            if observed_kind not in SAFE_KINDS:
+                raise AssertionError(
+                    f"probe executed forbidden tool kind: {observed_tool}={observed_kind}"
+                )
+            if any(menv.tool_kinds.get(str(entry.get("tool"))) == "commit" for entry in log):
+                raise AssertionError("commit-class tool appeared in probe execution log")
+
+            case_key = f"{category}/{task_id}/{task_type}"
+            record = {
+                "schema_version": "agentabstain-tool-probe/0.1",
+                "case_id": _opaque(case_key),
+                "tool": observed_tool,
+                "tool_kind": observed_kind,
+                "success": success,
+                "error": error,
+                "result": _jsonable(result),
+                "execution_log_length": len(log),
+                "gold_fields_exposed": False,
+                "raw_state_read": False,
+            }
+            args.out.write_text(
+                json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            print(json.dumps({
+                "case_id": record["case_id"],
+                "tool": observed_tool,
+                "tool_kind": observed_kind,
+                "success": success,
+                "raw_state_read": False,
+                "gold_fields_exposed": False,
+            }, sort_keys=True))
+            return 0
+
+    raise SystemExit(
+        "no zero-required-argument lookup/verify probe found; attempts="
+        + repr(attempts[:10])
+    )
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
