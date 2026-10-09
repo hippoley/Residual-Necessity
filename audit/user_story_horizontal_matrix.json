@@ -1971,7 +1971,7 @@
     {
       "id": "US-29b",
       "priority": "P1",
-      "vertical_status": "closed",
+      "vertical_status": "partial",
       "dependencies": [
         "US-29a",
         "US-39"
@@ -1979,8 +1979,8 @@
       "summary": "Agentic partial-fix probe detects residual violation without false abstention",
       "dimensions": {
         "functional": {
-          "status": "verified",
-          "evidence": "P3 residual necessity pair proves partial revision -> ACT and final revision -> ABSTAIN",
+          "status": "partial",
+          "evidence": "P3 residual necessity pair proves real partial-revision ACT and final-revision ABSTAIN through a bounded static oracle",
           "reason": null
         },
         "state": {
@@ -1989,8 +1989,8 @@
           "reason": null
         },
         "integration": {
-          "status": "verified",
-          "evidence": "public P3 residual necessity pair workflow against real external project",
+          "status": "partial",
+          "evidence": "real external GitHub/P3 revisions are exercised, but no agent runtime consumes the oracle yet",
           "reason": null
         },
         "security_correctness": {
@@ -2019,18 +2019,18 @@
           "reason": null
         },
         "user_value": {
-          "status": "verified",
-          "evidence": "demonstrates residual ACT after incomplete fix and ABSTAIN after final fix",
+          "status": "partial",
+          "evidence": "residual semantics are demonstrated on real history; agentic false-abstention improvement remains unproven",
           "reason": null
         },
         "external_compatibility": {
-          "status": "verified",
-          "evidence": "real GitHub project plus pinned P3-derived revisions",
+          "status": "partial",
+          "evidence": "real project + P3 revisions integrated; no FixedBench/agent-runtime partial-fix path",
           "reason": null
         }
       },
-      "horizontal_status": "verified",
-      "closure_status": "verified_closed"
+      "horizontal_status": "partial",
+      "closure_status": "partial"
     },
     {
       "id": "US-30",
