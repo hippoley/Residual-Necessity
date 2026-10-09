@@ -1590,8 +1590,8 @@
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "Candidate validated against pinned Agent Hooks official CTK schema in run 37897846550; not yet accepted upstream",
+          "status": "verified",
+          "evidence": "Clean delivery run 37921383519 used official agent-hooks-sdk[ctk]==0.1.0b1: 51 vectors, 47 pass, 4 capability-gated skips, 0 fail, plus four RN interceptor seam cases.",
           "reason": null
         },
         "security_correctness": {
@@ -1616,17 +1616,17 @@
         },
         "testability": {
           "status": "verified",
-          "evidence": "Official upstream ajv-cli@5.0.0 + ajv-formats@3.0.1 validation passed",
+          "evidence": "Implementation-neutral RN conformance pack plus official Agent Hooks CTK cross-contract workflow.",
           "reason": null
         },
         "user_value": {
           "status": "partial",
-          "evidence": "Upstream-ready compatibility artifact exists; no independent upstream consumer/acceptance yet",
+          "evidence": "A third party can reproduce the contract surfaces and official CTK alignment, but independent RN adoption/consumption is still absent.",
           "reason": null
         },
         "external_compatibility": {
           "status": "blocked",
-          "evidence": "Agent Hooks candidate is schema-valid; issue/PR creation is blocked by GitHub integration 403",
+          "evidence": "Official CTK semantics are consumed successfully, but RN is not a Host and no RN-specific upstream proposal/vector has been accepted; direct upstream write remains blocked by integration 403.",
           "reason": null
         }
       },

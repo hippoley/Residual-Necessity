@@ -479,3 +479,63 @@ Artifact:
 - artifact id **11601334725**
 
 This strengthens Track B with a second independent, versioned partial/no-patch protocol source in addition to the real P3 history. It still does not prove general autonomous residual-predicate discovery.
+
+
+## Benchmark 0.2 clean delivery checkpoint
+
+Clean delivery branch `delivery/benchmark-external-modules` was reconstructed from current `main` rather than merging the long-lived exploratory branch.
+
+Validated head before evidence-only finalization:
+`fc42f0165a171b9ea305840970cc7106171df41f`
+
+All nine required workflows passed on that same head:
+
+- CI — run **37921383526**
+- AgentAbstain reality — run **37921383492**
+- SafeAct evidence interop — run **37921383483**
+- P3 residual necessity pair — run **37921383528**
+- P3 partial-fix reality — run **37921383530**
+- NoPatch protocol baseline — run **37921383571**
+- Agent Hooks end to end — run **37921383510**
+- Agent Hooks upstream candidate — run **37921383565**
+- Agent Hooks official CTK cross-contract — run **37921383519**
+
+The delivery upgrades the benchmark/governance surface without replacing the existing NoPatch baseline:
+
+- benchmark manifest 0.2;
+- pair-preserving bootstrap uncertainty;
+- category-stratified development scoring;
+- gold-free split and sealed holdout policy;
+- method-card / method-freeze / frozen-prediction tools;
+- provider-profile registry;
+- CEL-backed proposition expressions with explicit profile authority;
+- Dataset Card and Croissant metadata;
+- P3 and SafeAct corpus/upstream-contract audits;
+- machine-readable external-module license/version/semantic-boundary registry.
+
+### Official Agent Hooks CTK receipt on the clean branch
+
+Run **37921383519** installed `agent-hooks-sdk[ctk]==0.1.0b1` and executed the official CTK reference corpus plus the RN interceptor seam.
+
+Official CTK reference:
+- vectors: **51**
+- pass: **47**
+- capability-gated skip: **4**
+- fail: **0**
+
+RN interceptor cases in the same pinned SDK:
+- authoritative TRUE → allow;
+- authoritative FALSE → deny;
+- UNKNOWN → deny / investigate;
+- wrong-revision TRUE → deny / investigate.
+
+The report explicitly states:
+- `claim_type = interceptor_compatibility_not_host_conformance`
+- `host_conformance_claimed = false`
+
+Artifact:
+- `agent-hooks-official-ctk-cross-contract`
+- artifact id **11611399384**
+- artifact zip SHA-256 `7471db9cffd173a51f79148708165fc30745c9643803494cc1116da5ff2b864a`
+
+This is official-CTK cross-contract evidence, not an Agent Hooks §13 host-conformance claim and not upstream adoption.

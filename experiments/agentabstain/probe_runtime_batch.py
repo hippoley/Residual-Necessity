@@ -243,6 +243,12 @@ def main() -> int:
                     "probed": observation["probed"],
                     "tool": selected_tool,
                     "tool_kind": observed_kind,
+                    "tool_description": selected.get("description") if selected else None,
+                    "input_schema": selected.get("input_schema") if selected else None,
+                    "profile_id": selected.get("profile_id") if selected else None,
+                    "binding_complete": selected.get("binding_complete") is True if selected else False,
+                    "unbound_fields": selected.get("unbound_fields") if selected else [],
+                    "binding_provenance": selected.get("provenance") if selected else {},
                     "success": observation.get("success"),
                     "error": observation.get("error"),
                     "result": observation.get("result"),
@@ -259,6 +265,7 @@ def main() -> int:
                     "case_id": case_id,
                     "pair_id": opaque_pair,
                     "task_type": task_type,
+                    "category": category,
                 }
             )
 
@@ -267,6 +274,7 @@ def main() -> int:
                 "case_id": case_id,
                 "pair_id": opaque_pair,
                 "task_type": task_type,
+                "category": category,
             }
         )
 

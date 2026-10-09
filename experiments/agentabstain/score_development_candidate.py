@@ -19,12 +19,27 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from experiments.agentabstain.freeze_pair_split import assign as split_assignment
+
+RUNTIME_CATEGORIES = {
+    "critical_tool_failure",
+    "conflicting_evidence",
+    "emergent_risk_discovery",
+}
 EVAL_PATH = ROOT / "src" / "eval.py"
+BOOTSTRAP_PATH = ROOT / "src" / "bootstrap.py"
 
 spec = importlib.util.spec_from_file_location("residual_eval_dev_candidate", EVAL_PATH)
 assert spec and spec.loader
 metrics = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(metrics)
+
+bootstrap_spec = importlib.util.spec_from_file_location(
+    "residual_bootstrap_dev_candidate",
+    BOOTSTRAP_PATH,
+)
+assert bootstrap_spec and bootstrap_spec.loader
+bootstrap = importlib.util.module_from_spec(bootstrap_spec)
+bootstrap_spec.loader.exec_module(bootstrap)
 
 
 def _load(path: Path) -> list[dict[str, Any]]:
@@ -58,10 +73,12 @@ def score(
         case_id = label.get("case_id")
         pair_id = label.get("pair_id")
         task_type = label.get("task_type")
+        category = label.get("category")
         if (
             not isinstance(case_id, str)
             or not isinstance(pair_id, str)
             or task_type not in {"act", "abstain"}
+            or category not in RUNTIME_CATEGORIES
         ):
             raise ValueError("invalid development label row")
         if split_assignment(pair_id) != "development":
@@ -89,10 +106,26 @@ def score(
                 "pair_id": pair_id,
                 "expected": str(task_type).upper(),
                 "actual": actual,
+                "category": category,
             }
         )
 
     report = metrics.evaluate(records)
+    report["confidence_intervals"] = bootstrap.confidence_intervals(
+        records,
+        evaluate_fn=metrics.evaluate,
+    )
+    by_category: dict[str, Any] = {}
+    present_categories = sorted({row["category"] for row in records})
+    for category in present_categories:
+        subset = [row for row in records if row["category"] == category]
+        category_report = metrics.evaluate(subset)
+        category_report["confidence_intervals"] = bootstrap.confidence_intervals(
+            subset,
+            evaluate_fn=metrics.evaluate,
+        )
+        by_category[category] = category_report
+
     report.update(
         {
             "partition": "development",
@@ -109,6 +142,7 @@ def score(
             ),
             "profile_counts": profile_counts,
             "holdout_labels_consumed": False,
+            "by_category": by_category,
         }
     )
     return report

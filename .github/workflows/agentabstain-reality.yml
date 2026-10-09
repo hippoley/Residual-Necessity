@@ -28,12 +28,33 @@ jobs:
       - name: Inspect blind runtime shape
         run: python experiments/agentabstain/inspect_blind_shape.py /tmp/runtime-blind.json
 
+      - name: Audit static pair equivalence
+        run: |
+          python benchmark/audit_agentabstain_static_pair_equivalence.py \
+            /tmp/runtime-blind.json \
+            --out /tmp/runtime-static-pair-equivalence.json
+          python - <<'PY'
+          import json
+          report=json.load(open("/tmp/runtime-static-pair-equivalence.json"))
+          assert report["pair_count"] == 97
+          assert report["differing_pair_count"] == 0
+          assert report["static_pair_equivalence_pass"] is True
+          print("STATIC_PAIR_EQUIVALENCE=PASS")
+          PY
+
       - name: Freeze gold-free development holdout split
         run: |
           python experiments/agentabstain/freeze_pair_split.py \
             /tmp/runtime-blind.json \
             --out /tmp/runtime-pair-split.json
           sha256sum /tmp/runtime-pair-split.json | tee /tmp/runtime-pair-split.sha256
+
+      - name: Audit hidden-category split coverage
+        run: |
+          python benchmark/audit_agentabstain_split.py \
+            --labels /tmp/runtime-labels.json \
+            --split /tmp/runtime-pair-split.json \
+            --out /tmp/runtime-split-audit.json
 
       - name: Preserve Reality Gate split manifest
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -42,6 +63,8 @@ jobs:
           path: |
             /tmp/runtime-pair-split.json
             /tmp/runtime-pair-split.sha256
+            /tmp/runtime-split-audit.json
+            /tmp/runtime-static-pair-equivalence.json
           if-no-files-found: error
       - name: Score preregistered trivial baselines
         run: |
@@ -54,7 +77,8 @@ jobs:
           rows = json.load(open("/tmp/runtime-blind.json"))
           forbidden = {
               "task_type", "abstention_trigger", "execution_dag",
-              "critical_actions", "category", "transformation_dimension"
+              "critical_actions", "category", "transformation_dimension",
+              "task_id"
           }
           assert rows, "expected non-empty runtime slice"
           for row in rows:
@@ -83,7 +107,14 @@ jobs:
       - name: Install minimal AgentAbstain sandbox dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install PyYAML==6.0.3 pydantic==2.14.0 fastmcp==4.1.0 mcp==2.3.0 huggingface_hub==2.2.0
+          python -m pip install PyYAML==6.0.3 pydantic==2.14.0 fastmcp==4.1.0 mcp==2.3.0 huggingface_hub==2.2.0 cel-expr-python==0.1.3
+
+      - name: Validate CEL-backed provider expressions
+        run: |
+          python experiments/agentabstain/validate_cel_profiles.py \
+            --registry experiments/agentabstain/probe_binding_profiles.json
+          python experiments/agentabstain/cel_provider_smoke.py
+
 
       - name: Download public AgentAbstain executable dataset
         run: |
@@ -196,6 +227,25 @@ jobs:
             --labels /tmp/runtime-development-labels.json \
             --out /tmp/runtime-development-profile.json
 
+      - name: Mine provider-profile coverage gaps
+        run: |
+          python experiments/agentabstain/profile_gap_miner.py \
+            --observations /tmp/runtime-development-observations.json \
+            --labels /tmp/runtime-development-labels.json \
+            --registry experiments/agentabstain/probe_binding_profiles.json \
+            --out /tmp/runtime-provider-gap-report.json
+          python - <<'PY'
+          import json
+          report=json.load(open("/tmp/runtime-provider-gap-report.json"))
+          assert report["holdout_consumed"] is False
+          assert report["authority_granted"] is False
+          assert report["development_pairs"] == 64
+          assert report["coverage_candidates"]
+          assert report["authority_readiness_candidates"]
+          print("TOP_COVERAGE_GAP=", json.dumps(report["coverage_candidates"][0], sort_keys=True))
+          print("TOP_AUTHORITY_READY_GAP=", json.dumps(report["authority_readiness_candidates"][0], sort_keys=True))
+          PY
+
       - name: Freeze proposition-provider profile registry
         run: |
           sha256sum experiments/agentabstain/probe_binding_profiles.json | tee /tmp/proposition-provider-profiles.sha256
@@ -213,9 +263,18 @@ jobs:
           assert report["holdout_labels_consumed"] is False
           assert report["development_variants"] == 128
           assert report["development_pairs"] == 64
+          expected_categories = {
+              "critical_tool_failure",
+              "conflicting_evidence",
+              "emergent_risk_discovery",
+          }
+          assert set(report["by_category"]) == expected_categories, report["by_category"].keys()
           print("DEVELOPMENT_CANDIDATE_PAIRED_ACCURACY=", report["paired_accuracy"])
           print("DEVELOPMENT_CANDIDATE_ACT_RECALL=", report["act_recall"])
+          print("DEVELOPMENT_CANDIDATE_ABSTAIN_RECALL=", report["abstain_recall"])
+          print("DEVELOPMENT_CANDIDATE_DECISION_COVERAGE=", report["decision_coverage"])
           print("DEVELOPMENT_CANDIDATE_UNNECESSARY_INTERVENTION=", report["unnecessary_intervention_rate"])
+          print("DEVELOPMENT_CANDIDATE_PAIR_OUTCOMES=", report["pair_outcomes"])
           PY
 
       - name: Freeze predictions before gold scoring
@@ -241,6 +300,7 @@ jobs:
             /tmp/runtime-development-observations.json
             /tmp/runtime-development-labels.json
             /tmp/runtime-development-profile.json
+            /tmp/runtime-provider-gap-report.json
             /tmp/runtime-development-candidate-score.json
             /tmp/proposition-provider-profiles.sha256
           if-no-files-found: error

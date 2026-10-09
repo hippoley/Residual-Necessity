@@ -3,7 +3,7 @@
 
 The output is intentionally insufficient to reconstruct the benchmark label:
 we remove task_type, abstention_trigger, execution_dag, critical_actions,
-category, and transformation metadata from the inference view.
+category, transformation metadata, and task_id from the inference view.
 
 Only runtime-phase tasks are retained because Residual Necessity is specifically
 about current-state evidence discovered during execution rather than generic
@@ -26,6 +26,7 @@ HIDDEN_FIELDS = {
     "critical_actions",
     "category",
     "transformation_dimension",
+    "task_id",
 }
 
 ALLOWED_RUNTIME_CATEGORIES = {
