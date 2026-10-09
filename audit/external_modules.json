@@ -80,6 +80,35 @@
         ]
       },
       "failure_policy": "incomplete/unsupported evidence becomes UNKNOWN"
+    },
+    {
+      "id": "cel-expression-engine",
+      "source": "https://github.com/cel-expr/cel-python",
+      "pin": "cel-expr-python==0.1.3",
+      "upstream_module": "cel_expr_python.cel",
+      "integration_role": "portable deterministic proposition-expression evaluator",
+      "local_glue": "experiments/agentabstain/proposition_evidence.py",
+      "workflow": ".github/workflows/agentabstain-reality.yml",
+      "code_license": "Apache-2.0",
+      "semantic_boundary": {
+        "upstream_owns": [
+          "CEL parsing",
+          "CEL type/evaluation semantics",
+          "portable expression runtime"
+        ],
+        "residual_necessity_owns": [
+          "whether a CEL boolean has proposition authority",
+          "target/revision scoping",
+          "necessity versus constraint role",
+          "final necessity verdict"
+        ],
+        "forbidden_mapping": [
+          "CEL expression success -> authority without provider profile",
+          "CEL runtime error -> FALSE",
+          "non-boolean CEL result -> proposition truth"
+        ]
+      },
+      "failure_policy": "CEL import/compile/eval/type failures remain UNKNOWN and may not fall back to heuristic truth"
     }
   ]
 }
