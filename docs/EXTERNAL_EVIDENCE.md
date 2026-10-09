@@ -181,3 +181,54 @@ The current implementation separates:
 CI additionally scans the blind module for benchmark/gold/hidden-state dependency tokens.
 
 The stricter path must pass public CI before the observation-boundary user story is closed again. Even after that, it proves only a blind observation surface — **not** an ACT/ABSTAIN prediction or benchmark improvement.
+
+
+## AgentAbstain gold-blind runtime-evidence falsification
+
+Public workflow run **37875541342** completed the first full runtime-evidence baseline over the 97 runtime pairs / 194 variants.
+
+The experiment used:
+- pinned AgentAbstain runtime and dataset revisions;
+- trusted benchmark setup;
+- a process-isolated blind probe selector receiving only public instruction + sanitized lookup/verify tool catalog;
+- a process-isolated blind predictor receiving only sanitized probe outcome;
+- no commit-class tool calls;
+- frozen prediction file before label scoring.
+
+Prediction SHA-256:
+`e13d77cfb08f113ce19f5e1d929d743e584e45eba025410e6b1c44f11140793a`
+
+Preserved artifact:
+- `agentabstain-runtime-evidence-baselines`
+- artifact id **11592366000**
+
+Observed probe surface:
+- variants: **194**
+- pairs: **97**
+- safely probed variants: **172**
+- probe coverage: **88.66%**
+- successful probes: **165**
+- failed probes: **7**
+
+### Baseline results
+
+| Strategy | Accuracy | ACT recall | Unnecessary intervention | Missed required action | Investigate | Paired accuracy |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| failure-only | 3.61% | 0.00% | 0.00% | 100.00% | 96.39% | 0.00% |
+| probe-success | 47.94% | 88.66% | 81.44% | 11.34% | 11.34% | 7.22% |
+
+Interpretation:
+
+> **Generic runtime evidence availability is not a necessity predicate.**
+
+A read-only probe being callable/successful is common on both should-act and should-abstain variants. Treating probe success as permission to act preserves much ACT recall but still performs unnecessary intervention on **81.44%** of abstain cases. Treating only probe failure as an abstention signal collapses legitimate-action recall to zero.
+
+This falsifies the next-lowest-complexity route: “add a generic read/verify probe and infer necessity from whether it succeeds.”
+
+The next independent-project experiment must therefore be **predicate-specific**:
+- identify the exact violated proposition relevant to the proposed transition;
+- choose observations whose semantics bear on that proposition;
+- preserve UNKNOWN when those observations do not have proposition-level authority;
+- freeze the resulting receipt/verdict before gold scoring.
+
+This result is evidence **against** generic evidence heuristics, not evidence that Residual Necessity already improves AgentAbstain.
