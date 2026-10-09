@@ -220,6 +220,23 @@ jobs:
             --labels /tmp/runtime-development-labels.json \
             --out /tmp/runtime-development-profile.json
 
+      - name: Mine provider-profile coverage gaps
+        run: |
+          python experiments/agentabstain/profile_gap_miner.py \
+            --observations /tmp/runtime-development-observations.json \
+            --labels /tmp/runtime-development-labels.json \
+            --registry experiments/agentabstain/probe_binding_profiles.json \
+            --out /tmp/runtime-provider-gap-report.json
+          python - <<'PY'
+          import json
+          report=json.load(open("/tmp/runtime-provider-gap-report.json"))
+          assert report["holdout_consumed"] is False
+          assert report["authority_granted"] is False
+          assert report["development_pairs"] == 64
+          assert report["candidates"]
+          print("TOP_PROVIDER_GAP=", json.dumps(report["candidates"][0], sort_keys=True))
+          PY
+
       - name: Freeze proposition-provider profile registry
         run: |
           sha256sum experiments/agentabstain/probe_binding_profiles.json | tee /tmp/proposition-provider-profiles.sha256
@@ -274,6 +291,7 @@ jobs:
             /tmp/runtime-development-observations.json
             /tmp/runtime-development-labels.json
             /tmp/runtime-development-profile.json
+            /tmp/runtime-provider-gap-report.json
             /tmp/runtime-development-candidate-score.json
             /tmp/proposition-provider-profiles.sha256
           if-no-files-found: error
