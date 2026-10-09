@@ -111,13 +111,22 @@
       "metrics": [
         "partial_revision_verdict",
         "final_revision_verdict",
-        "bounded_oracle_coverage"
+        "bounded_oracle_coverage",
+        "partial_fix_task_count",
+        "reconstructable_revision_chain_count",
+        "unique_repository_count",
+        "attempt_count_distribution"
       ],
       "expected": {
         "partial_revision_verdict": "ACT",
         "final_revision_verdict": "ABSTAIN"
       },
-      "authority_rule": "Oracle is bounded to the issue-derived CMD_BSL zero-branch proposition and may not claim global bug absence."
+      "authority_rule": "Oracle is bounded to the issue-derived CMD_BSL zero-branch proposition and may not claim global bug absence.",
+      "corpus_inventory": {
+        "scope": "all pinned P3 tasks classified as partial fix",
+        "purpose": "measure external partial-fix breadth and reconstructable revision-chain coverage",
+        "oracle_coverage_claim": "none"
+      }
     },
     {
       "id": "C-evidence-support-boundary",
