@@ -89,6 +89,11 @@ def validate(data: dict) -> list[str]:
     support=by_id.get("C-evidence-support-boundary",{})
     if "constraint" not in str(support.get("authority_rule","")).lower():
         errors.append("SafeAct track must preserve constraint-only boundary")
+    corpus_audit=support.get("corpus_audit") or {}
+    if corpus_audit.get("required") is not True:
+        errors.append("SafeAct track must require corpus-level adapter audit")
+    if "negative authority" not in str(corpus_audit.get("invariant","")).lower():
+        errors.append("SafeAct corpus audit must prohibit negative-authority promotion")
     return errors
 
 if __name__=="__main__":
