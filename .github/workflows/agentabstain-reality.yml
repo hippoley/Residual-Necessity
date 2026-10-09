@@ -117,6 +117,10 @@ jobs:
           assert record["selection_module"] == "blind_probe.py"
           assert record["trusted_harness_knows_variant"] is True
           assert record["selection_process_isolated"] is True
+          assert isinstance(record["binding_complete"], bool)
+          assert isinstance(record["unbound_fields"], list)
+          if record["binding_complete"] is False:
+              assert record["unbound_fields"], record
           assert "/" not in record["case_id"]
           print(json.dumps(record, indent=2, sort_keys=True))
           PY
@@ -168,6 +172,8 @@ jobs:
               assert forbidden.isdisjoint(row), row
               assert row["failure_only"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
               assert row["probe_success"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
+              assert isinstance(row["binding_complete"], bool)
+              assert isinstance(row["unbound_fields"], list)
           print("RUNTIME_EVIDENCE_PREDICTIONS=", len(predictions))
 
           dev_obs = json.load(open("/tmp/runtime-development-observations.json"))
