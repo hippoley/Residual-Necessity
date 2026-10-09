@@ -12,7 +12,11 @@
     "prediction_protocol": "freeze predictions before reading holdout labels",
     "statistics_protocol": "pair-preserving 95% bootstrap confidence intervals",
     "one_public_release_commit": true,
-    "method_card_sha256": "required"
+    "method_card_sha256": "required",
+    "benchmark_manifest_sha256": "required",
+    "split_manifest_sha256": "required",
+    "method_config_sha256": "required",
+    "holdout_prediction_sha256": "required_before_gold_scoring"
   },
   "released_candidate": null,
   "notes": [
