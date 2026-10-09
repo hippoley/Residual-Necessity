@@ -945,7 +945,7 @@
       "priority": "P1",
       "vertical_status": "closed",
       "dependencies": [],
-      "summary": "Schema/examples/conformance cannot silently drift",
+      "summary": "Receipt schema 0.3 changes are versioned and examples cannot silently drift",
       "dimensions": {
         "functional": {
           "status": "verified",
@@ -974,7 +974,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "schema 0.2 + deterministic reference gate",
+          "evidence": "schema 0.3 + deterministic reference gate",
           "reason": null
         },
         "observability_traceability": {
@@ -2381,6 +2381,71 @@
       },
       "horizontal_status": "verified",
       "closure_status": "verified_closed"
+    },
+    {
+      "id": "US-38",
+      "priority": "P0",
+      "vertical_status": "partial",
+      "dependencies": [
+        "US-01",
+        "US-12",
+        "US-19"
+      ],
+      "summary": "External action-support evidence cannot masquerade as residual necessity",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "Receipt 0.3 role=necessity|constraint and gate justified_by enforcement",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "Scoped predicate+target+revision authority retained",
+          "reason": null
+        },
+        "integration": {
+          "status": "partial",
+          "evidence": "Pinned SafeAct 841816cf interoperability workflow implemented; external run pending",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "Core regression proves TRUE support constraint cannot justify ACT",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Semantic adapter correctness; no throughput SLO is required for this story."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "SafeAct mapping isolated in experiments/safeact_constraint_adapter.py",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "SafeAct case/rule IDs preserved in evidence_ref and details",
+          "reason": null
+        },
+        "testability": {
+          "status": "partial",
+          "evidence": "Unit tests exist; pinned external SafeAct E2E pending",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "Prevents supported/permitted actions from being mislabeled necessary",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "partial",
+          "evidence": "SafeAct MIT code + CC BY 4.0 data at pinned commit; CI pending",
+          "reason": null
+        }
+      },
+      "horizontal_status": "partial",
+      "closure_status": "partial"
     }
   ]
 }
