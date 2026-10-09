@@ -163,6 +163,7 @@ Verified run:
 - workflow run: `37871728936`
 - job: `tool-visible-probe`
 - AgentAbstain runtime commit: `cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3`
+- AgentAbstain dataset revision: `842228426c2a703347396501af61c7890972c7ee`
 - tool: `security_and_privacy_admin.search_breach_records`
 - tool kind: `lookup`
 - success: `true`
