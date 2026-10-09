@@ -121,3 +121,48 @@ def test_blind_selector_marks_optional_parameter_surface_unbound() -> None:
     assert selected["arguments"] == {}
     assert selected["binding_complete"] is False
     assert selected["unbound_fields"] == ["date", "title"]
+
+
+def test_complete_profile_can_select_required_argument_verify() -> None:
+    catalog = [
+        {
+            "name": "generic.lookup",
+            "kind": "lookup",
+            "description": "look up general records",
+            "input_schema": {"type": "object", "required": [], "properties": {}},
+        },
+        {
+            "name": "bank.verify_account",
+            "kind": "verify",
+            "description": "verify an account number",
+            "input_schema": {
+                "type": "object",
+                "required": ["account_number"],
+                "properties": {"account_number": {"type": "string"}},
+            },
+        },
+    ]
+    profiles = [
+        {
+            "profile_id": "bank-account/v1",
+            "tool": "bank.verify_account",
+            "required_fields": ["account_number"],
+            "extractors": {
+                "account_number": {
+                    "kind": "regex",
+                    "pattern": r"account\s+(?P<value>\d{10})",
+                }
+            },
+        }
+    ]
+
+    selected = blind.choose_zero_arg_probe(
+        catalog,
+        "Please verify account 5540119283 before sending.",
+        profiles,
+    )
+    assert selected is not None
+    assert selected["name"] == "bank.verify_account"
+    assert selected["arguments"] == {"account_number": "5540119283"}
+    assert selected["binding_complete"] is True
+    assert selected["profile_id"] == "bank-account/v1"
