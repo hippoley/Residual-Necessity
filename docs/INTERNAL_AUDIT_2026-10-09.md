@@ -136,6 +136,7 @@ These are not third-party dependency.
 ### Existentially open
 
 - US-26 — blinded AgentAbstain inference from tool-visible current state;
+- US-37 — **closed for one real external observation path**, but not a prediction;
 - US-27 — measurable improvement without ACT-recall collapse;
 - US-28 — meaningful non-trivial baseline;
 - US-29 — real partial-fix evaluation;
@@ -181,7 +182,7 @@ Required invariant:
 - commit-class tools are forbidden during observation collection;
 - inference view receives no task type, trigger, execution DAG, critical actions, transformation metadata, or semantic category identifier.
 
-A real CI probe is being added against the public executable sandbox.
+This boundary is now proven for one real public-sandbox path in workflow run `37871728936`: the probe called `security_and_privacy_admin.search_breach_records` (lookup), produced one execution-log entry, executed no commit tool, read no raw state, received no gold fields, and preserved artifact `11590222305`. The returned result was null, so this proves observation access rather than predictive value.
 
 ### B. Blinded prediction
 
