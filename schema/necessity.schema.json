@@ -189,9 +189,6 @@
               ]
             },
             "then": {
-              "required": [
-                "positive_authority"
-              ],
               "not": {
                 "required": [
                   "negative_authority"
@@ -211,9 +208,6 @@
               ]
             },
             "then": {
-              "required": [
-                "negative_authority"
-              ],
               "not": {
                 "required": [
                   "positive_authority"
