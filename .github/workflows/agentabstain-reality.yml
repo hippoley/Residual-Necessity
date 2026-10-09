@@ -172,6 +172,7 @@ jobs:
               assert forbidden.isdisjoint(row), row
               assert row["failure_only"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
               assert row["probe_success"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
+              assert row["proposition_specific"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
               assert isinstance(row["binding_complete"], bool)
               assert isinstance(row["unbound_fields"], list)
           print("RUNTIME_EVIDENCE_PREDICTIONS=", len(predictions))
@@ -194,6 +195,24 @@ jobs:
             --observations /tmp/runtime-development-observations.json \
             --labels /tmp/runtime-development-labels.json \
             --out /tmp/runtime-development-profile.json
+
+      - name: Score proposition candidate on development only
+        run: |
+          python experiments/agentabstain/score_development_candidate.py \
+            --predictions /tmp/runtime-evidence-predictions.json \
+            --development-labels /tmp/runtime-development-labels.json \
+            --out /tmp/runtime-development-candidate-score.json
+          python - <<'PY'
+          import json
+          report = json.load(open("/tmp/runtime-development-candidate-score.json"))
+          assert report["partition"] == "development"
+          assert report["holdout_labels_consumed"] is False
+          assert report["development_variants"] == 128
+          assert report["development_pairs"] == 64
+          print("DEVELOPMENT_CANDIDATE_PAIRED_ACCURACY=", report["paired_accuracy"])
+          print("DEVELOPMENT_CANDIDATE_ACT_RECALL=", report["act_recall"])
+          print("DEVELOPMENT_CANDIDATE_UNNECESSARY_INTERVENTION=", report["unnecessary_intervention_rate"])
+          PY
 
       - name: Freeze predictions before gold scoring
         run: |
@@ -218,4 +237,5 @@ jobs:
             /tmp/runtime-development-observations.json
             /tmp/runtime-development-labels.json
             /tmp/runtime-development-profile.json
+            /tmp/runtime-development-candidate-score.json
           if-no-files-found: error
