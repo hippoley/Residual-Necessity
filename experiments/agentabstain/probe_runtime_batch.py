@@ -32,6 +32,7 @@ from experiments.agentabstain.probe_runtime_observation import (
     _jsonable,
     _safe_catalog,
     _select_in_blind_subprocess,
+    _load_binding_profiles,
 )
 
 
@@ -126,6 +127,7 @@ def main() -> int:
     failed_probe_count = 0
     development_observations: list[dict[str, Any]] = []
     development_labels: list[dict[str, Any]] = []
+    profiles = _load_binding_profiles()
 
     for row in _runtime_rows(load_jsonl(args.tasks_jsonl)):
         category = str(row["category"])
@@ -139,7 +141,7 @@ def main() -> int:
         allowed = _apply_runtime_surface(bundle, menv)
 
         catalog = _safe_catalog(menv, allowed)
-        selected = _select_in_blind_subprocess(catalog, instruction)
+        selected = _select_in_blind_subprocess(catalog, instruction, profiles)
 
         observation: dict[str, Any]
         selected_tool: str | None = None
@@ -238,6 +240,8 @@ def main() -> int:
                     "error": observation.get("error"),
                     "result": observation.get("result"),
                     "arguments": observation.get("arguments") or {},
+                    "profile_id": selected.get("profile_id") if selected else None,
+                    "binding_provenance": selected.get("provenance") if selected else {},
                     "binding_complete": observation.get("binding_complete") is True,
                     "unbound_fields": observation.get("unbound_fields") or [],
                     "input_schema": selected.get("input_schema") if selected else None,
