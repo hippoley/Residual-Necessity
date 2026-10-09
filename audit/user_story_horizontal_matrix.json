@@ -1698,7 +1698,11 @@
       "id": "US-26",
       "priority": "P1",
       "vertical_status": "superseded",
-      "dependencies": [],
+      "dependencies": [
+        "US-25",
+        "US-37",
+        "US-28"
+      ],
       "summary": "Generalize proposition-specific evidence prediction to AgentAbstain constraint-heavy runtime cases",
       "dimensions": {
         "functional": {
@@ -1769,7 +1773,11 @@
       "id": "US-27",
       "priority": "P1",
       "vertical_status": "superseded",
-      "dependencies": [],
+      "dependencies": [
+        "US-25",
+        "US-26",
+        "US-28"
+      ],
       "summary": "Demonstrate two-sided utility on a broader external benchmark without semantic collapse",
       "dimensions": {
         "functional": {
@@ -1972,22 +1980,22 @@
       "dimensions": {
         "functional": {
           "status": "verified",
-          "evidence": "P3 residual pair run 37892134518 and rerun 37892615862 drive ACT at partial revision and ABSTAIN at final fix",
+          "evidence": "P3 residual necessity pair proves partial revision -> ACT and final revision -> ABSTAIN",
           "reason": null
         },
         "state": {
           "status": "verified",
-          "evidence": "Same bounded predicate evaluated across pinned partial/final revisions",
+          "evidence": "revision-bound necessity predicate over real cave-story-md revisions",
           "reason": null
         },
         "integration": {
           "status": "verified",
-          "evidence": "Real andwn/cave-story-md repository and issue #169 path integrated",
+          "evidence": "public P3 residual necessity pair workflow against real external project",
           "reason": null
         },
         "security_correctness": {
           "status": "verified",
-          "evidence": "Oracle is bounded to current revision source and does not compare against final patch during decision",
+          "evidence": "bounded oracle uses current revision only and does not compare against final patch during classification",
           "reason": null
         },
         "performance_scalability": {
@@ -1997,27 +2005,27 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "Bounded oracle isolated in experiments/p3/cave_story_issue169_oracle.py",
+          "evidence": "isolated issue-derived bounded oracle with regression tests",
           "reason": null
         },
         "observability_traceability": {
           "status": "verified",
-          "evidence": "Scoped predicate, revision, issue reference and receipt hashes preserved",
+          "evidence": "paired receipt hashes/artifacts preserved by public workflow",
           "reason": null
         },
         "testability": {
           "status": "verified",
-          "evidence": "Unit counterexamples + public external partial/final E2E",
+          "evidence": "unit tests plus real external revision E2E",
           "reason": null
         },
         "user_value": {
           "status": "verified",
-          "evidence": "Demonstrates residual partial state still requires action while final fixed state requires abstention",
+          "evidence": "demonstrates residual ACT after incomplete fix and ABSTAIN after final fix",
           "reason": null
         },
         "external_compatibility": {
           "status": "verified",
-          "evidence": "Public P3 history + external GitHub repository/issue/revisions",
+          "evidence": "real GitHub project plus pinned P3-derived revisions",
           "reason": null
         }
       },
@@ -2405,7 +2413,7 @@
         "US-01",
         "US-12"
       ],
-      "summary": "External action-support evidence cannot masquerade as residual necessity",
+      "summary": "SafeAct action-support evidence is reused as constraints without being promoted to necessity authority.",
       "dimensions": {
         "functional": {
           "status": "verified",
@@ -2419,7 +2427,7 @@
         },
         "integration": {
           "status": "verified",
-          "evidence": "Pinned SafeAct 841816cf interoperability passed on latest validated head in run 37892615899",
+          "evidence": "SafeAct evidence interop workflow consumes pinned real SafeAct materialized evidence",
           "reason": null
         },
         "security_correctness": {
@@ -2444,7 +2452,7 @@
         },
         "testability": {
           "status": "verified",
-          "evidence": "Unit tests plus pinned external SafeAct E2E passed on latest validated head",
+          "evidence": "adapter unit tests plus public real SafeAct E2E",
           "reason": null
         },
         "user_value": {
@@ -2454,7 +2462,7 @@
         },
         "external_compatibility": {
           "status": "verified",
-          "evidence": "SafeAct MIT code + CC BY 4.0 data pinned at 841816cf; run 37892615899 success",
+          "evidence": "pinned SafeAct commit 841816cf; MIT code and CC BY 4.0 data licenses verified in repository/workflow",
           "reason": null
         }
       },
