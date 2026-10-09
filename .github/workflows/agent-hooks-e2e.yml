@@ -1,0 +1,25 @@
+name: Agent Hooks end to end
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: residual-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  canonical-control-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Agent Hooks beta SDK
+        run: python -m pip install --pre agent-hooks-sdk
+
+      - name: Run Residual Necessity as an Agent Hooks interceptor
+        run: python experiments/agent_hooks_e2e.py
