@@ -411,3 +411,23 @@ def test_only_false_necessity_can_abstain() -> None:
     }
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "ABSTAIN"
+
+
+def test_selective_metrics_distinguish_investigate_from_decision() -> None:
+    result = metrics.evaluate([
+        {"pair_id": "p1", "expected": "ACT", "actual": "ACT"},
+        {"pair_id": "p1", "expected": "ABSTAIN", "actual": "INVESTIGATE"},
+    ])
+    assert result["decision_coverage"] == 0.5
+    assert result["decisive_accuracy"] == 1.0
+    assert result["act_precision"] == 1.0
+    assert result["abstain_precision"] is None
+
+
+def test_always_investigate_has_zero_decision_coverage() -> None:
+    result = metrics.evaluate([
+        {"pair_id": "p1", "expected": "ACT", "actual": "INVESTIGATE"},
+        {"pair_id": "p1", "expected": "ABSTAIN", "actual": "INVESTIGATE"},
+    ])
+    assert result["decision_coverage"] == 0.0
+    assert result["decisive_accuracy"] is None
