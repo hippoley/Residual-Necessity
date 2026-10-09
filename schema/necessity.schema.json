@@ -175,7 +175,53 @@
           },
           "details": {}
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "TRUE"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "positive_authority"
+              ],
+              "not": {
+                "required": [
+                  "negative_authority"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "FALSE"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "negative_authority"
+              ],
+              "not": {
+                "required": [
+                  "positive_authority"
+                ]
+              }
+            }
+          }
+        ]
       }
     }
   },
