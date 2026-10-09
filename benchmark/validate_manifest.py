@@ -86,6 +86,13 @@ def validate(data: dict) -> list[str]:
     if methods.get("holdout_reveal_requires_frozen_method") is not True:
         errors.append("holdout reveal must require frozen method")
 
+    residual=by_id.get("B-residual-partial-fix",{})
+    corpus_inventory=residual.get("corpus_inventory") or {}
+    if corpus_inventory.get("oracle_coverage_claim")!="none":
+        errors.append("P3 corpus inventory must not imply global oracle coverage")
+    if "partial fix" not in str(corpus_inventory.get("scope","")).lower():
+        errors.append("P3 corpus inventory scope must be explicit")
+
     support=by_id.get("C-evidence-support-boundary",{})
     if "constraint" not in str(support.get("authority_rule","")).lower():
         errors.append("SafeAct track must preserve constraint-only boundary")
