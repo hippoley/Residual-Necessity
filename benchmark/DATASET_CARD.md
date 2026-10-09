@@ -103,10 +103,17 @@ External source licenses remain upstream. In particular, the SafeAct repository 
 - Track C proves a semantic boundary, not Residual Necessity benchmark superiority.
 - Third-party adoption/dependency on this benchmark is currently zero.
 
+## Third-party method submissions
+
+Track A candidates use the machine-readable contract in `benchmark/method_submission.schema.json`.
+A candidate must freeze its exact code commit, provider-profile hash and development-report hash before holdout release. The one-shot holdout governance lives in `benchmark/holdout_policy.json`.
+
 ## Machine-readable metadata
 
 - Benchmark contract: `benchmark/manifest.json`
 - Croissant 1.1 metadata: `benchmark/croissant.json`
 - Horizontal completeness matrix: `audit/user_story_horizontal_matrix.json`
+- Method submission schema: `benchmark/method_submission.schema.json`
+- Holdout release policy: `benchmark/holdout_policy.json`
 
 The Croissant file describes this composite benchmark without vendoring external raw datasets.
