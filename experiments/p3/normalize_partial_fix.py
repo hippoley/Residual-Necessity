@@ -94,7 +94,7 @@ def main() -> int:
             continue
         if not isinstance(doc, dict):
             continue
-        if classify(doc) == "Partial Fix":
+        if norm_key(classify(doc) or "") == "partial_fix":
             candidates.append((path, doc))
 
     if not candidates:
@@ -114,7 +114,7 @@ def main() -> int:
                 "source": "SoSy-Lab/P3",
                 "source_commit": args.p3_commit,
                 "task_path": str(path.relative_to(args.p3_root)),
-                "classification": "Partial Fix",
+                "classification": "partial fix",
                 "repository_url": str(repository) if repository is not None else None,
                 "related_issue": str(related_issue) if related_issue is not None else None,
                 **sequence,
