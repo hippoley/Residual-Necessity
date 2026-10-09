@@ -7,6 +7,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE = ROOT / "benchmark" / "validate_provider_profiles.py"
+REGISTRY = ROOT / "experiments" / "agentabstain" / "probe_binding_profiles.json"
+SCHEMA_DOC = json.loads(
+    (ROOT / "benchmark" / "provider_profile_registry.schema.json").read_text(encoding="utf-8")
+)
 
 spec = importlib.util.spec_from_file_location("provider_profile_validator", MODULE)
 assert spec and spec.loader
