@@ -15,6 +15,9 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
 
     total = len(records)
     correct = investigate = escalate = 0
+    decisive = decisive_correct = 0
+    predicted_act = predicted_abstain = 0
+    correct_act = correct_abstain = 0
     unnecessary = false_abstain = 0
     expected_abstain = expected_act = 0
     by_pair: dict[str, dict[str, bool | None]] = {}
@@ -28,9 +31,20 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         if actual not in {"ACT", "ABSTAIN", "INVESTIGATE", "ESCALATE"}:
             raise ValueError(f"unsupported actual verdict: {actual!r}")
 
-        correct += actual == expected
+        is_correct = actual == expected
+        correct += is_correct
         investigate += actual == "INVESTIGATE"
         escalate += actual == "ESCALATE"
+
+        if actual in {"ACT", "ABSTAIN"}:
+            decisive += 1
+            decisive_correct += is_correct
+        if actual == "ACT":
+            predicted_act += 1
+            correct_act += expected == "ACT"
+        elif actual == "ABSTAIN":
+            predicted_abstain += 1
+            correct_abstain += expected == "ABSTAIN"
 
         if expected == "ABSTAIN":
             expected_abstain += 1
@@ -80,6 +94,16 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "investigate_rate": investigate / total,
         "escalate_rate": escalate / total,
+        "decision_coverage": decisive / total,
+        "decisive_accuracy": (
+            decisive_correct / decisive if decisive else None
+        ),
+        "act_precision": (
+            correct_act / predicted_act if predicted_act else None
+        ),
+        "abstain_precision": (
+            correct_abstain / predicted_abstain if predicted_abstain else None
+        ),
         "pair_count": len(by_pair),
         "complete_pair_count": len(complete_pairs),
         "paired_accuracy": (
