@@ -22,6 +22,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
+
 from experiments.agentabstain.blind_probe import choose_zero_arg_probe
 
 
@@ -166,6 +169,8 @@ def main() -> int:
             "result": _jsonable(result),
             "execution_log_length": len(log),
             "selection_module": "blind_probe.choose_zero_arg_probe",
+            "trusted_harness_knows_variant": True,
+            "trusted_harness_knows_variant": True,
             "gold_fields_exposed_to_selector": False,
             "raw_state_exposed_to_selector": False,
         }
