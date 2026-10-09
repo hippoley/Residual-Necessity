@@ -157,22 +157,27 @@ This is compatibility evidence with a released policy runtime. It is not an ACS 
 
 ## AgentAbstain tool-visible runtime observation
 
-A public CI path now obtains runtime evidence from the executable AgentAbstain sandbox without reading raw environment state or benchmark gold.
+### First-generation probe — superseded as a firewall proof
 
-Verified run:
+Public run `37871728936` successfully exercised one read-only AgentAbstain lookup tool and preserved a real execution-log entry. It was useful evidence that the external sandbox can be consumed.
 
-- workflow run: `37871728936`
-- job: `tool-visible-probe`
-- AgentAbstain runtime commit: `cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3`
-- AgentAbstain dataset revision: `842228426c2a703347396501af61c7890972c7ee`
-- tool: `security_and_privacy_admin.search_breach_records`
-- tool kind: `lookup`
-- success: `true`
-- execution-log entries: `1`
-- raw state read by probe logic: `false`
-- gold fields exposed to probe: `false`
-- preserved artifact id: `11590222305`
+However, a later adversarial audit found that the probe and trusted benchmark setup still lived in the same script/process:
 
-The observed result for this one probe was `null`. Therefore this run proves the **non-gold, tool-visible observation boundary**, not an ACT/ABSTAIN prediction and not benchmark improvement.
+- the harness iterated the `act` / `abstain` variant paths;
+- `BaseAgent.load_task_bundle` loaded task metadata containing gold-only fields;
+- benchmark initial state was loaded to instantiate the environment.
 
-The Reality Gate still requires a larger blinded paired inference path before any usefulness claim graduates.
+The probe logic did not intentionally inspect those gold/state fields when choosing the lookup tool, but the isolation boundary was not strong enough to support the stronger claim that the inference selector itself was structurally unable to access them.
+
+Therefore run `37871728936` is retained as **runtime-interoperability evidence**, not as the final gold-firewall proof.
+
+### Stricter replacement
+
+The current implementation separates:
+
+- a **trusted harness** that instantiates the benchmark variant and enforces that only upstream `lookup` / `verify` tools are projected;
+- `experiments/agentabstain/blind_probe.py`, which has no AgentAbstain imports and receives only a sanitized tool catalog.
+
+CI additionally scans the blind module for benchmark/gold/hidden-state dependency tokens.
+
+The stricter path must pass public CI before the observation-boundary user story is closed again. Even after that, it proves only a blind observation surface — **not** an ACT/ABSTAIN prediction or benchmark improvement.
