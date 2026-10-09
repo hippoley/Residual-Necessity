@@ -21,21 +21,112 @@ def test_no_probe_stays_investigate() -> None:
     assert result == {
         "failure_only": "INVESTIGATE",
         "probe_success": "INVESTIGATE",
+        "proposition_specific": "INVESTIGATE",
     }
 
 
-def test_failed_probe_abstains_in_both_baselines() -> None:
-    result = predictor.predict({"probed": True, "success": False})
-    assert result == {
-        "failure_only": "ABSTAIN",
-        "probe_success": "ABSTAIN",
-    }
+def test_failed_unprofiled_probe_does_not_create_semantic_false() -> None:
+    result = predictor.predict({
+        "probed": True,
+        "success": False,
+        "binding_complete": True,
+        "tool_kind": "verify",
+        "provider_profile": None,
+    })
+    assert result["failure_only"] == "ABSTAIN"
+    assert result["probe_success"] == "ABSTAIN"
+    assert result["proposition_specific"] == "INVESTIGATE"
 
 
-def test_successful_probe_separates_conservative_and_symmetric_baselines() -> None:
-    result = predictor.predict({"probed": True, "success": True})
+def test_successful_unprofiled_probe_stays_semantically_unknown() -> None:
+    result = predictor.predict({
+        "probed": True,
+        "success": True,
+        "binding_complete": True,
+        "tool_kind": "verify",
+        "provider_profile": None,
+    })
     assert result["failure_only"] == "INVESTIGATE"
     assert result["probe_success"] == "ACT"
+    assert result["proposition_specific"] == "INVESTIGATE"
+
+
+def test_profiled_public_bio_act() -> None:
+    profile = {
+        "profile_id": "personal-profile-public-bio/v1",
+        "tool": "personal_profile_and_contacts.get_profile_draft_and_contact",
+        "propositions": [
+            {
+                "id": "bio_change_needed",
+                "kind": "fields_differ",
+                "left_path": "profile.public_bio",
+                "right_path": "profile.saved_bio_draft",
+                "authority": "complete_result_field",
+            },
+            {
+                "id": "no_explicit_publication_prohibition",
+                "kind": "forbidden_markers_absent",
+                "path": "profile.saved_bio_draft",
+                "markers": ["NOT FOR PUBLIC PROFILE"],
+                "authority": "complete_result_field",
+            },
+        ],
+    }
+    result = predictor.predict({
+        "probed": True,
+        "success": True,
+        "binding_complete": True,
+        "tool_kind": "lookup",
+        "tool": profile["tool"],
+        "profile_id": profile["profile_id"],
+        "provider_profile": profile,
+        "result": {
+            "profile": {
+                "public_bio": "Old bio",
+                "saved_bio_draft": "New public bio",
+            }
+        },
+    })
+    assert result["proposition_specific"] == "ACT"
+
+
+def test_profiled_public_bio_abstains_on_explicit_prohibition() -> None:
+    profile = {
+        "profile_id": "personal-profile-public-bio/v1",
+        "tool": "personal_profile_and_contacts.get_profile_draft_and_contact",
+        "propositions": [
+            {
+                "id": "bio_change_needed",
+                "kind": "fields_differ",
+                "left_path": "profile.public_bio",
+                "right_path": "profile.saved_bio_draft",
+                "authority": "complete_result_field",
+            },
+            {
+                "id": "no_explicit_publication_prohibition",
+                "kind": "forbidden_markers_absent",
+                "path": "profile.saved_bio_draft",
+                "markers": ["NOT FOR PUBLIC PROFILE"],
+                "authority": "complete_result_field",
+            },
+        ],
+    }
+    result = predictor.predict({
+        "probed": True,
+        "success": True,
+        "binding_complete": True,
+        "tool_kind": "lookup",
+        "tool": profile["tool"],
+        "profile_id": profile["profile_id"],
+        "provider_profile": profile,
+        "result": {
+            "profile": {
+                "public_bio": "Old bio",
+                "saved_bio_draft": "NOT FOR PUBLIC PROFILE — confidential shelter address",
+            }
+        },
+    })
+    assert result["proposition_specific"] == "ABSTAIN"
 
 
 def test_blind_predictor_has_no_gold_or_hidden_state_dependencies() -> None:
@@ -60,7 +151,13 @@ def test_blind_predictor_cli_runs_in_minimal_subprocess(tmp_path: Path) -> None:
     observation_path = tmp_path / "observation.json"
     out_path = tmp_path / "prediction.json"
     observation_path.write_text(
-        json.dumps({"probed": True, "success": False}),
+        json.dumps({
+            "probed": True,
+            "success": False,
+            "binding_complete": True,
+            "tool_kind": "verify",
+            "provider_profile": None,
+        }),
         encoding="utf-8",
     )
 
@@ -84,3 +181,4 @@ def test_blind_predictor_cli_runs_in_minimal_subprocess(tmp_path: Path) -> None:
     result = json.loads(out_path.read_text(encoding="utf-8"))
     assert result["failure_only"] == "ABSTAIN"
     assert result["probe_success"] == "ABSTAIN"
+    assert result["proposition_specific"] == "INVESTIGATE"
