@@ -2596,6 +2596,70 @@
       },
       "horizontal_status": "verified",
       "closure_status": "verified_closed"
+    },
+    {
+      "id": "US-41",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-28",
+        "US-40"
+      ],
+      "summary": "Benchmark is a discoverable, leakage-resistant, statistically interpretable evaluation asset with auditable third-party method submission.",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "Three-track benchmark manifest, sealed holdout, Method Card schema and selective/two-sided metrics",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "Pair split, holdout state, method freeze metadata and source versions are machine-readable and versioned",
+          "reason": null
+        },
+        "integration": {
+          "status": "partial",
+          "evidence": "Croissant 1.1 official validator and core CI pass; current-head AgentAbstain full Reality Gate rerun is still pending",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "Gold-hidden process isolation, pair-level split, one-shot holdout release policy and support-versus-necessity boundary",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "verified",
+          "evidence": "97 pairs / 194 variants execute in public CI; pair-preserving 5,000-sample bootstrap is integrated",
+          "reason": null
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "benchmark/manifest.json, validators, Dataset Card, Croissant metadata and Method Card schema separate contracts from external data",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "Pinned source revisions, prediction hashes, split audit, CI artifacts, confidence intervals and provenance metadata",
+          "reason": null
+        },
+        "testability": {
+          "status": "partial",
+          "evidence": "Core tests and metadata validators are green; latest full AgentAbstain benchmark rerun not completed on current head",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "Third parties can understand benchmark scope, non-claims, leakage policy, uncertainty and submission protocol without reading implementation internals",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "Croissant 1.1 validated by mlcroissant==1.1.0; upstream AgentAbstain/P3/SafeAct versions/licenses are explicitly separated",
+          "reason": null
+        }
+      },
+      "horizontal_status": "partial",
+      "closure_status": "partial"
     }
   ]
 }
