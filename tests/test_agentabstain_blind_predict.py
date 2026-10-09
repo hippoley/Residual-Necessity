@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -51,3 +54,33 @@ def test_blind_predictor_has_no_gold_or_hidden_state_dependencies() -> None:
     }
     for token in forbidden:
         assert token not in source, f"blind predictor leaked forbidden token: {token}"
+
+
+def test_blind_predictor_cli_runs_in_minimal_subprocess(tmp_path: Path) -> None:
+    observation_path = tmp_path / "observation.json"
+    out_path = tmp_path / "prediction.json"
+    observation_path.write_text(
+        json.dumps({"probed": True, "success": False}),
+        encoding="utf-8",
+    )
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(MODULE),
+            "--observation",
+            str(observation_path),
+            "--out",
+            str(out_path),
+        ],
+        check=True,
+        cwd=str(tmp_path),
+        env={
+            "PYTHONIOENCODING": "utf-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+        },
+    )
+
+    result = json.loads(out_path.read_text(encoding="utf-8"))
+    assert result["failure_only"] == "ABSTAIN"
+    assert result["probe_success"] == "ABSTAIN"
