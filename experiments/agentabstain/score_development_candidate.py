@@ -11,13 +11,14 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
-from experiments.agentabstain.freeze_pair_split import assign as split_assignment
-
-
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from experiments.agentabstain.freeze_pair_split import assign as split_assignment
 EVAL_PATH = ROOT / "src" / "eval.py"
 
 spec = importlib.util.spec_from_file_location("residual_eval_dev_candidate", EVAL_PATH)
