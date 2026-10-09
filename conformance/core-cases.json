@@ -3,7 +3,7 @@
     "id": "partial-fix-residual-act",
     "expected": "ACT",
     "receipt": {
-      "schema_version": "0.2",
+      "schema_version": "0.3",
       "intervention": {
         "id": "patch-p2",
         "kind": "modify_code",
@@ -20,12 +20,14 @@
         {
           "id": "residual_violation_exists",
           "required": true,
-          "kind": "reality"
+          "kind": "reality",
+          "role": "necessity"
         },
         {
           "id": "target_is_current",
           "required": true,
-          "kind": "freshness"
+          "kind": "freshness",
+          "role": "constraint"
         }
       ],
       "observations": {
@@ -60,7 +62,7 @@
     "id": "already-resolved-abstain",
     "expected": "ABSTAIN",
     "receipt": {
-      "schema_version": "0.2",
+      "schema_version": "0.3",
       "intervention": {
         "id": "repair-service",
         "kind": "modify_state",
@@ -77,12 +79,14 @@
         {
           "id": "residual_violation_exists",
           "required": true,
-          "kind": "reality"
+          "kind": "reality",
+          "role": "necessity"
         },
         {
           "id": "target_is_current",
           "required": true,
-          "kind": "freshness"
+          "kind": "freshness",
+          "role": "constraint"
         }
       ],
       "observations": {
@@ -117,7 +121,7 @@
     "id": "retry-after-success-abstain",
     "expected": "ABSTAIN",
     "receipt": {
-      "schema_version": "0.2",
+      "schema_version": "0.3",
       "intervention": {
         "id": "retry-window-close",
         "kind": "device_command",
@@ -134,12 +138,14 @@
         {
           "id": "window_still_open",
           "required": true,
-          "kind": "reality"
+          "kind": "reality",
+          "role": "necessity"
         },
         {
           "id": "target_is_current",
           "required": true,
-          "kind": "freshness"
+          "kind": "freshness",
+          "role": "constraint"
         }
       ],
       "observations": {
@@ -174,7 +180,7 @@
     "id": "wrong-revision-positive-investigate",
     "expected": "INVESTIGATE",
     "receipt": {
-      "schema_version": "0.2",
+      "schema_version": "0.3",
       "intervention": {
         "id": "repair",
         "kind": "modify_state",
@@ -191,7 +197,8 @@
         {
           "id": "violation_exists",
           "required": true,
-          "kind": "reality"
+          "kind": "reality",
+          "role": "necessity"
         }
       ],
       "observations": {
@@ -214,7 +221,7 @@
     "id": "absence-without-negative-authority-investigate",
     "expected": "INVESTIGATE",
     "receipt": {
-      "schema_version": "0.2",
+      "schema_version": "0.3",
       "intervention": {
         "id": "repair",
         "kind": "modify_state",
@@ -231,7 +238,8 @@
         {
           "id": "violation_exists",
           "required": true,
-          "kind": "reality"
+          "kind": "reality",
+          "role": "necessity"
         }
       ],
       "observations": {
@@ -246,7 +254,7 @@
     "id": "human-only-escalate",
     "expected": "ESCALATE",
     "receipt": {
-      "schema_version": "0.2",
+      "schema_version": "0.3",
       "intervention": {
         "id": "irreversible-change",
         "kind": "modify_state",
@@ -264,7 +272,8 @@
           "id": "violation_exists",
           "required": true,
           "kind": "reality",
-          "human_only": true
+          "human_only": true,
+          "role": "necessity"
         }
       ],
       "observations": {
