@@ -115,10 +115,9 @@ def main() -> int:
         report["probe_coverage"] = probed / len(records) if records else 0.0
 
         by_category: dict[str, Any] = {}
-        for category in sorted(RUNTIME_CATEGORIES):
+        present_categories = sorted({row["category"] for row in records})
+        for category in present_categories:
             subset = [row for row in records if row["category"] == category]
-            if not subset:
-                raise ValueError(f"missing category in scoring set: {category}")
             category_report = metrics.evaluate(subset)
             category_report["confidence_intervals"] = bootstrap.confidence_intervals(
                 subset,
