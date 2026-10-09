@@ -48,23 +48,26 @@ Status vocabulary:
 
 | ID | User story | Status | Acceptance evidence |
 | --- | --- | --- | --- |
-| US-23 | As an evaluator, unnecessary intervention and false abstention use the correct class-conditional denominators. | CLOSED | `src/eval.py` fixed; tests lock denominators. |
+| US-23 | As an evaluator, unnecessary intervention and missed required action use the correct class-conditional denominators. | CLOSED after audit fix | Expected-ABSTAIN ACTs count as unnecessary intervention; expected-ACT **any non-ACT** counts as false abstention / missed required action; `act_recall` is reported so always-INVESTIGATE cannot game the metric. |
 | US-24 | As an evaluator, paired accuracy only scores complete ACT/ABSTAIN pairs. | CLOSED | Incomplete pairs excluded; duplicate members rejected. |
 | US-25 | As a benchmark consumer, hidden gold never leaks into inference. | CLOSED for data preparation | AgentAbstain blind-slice tests and CI boundary. |
-| US-26 | As a benchmark consumer, Residual Necessity actually predicts AgentAbstain outcomes from current-state observations before labels are revealed. | OPEN | No inference/probe implementation over the 97 runtime pairs yet. |
+| US-26 | As a benchmark consumer, Residual Necessity actually predicts AgentAbstain outcomes from **tool-visible** current-state observations before labels are revealed. | OPEN — implementation debt, not data unavailability | AgentAbstain publicly ships the executable environments and runtime export path. Directly reading hidden initial state or gold task fields is disallowed; a read/verify-tool probe runner is still missing. |
 | US-27 | As a project, I can demonstrate lower unnecessary intervention without collapsing legitimate-action recall. | OPEN — primary Reality Gate | No superiority result yet. |
-| US-28 | As a project, I compare against always-act, always-abstain, and at least one reasonable evidence/repair baseline. | PARTIAL | Trivial baselines implemented; meaningful baseline comparison still open. |
+| US-28 | As a project, I compare against always-act, always-abstain, and at least one reasonable evidence/repair baseline. | PARTIAL | Trivial baselines implemented and now measured with non-ACT missed-action semantics; meaningful runtime-evidence baseline still open. |
 | US-29 | As a project, partial-fix cases are present in the real evaluation, not only synthetic fixtures. | OPEN | Current partial-fix conformance vector is synthetic; external FixedBench artifact path remains unresolved. |
 
 ## Product / dependency surface
 
 | ID | User story | Status | Acceptance evidence |
 | --- | --- | --- | --- |
-| US-30 | As a third-party developer, I can install a versioned package and import a stable API. | OPEN intentionally | No `pyproject.toml` / package release yet. Do not stabilize API before Reality Gate semantics settle. |
+| US-30 | As a third-party developer, I can install a versioned package and import a stable API. | BLOCKED BY REALITY GATE | Packaging now would prematurely freeze an unvalidated API. Keep importable adapters in-tree until US-26/27 survive real paired evaluation. |
 | US-31 | As a third-party developer, schema changes are versioned and examples cannot silently drift. | CLOSED for current draft | Receipt schema bumped to 0.2; examples/conformance validated by JSON Schema in CI. |
 | US-32 | As a third-party developer, the repository has a canonical license file. | CLOSED | Full canonical Apache-2.0 license text installed. |
-| US-33 | As a reviewer, one PR tells one coherent story. | PARTIAL | PR #2 has been retitled/reframed as the first Reality Gate branch, but it is still broad (core + AgentAbstain + ExecSurface + ACS + standards work). Keep draft until CI and merge gate are satisfied. |
+| US-33 | As a reviewer, one PR tells one coherent story. | PARTIAL, materially improved | PR #2 is now reframed around one Reality Gate foundation: receipt semantics + benchmark boundary + canonical runtime/evidence interoperability + explicit node migration. It remains a large 90+ commit draft until latest-head CI is green and it is squash-merged. |
 | US-34 | As a maintainer, latest commits cancel superseded CI so one PR does not accumulate stale runs. | CLOSED | Workflow concurrency + cancel-in-progress added. |
+| US-35 | As a runtime integrator, unknown or misspelled control fields cannot silently change semantics even when JSON Schema validation is bypassed. | CLOSED after audit fix | Schema core objects are closed and `gate.evaluate()` independently fails closed on unknown fields, malformed predicates/interventions, and orphan observations. |
+| US-36 | As an Agent Hooks audit consumer, evidence supporting a permit remains attributable after verdict composition. | OPEN upstream-contract gap | Real Beta E2E shows interceptor permit evidence is not preserved on synthesized combined allow; reproduction is frozen in `docs/AGENT_HOOKS_PERMIT_EVIDENCE_NOTE.md`. No upstream acceptance yet. |
+| US-37 | As a Reality Gate runner, I can obtain AgentAbstain observations without reading hidden initial state or gold task metadata. | OPEN | Public environments make this feasible; a probe runner restricted to lookup/verify tool surface still needs implementation and CI proof. |
 
 ## Claims deliberately de-scoped
 
