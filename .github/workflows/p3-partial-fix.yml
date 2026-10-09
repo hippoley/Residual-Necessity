@@ -29,16 +29,6 @@ jobs:
       - name: Install parser dependency
         run: python -m pip install PyYAML==6.0.3
 
-      - name: Inspect pinned P3 schema and one task
-        run: |
-          echo "=== P3 schema ==="
-          sed -n '1,240p' /tmp/p3/doc/schema.yml
-          echo "=== first task definition ==="
-          FIRST_TASK="$(find /tmp/p3/partial-fixes -name '*.yml' | sort | head -n 1)"
-          test -n "$FIRST_TASK"
-          echo "$FIRST_TASK"
-          sed -n '1,240p' "$FIRST_TASK"
-
       - name: Normalize one curated real partial-fix sequence
         run: |
           python experiments/p3/normalize_partial_fix.py \
@@ -48,7 +38,7 @@ jobs:
           python - <<'PY'
           import json
           record = json.load(open("/tmp/p3-partial-fix.json"))
-          assert record["classification"] == "Partial Fix"
+          assert record["classification"] == "partial fix"
           assert record["base_revision"]
           assert record["attempt_revisions"]
           assert record["expected_revision"]
