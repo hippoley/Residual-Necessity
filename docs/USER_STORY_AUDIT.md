@@ -82,14 +82,16 @@ Status vocabulary:
 
 The repository should not expand framework surface until these are resolved in order:
 
-1. **US-26 / US-27 / US-28 / US-29 — real paired evaluation.**
-   This is the project’s existential gate.
-2. **Agent Hooks upstream/conformance reality.**
-   Canonical runtime interoperability is now proven locally/CI; external maintainer discussion or CTK contribution is still absent.
-3. **US-33 — PR/history cleanup.**
-   Public history must become reviewable before merge.
-4. **US-32 — canonical license hygiene.**
-5. **US-30 — packaging only after semantics survive the Reality Gate.**
+1. **US-37 → US-26 / US-27 / US-28 — tool-visible AgentAbstain Reality Gate.**
+   Public runtime availability is no longer the blocker. Prove the read/verify-only probe boundary, then derive blinded predictions and measure both error directions.
+2. **US-29 — real partial-fix evidence.**
+   FixedBench confirms the failure mode, but no directly consumable public partial-fix executable corpus is currently integrated.
+3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
+   Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
+4. **US-33 — PR/history cleanup.**
+   Latest-head CI must be green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
+5. **US-30 — package only after US-27 survives.**
+   Do not freeze an API before the existential benchmark result.
 6. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
 
 If the real evaluation cannot beat reasonable baselines without false-abstention collapse, stop independent framework growth and upstream the useful completeness/conformance pieces.
