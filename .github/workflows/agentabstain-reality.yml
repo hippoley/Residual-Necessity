@@ -19,7 +19,7 @@ jobs:
           python-version: "3.11"
       - name: Download external AgentAbstain dataset
         run: |
-          curl -fL             https://huggingface.co/datasets/antiquality/agentabstain/resolve/main/tasks.jsonl             -o /tmp/agentabstain-tasks.jsonl
+          curl -fL             https://huggingface.co/datasets/antiquality/agentabstain/resolve/842228426c2a703347396501af61c7890972c7ee/tasks.jsonl             -o /tmp/agentabstain-tasks.jsonl
           test -s /tmp/agentabstain-tasks.jsonl
       - name: Build gold-hidden runtime slice
         run: |
@@ -72,11 +72,14 @@ jobs:
         run: |
           python - <<'PY'
           from huggingface_hub import HfApi, snapshot_download
-          info = HfApi().dataset_info("antiquality/agentabstain")
+          revision = "842228426c2a703347396501af61c7890972c7ee"
+          info = HfApi().dataset_info("antiquality/agentabstain", revision=revision)
+          assert info.sha == revision, (info.sha, revision)
           print("AGENTABSTAIN_DATASET_SHA=", info.sha)
           path = snapshot_download(
               "antiquality/agentabstain",
               repo_type="dataset",
+              revision=revision,
               local_dir="/tmp/agentabstain-data",
           )
           print("AGENTABSTAIN_DATA_DIR=", path)
