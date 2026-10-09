@@ -26,6 +26,44 @@ def _get_path(value: Any, path: str) -> Any:
     return current
 
 
+def _evaluate_cel(result: Any, expression: str) -> dict[str, Any]:
+    try:
+        from cel_expr_python import cel
+    except Exception as exc:
+        return {
+            "status": "UNKNOWN",
+            "reason": "cel_runtime_unavailable",
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+    try:
+        env = cel.NewEnv(variables={"result": cel.Type.DYN})
+        compiled = env.compile(expression)
+        evaluated = compiled.eval(data={"result": result})
+        value = evaluated.value()
+    except Exception as exc:
+        return {
+            "status": "UNKNOWN",
+            "reason": "cel_no_boolean_result",
+            "diagnostic": "evaluation_error",
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+    if not isinstance(value, bool):
+        return {
+            "status": "UNKNOWN",
+            "reason": "cel_no_boolean_result",
+            "diagnostic": "non_boolean_value",
+            "value_type": type(value).__name__,
+        }
+
+    return {
+        "status": "TRUE" if value else "FALSE",
+        "reason": "cel_expression_evaluated",
+        "expression": expression,
+    }
+
+
 def _evaluate_rule(result: Any, rule: dict[str, Any]) -> dict[str, Any]:
     if rule.get("authority") != "complete_result_field":
         return {
@@ -34,6 +72,12 @@ def _evaluate_rule(result: Any, rule: dict[str, Any]) -> dict[str, Any]:
         }
 
     kind = rule.get("kind")
+
+    if kind == "cel":
+        expression = rule.get("expression")
+        if not isinstance(expression, str) or not expression.strip():
+            raise ValueError("cel proposition requires non-empty expression")
+        return _evaluate_cel(result, expression)
 
     if kind == "fields_differ":
         left_path = rule.get("left_path")
