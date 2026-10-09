@@ -41,5 +41,6 @@ def test_released_policy_accepts_frozen_candidate() -> None:
         "candidate_code_commit":"abc123",
         "provider_profile_sha256":"def456",
         "development_report_sha256":"ghi789",
+        "method_card_sha256":"jkl012",
     }
     assert mod.validate_policy(p)==[]
