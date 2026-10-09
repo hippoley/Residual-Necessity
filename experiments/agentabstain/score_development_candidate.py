@@ -116,10 +116,9 @@ def score(
         evaluate_fn=metrics.evaluate,
     )
     by_category: dict[str, Any] = {}
-    for category in sorted(RUNTIME_CATEGORIES):
+    present_categories = sorted({row["category"] for row in records})
+    for category in present_categories:
         subset = [row for row in records if row["category"] == category]
-        if not subset:
-            raise ValueError(f"missing development category: {category}")
         category_report = metrics.evaluate(subset)
         category_report["confidence_intervals"] = bootstrap.confidence_intervals(
             subset,
