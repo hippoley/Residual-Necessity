@@ -15,7 +15,7 @@ intervention_points:
     tool_name_from: "$.tool_call.name"
     annotations:
       residual_necessity:
-        from: "$target"
+        from: "$.tool_call.args"
     policy:
       id: necessity_policy
 
@@ -25,7 +25,7 @@ intervention_points:
     tool_name_from: "$.tool_call.name"
     annotations:
       residual_necessity:
-        from: "$target"
+        from: "$.tool_result.value"
     policy:
       id: necessity_policy
 
