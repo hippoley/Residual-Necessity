@@ -1,5 +1,5 @@
 {
-  "schema_version": "rn-method-card/0.1",
+  "schema_version": "rn-method-card/0.2",
   "method_id": "example-proposition-specific-v0",
   "track_id": "A-runtime-necessity",
   "code_commit": "0000000000000000000000000000000000000000",
@@ -24,5 +24,9 @@
       "Support or permission evidence is not treated as necessity authority."
     ]
   },
-  "development_metrics": {}
+  "development_metrics": {},
+  "benchmark_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "split_manifest_sha256": "97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79",
+  "method_config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "holdout_prediction_sha256": null
 }
