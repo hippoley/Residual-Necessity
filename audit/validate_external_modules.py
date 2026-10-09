@@ -57,6 +57,23 @@ def validate(data: dict) -> list[str]:
         if not required.issubset(forbidden):
             errors.append("SafeAct semantic boundary lost required forbidden mappings")
 
+    cel_entry=next((x for x in modules if x.get("id")=="cel-expression-engine"),None)
+    if cel_entry is None:
+        errors.append("cel-expression-engine external module entry required")
+    else:
+        if cel_entry.get("pin")!="cel-expr-python==0.1.3":
+            errors.append("CEL provider runtime must remain pinned to cel-expr-python==0.1.3")
+        if cel_entry.get("code_license")!="Apache-2.0":
+            errors.append("CEL provider runtime license must remain Apache-2.0")
+        forbidden=set((cel_entry.get("semantic_boundary") or {}).get("forbidden_mapping") or [])
+        required={
+            "CEL expression success -> authority without provider profile",
+            "CEL runtime error -> FALSE",
+            "non-boolean CEL result -> proposition truth",
+        }
+        if not required.issubset(forbidden):
+            errors.append("CEL semantic boundary lost required forbidden mappings")
+
     return errors
 
 if __name__=="__main__":
