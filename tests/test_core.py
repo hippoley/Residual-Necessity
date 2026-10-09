@@ -383,3 +383,31 @@ def test_legacy_02_receipt_fails_closed() -> None:
     receipt["schema_version"] = "0.2"
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "INVESTIGATE"
+
+
+def test_false_reality_constraint_does_not_disprove_necessity() -> None:
+    receipt = base_receipt()
+    receipt["predicates"].append(
+        {
+            "id": "action_supported",
+            "required": True,
+            "kind": "reality",
+            "role": "constraint",
+        }
+    )
+    receipt["observations"]["action_supported"] = {
+        "status": "FALSE",
+        "negative_authority": negative_authority("action_supported"),
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_only_false_necessity_can_abstain() -> None:
+    receipt = base_receipt()
+    receipt["observations"]["violation_exists"] = {
+        "status": "FALSE",
+        "negative_authority": negative_authority("violation_exists"),
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "ABSTAIN"
