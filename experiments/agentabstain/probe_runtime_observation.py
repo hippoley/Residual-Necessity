@@ -85,6 +85,7 @@ def _safe_catalog(menv: Any, allowed: set[str] | None) -> list[dict[str, Any]]:
         out.append(
             {
                 "name": name,
+                "kind": schema.get("kind"),
                 "description": schema.get("description") or "",
                 "input_schema": schema.get("input_schema") or {},
             }
@@ -174,12 +175,19 @@ def main() -> int:
             continue
 
         tool_name = str(selected["name"])
+        arguments = selected.get("arguments") or {}
+        if not isinstance(arguments, dict):
+            raise ValueError("blind selector arguments must be an object")
+        binding_complete = selected.get("binding_complete") is True
+        unbound_fields = selected.get("unbound_fields") or []
+        if not isinstance(unbound_fields, list):
+            raise ValueError("blind selector unbound_fields must be a list")
 
         success = True
         error = None
         result: Any = None
         try:
-            result = menv.call_tool(tool_name)
+            result = menv.call_tool(tool_name, **arguments)
         except Exception as exc:  # tool failure is itself runtime evidence
             success = False
             error = f"{type(exc).__name__}: {exc}"
@@ -208,6 +216,9 @@ def main() -> int:
             "success": success,
             "error": error,
             "result": _jsonable(result),
+            "arguments": arguments,
+            "binding_complete": binding_complete,
+            "unbound_fields": unbound_fields,
             "execution_log_length": len(log),
             "selection_module": "blind_probe.py",
             "selection_process_isolated": True,
@@ -224,6 +235,8 @@ def main() -> int:
             "tool": observed_tool,
             "tool_kind": observed_kind,
             "success": success,
+            "binding_complete": binding_complete,
+            "unbound_fields": unbound_fields,
             "selection_process_isolated": True,
             "trusted_harness_knows_variant": True,
             "gold_fields_exposed_to_selector": False,
