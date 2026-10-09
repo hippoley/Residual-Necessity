@@ -120,6 +120,29 @@ def validate(data: dict) -> list[str]:
         errors.append("SafeAct track must require corpus-level adapter audit")
     if "negative authority" not in str(corpus_audit.get("invariant","")).lower():
         errors.append("SafeAct corpus audit must prohibit negative-authority promotion")
+
+    safeact_source=support.get("source") or {}
+    if safeact_source.get("upstream_code_module")!="scripts/safeact_contract.py":
+        errors.append("SafeAct track must delegate protocol semantics to upstream safeact_contract.py")
+    if safeact_source.get("contract_id")!="safeact_evaluation_v1":
+        errors.append("SafeAct track must pin safeact_evaluation_v1 contract")
+
+    bias=support.get("necessity_signal_bias") or {}
+    existing_execution=(bias.get("existing_execution") or {}).get("observed_values") or {}
+    if set(existing_execution) - {"false"}:
+        errors.append("SafeAct existing_execution bias metadata changed; re-audit before using as necessity data")
+    policy=str(bias.get("benchmark_policy") or "")
+    if "only for evidence/constraint grounding" not in policy:
+        errors.append("SafeAct benchmark policy must remain constraint-grounding only")
+
+    forbidden=set(support.get("forbidden_claims") or [])
+    required_forbidden={
+        "SafeAct SUPPORTED implies RN ACT",
+        "SafeAct MISSING/DEFER implies RN FALSE or ABSTAIN",
+        "SafeAct static corpus provides balanced necessity positives and negatives",
+    }
+    if not required_forbidden.issubset(forbidden):
+        errors.append("SafeAct track missing required forbidden claims")
     return errors
 
 if __name__=="__main__":
