@@ -1,0 +1,2310 @@
+{
+  "schema_version": "horizontal-completeness/0.1",
+  "dimension_statuses": [
+    "verified",
+    "partial",
+    "open",
+    "blocked",
+    "not_applicable"
+  ],
+  "dimensions": [
+    "functional",
+    "state",
+    "integration",
+    "security_correctness",
+    "performance_scalability",
+    "maintainability",
+    "observability_traceability",
+    "testability",
+    "user_value",
+    "external_compatibility"
+  ],
+  "priority_definition": {
+    "P0": "Can invalidate core claims, leak gold, authorize wrong actions, corrupt evidence, or make Reality Gate conclusions unsound.",
+    "P1": "Blocks external adoption/upstreaming or a major real-world validation path but does not invalidate current core safety claims.",
+    "P2": "Productization, ergonomics, packaging, or scale work that should wait for Reality Gate."
+  },
+  "stories": [
+    {
+      "id": "US-01",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "ACT requires explicitly justified current reality predicate",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-02",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Wrong target/revision TRUE cannot authorize ACT",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-03",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Absence alone cannot become FALSE",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-04",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Scoped authoritative FALSE may justify ABSTAIN",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-05",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Missing/unknown/conflicted/stale evidence fails closed",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-06",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Human-only predicate escalates",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-07",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Already-satisfied stale request can abstain with authority",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-08",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Retry after prior success can abstain",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-09",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Residual violation after partial fix can still ACT",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-10",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "False freshness/scope is not 'problem solved'",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-11",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Duplicate/malformed justification fails closed",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-12",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Record completeness is distinct from proposition completeness",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-17",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Decision is pinned to target revision/state token",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-23",
+      "priority": "P0",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Two-sided metrics penalize all missed required actions",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-24",
+      "priority": "P0",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Paired accuracy scores only complete pairs",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-31",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Schema/examples/conformance cannot silently drift",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-35",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Unknown control fields fail closed even without schema validation",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "core gate/conformance tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target+revision scoped receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Pure semantic rule; runtime integrations audited separately."
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed core tests",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Constant-size receipt evaluation; no target-scale requirement established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "schema 0.2 + deterministic reference gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt reason + evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + conformance regression",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents unjustified or stale mutation semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Core semantic rule; compatibility is covered by integration stories."
+        }
+      }
+    },
+    {
+      "id": "US-13",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-02",
+        "US-17"
+      ],
+      "summary": "ExecSurface positive evidence maps to scoped TRUE",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "ExecSurface adapter tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "target/revision binding",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "external schema adapter",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "typed/raw consistency checks",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Adapter is per-record and no scale SLO exists."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "isolated adapter boundary",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "evidence refs preserved",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + external CI",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "allows real observer evidence without inheriting policy authority",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "ExecSurface public typed-evidence schema",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-14",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-13"
+      ],
+      "summary": "Incomplete/unsupported ExecSurface evidence remains UNKNOWN",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "ExecSurface adapter regression tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "UNKNOWN/authority semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "ExecSurface consumer path",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed external evidence handling",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "No scale SLO established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "single conservative adapter contract",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "collection health / warnings retained",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + real external diagnostic",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents observer incompleteness becoming permission",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "external schema and real workload run",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-15",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-13"
+      ],
+      "summary": "Effect absence cannot become FALSE without negative authority",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "ExecSurface adapter regression tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "UNKNOWN/authority semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "ExecSurface consumer path",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed external evidence handling",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "No scale SLO established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "single conservative adapter contract",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "collection health / warnings retained",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + real external diagnostic",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents observer incompleteness becoming permission",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "external schema and real workload run",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-16",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-13"
+      ],
+      "summary": "Contradictory typed/raw evidence fails closed",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "ExecSurface adapter regression tests",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "UNKNOWN/authority semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "ExecSurface consumer path",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "fail-closed external evidence handling",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "No scale SLO established."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "single conservative adapter contract",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "collection health / warnings retained",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit + real external diagnostic",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents observer incompleteness becoming permission",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "external schema and real workload run",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-18",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-01",
+        "US-05"
+      ],
+      "summary": "ACS integration uses full core-gate semantics",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "ACS bridge",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "full receipt passed",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "released ACS native runtime",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "no naked status bypass",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Compatibility probe, not throughput product."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "adapter isolated from core",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt digest",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "ACS E2E",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "portable pre-tool policy seam",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "agent-control-specification released runtime",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-19",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-01",
+        "US-05"
+      ],
+      "summary": "Agent Hooks host permits/blocks through canonical control contract",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "Agent Hooks Beta E2E",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "receipt carried in namespaced extension",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "canonical InterceptionEmitter",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "TRUE/FALSE/UNKNOWN/wrong-revision E2E",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "No throughput SLO yet."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "framework-neutral interceptor",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "partial",
+          "evidence": "permit evidence attribution gap tracked in US-36",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "real SDK E2E",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "framework-neutral control-plane reuse",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "Agent Hooks Beta",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-20",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-18"
+      ],
+      "summary": "ACS verdict is bound to exact receipt digest",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "ACS annotation evidence",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "receipt digest",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "released ACS pre-tool runtime",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "digest binds evaluated receipt",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "No scale requirement."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "bridge-local behavior",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "SHA-256 artefact reference",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "ACS E2E",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "auditability",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "ACS evidence artefact seam",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-21",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-13"
+      ],
+      "summary": "External project can independently qualify a real workload record",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "ExecSurface external real-workload record",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "external observer state preserved",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "third-party process",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "incomplete evidence not upgraded",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Scientific evidence record, not scale feature."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "evidence ledger",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "public upstream comments/run evidence",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "external workload execution",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "independent reality check",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "ExecSurface preregistered process",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-22",
+      "priority": "P1",
+      "vertical_status": "partial",
+      "dependencies": [
+        "US-19",
+        "US-36"
+      ],
+      "summary": "External implementer can consume a conformance pack, not prose",
+      "dimensions": {
+        "functional": {
+          "status": "partial",
+          "evidence": "local executable vectors exist",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "vectors bind receipt semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "partial",
+          "evidence": "Agent Hooks CTK candidate exists but not upstream",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "vectors include fail-closed cases",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Conformance semantics, not throughput."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "machine-readable core-cases",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "expected verdicts explicit",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "local conformance test executes vectors",
+          "reason": null
+        },
+        "user_value": {
+          "status": "partial",
+          "evidence": "not yet useful as accepted external compatibility target",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "partial",
+          "evidence": "no upstream CTK/conformance claim accepted",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-25",
+      "priority": "P0",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Benchmark gold is hidden from inference preparation",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "blind-slice firewall",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "separate labels/predictions",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "AgentAbstain pinned dataset/runtime",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "forbidden gold fields stripped",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Evaluation correctness concern."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "dedicated scripts",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "frozen hashes/artifacts",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "CI source firewall + subprocess tests",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents benchmark self-deception",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "public AgentAbstain data",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-26",
+      "priority": "P0",
+      "vertical_status": "open",
+      "dependencies": [
+        "US-25",
+        "US-37",
+        "US-28"
+      ],
+      "summary": "Predict ACT/ABSTAIN from tool-visible proposition-specific evidence",
+      "dimensions": {
+        "functional": {
+          "status": "open",
+          "evidence": "No proposition-specific predictor yet",
+          "reason": null
+        },
+        "state": {
+          "status": "partial",
+          "evidence": "runtime observations and revision semantics exist",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "real AgentAbstain sandbox runner",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "gold-blind process boundary",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "partial",
+          "evidence": "194-variant batch works; semantic method cost unknown",
+          "reason": null
+        },
+        "maintainability": {
+          "status": "partial",
+          "evidence": "provider profile not yet defined",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "predictions/hashes/artifacts frozen",
+          "reason": null
+        },
+        "testability": {
+          "status": "partial",
+          "evidence": "generic baselines tested; proposition-specific counterexamples missing",
+          "reason": null
+        },
+        "user_value": {
+          "status": "open",
+          "evidence": "no demonstrated decision improvement",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "pinned AgentAbstain runtime/dataset",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-27",
+      "priority": "P0",
+      "vertical_status": "open",
+      "dependencies": [
+        "US-26"
+      ],
+      "summary": "Reduce unnecessary intervention without collapsing ACT recall",
+      "dimensions": {
+        "functional": {
+          "status": "open",
+          "evidence": "No superior method result",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "paired labels and split frozen",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "full 97-pair Reality Gate",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "two-sided metrics prevent refusal gaming",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Evaluation quality goal, not system throughput."
+        },
+        "maintainability": {
+          "status": "partial",
+          "evidence": "depends on frozen method protocol",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "metrics and artifacts retained",
+          "reason": null
+        },
+        "testability": {
+          "status": "open",
+          "evidence": "holdout superiority not yet demonstrated",
+          "reason": null
+        },
+        "user_value": {
+          "status": "open",
+          "evidence": "existential value claim not proven",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "AgentAbstain paired benchmark",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-28",
+      "priority": "P0",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-25"
+      ],
+      "summary": "Compare against trivial and runtime-evidence baselines",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "always-act/abstain/investigate + two runtime-evidence baselines",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "frozen predictions before labels",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "real sandbox probes",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "gold-blind predictor subprocess",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "verified",
+          "evidence": "194 variants run in public CI",
+          "reason": null
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "baseline scripts isolated",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "prediction hash + score artifact",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "baseline/scoring tests",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "falsified generic probe-success semantics",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "public benchmark",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-29a",
+      "priority": "P1",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Real external partial-fix semantics are grounded in software history",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "P3 normalized revision chain",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "base/attempt/expected revisions pinned",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "pinned external P3 dataset",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "no synthetic relabeling",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Evidence fixture."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "normalizer + pinned commit",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "hash/artifact/source task",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "public CI validates chain",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "removes synthetic-only partial-fix evidence",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "SoSy-Lab P3",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-29b",
+      "priority": "P1",
+      "vertical_status": "open",
+      "dependencies": [
+        "US-26",
+        "US-29a"
+      ],
+      "summary": "Agentic partial-fix probe detects residual violation without false abstention",
+      "dimensions": {
+        "functional": {
+          "status": "open",
+          "evidence": "No agentic residual detector",
+          "reason": null
+        },
+        "state": {
+          "status": "partial",
+          "evidence": "real partial-fix history exists; tool-visible predicate mapping absent",
+          "reason": null
+        },
+        "integration": {
+          "status": "partial",
+          "evidence": "P3 and AgentAbstain are separate external sources",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "partial",
+          "evidence": "gold firewall can be reused",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Evaluation story."
+        },
+        "maintainability": {
+          "status": "open",
+          "evidence": "no cross-dataset adapter/profile",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "partial",
+          "evidence": "P3 and AgentAbstain evidence retained separately",
+          "reason": null
+        },
+        "testability": {
+          "status": "open",
+          "evidence": "no E2E residual case",
+          "reason": null
+        },
+        "user_value": {
+          "status": "open",
+          "evidence": "cannot yet show partial-fix false-abstention improvement",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "partial",
+          "evidence": "FixedBench/public agentic partial-fix corpus not integrated",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-30",
+      "priority": "P2",
+      "vertical_status": "blocked",
+      "dependencies": [
+        "US-27"
+      ],
+      "summary": "Versioned installable stable API",
+      "dimensions": {
+        "functional": {
+          "status": "blocked",
+          "evidence": "deliberately deferred",
+          "reason": null
+        },
+        "state": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Packaging concern."
+        },
+        "integration": {
+          "status": "blocked",
+          "evidence": "no package release",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "No new security semantics beyond core once packaged."
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Packaging concern."
+        },
+        "maintainability": {
+          "status": "blocked",
+          "evidence": "API must not freeze before Reality Gate",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Packaging concern."
+        },
+        "testability": {
+          "status": "blocked",
+          "evidence": "release compatibility suite deferred",
+          "reason": null
+        },
+        "user_value": {
+          "status": "blocked",
+          "evidence": "premature until utility proven",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "blocked",
+          "evidence": "no published package",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-32",
+      "priority": "P2",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Canonical license file",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "canonical Apache-2.0 text",
+          "reason": null
+        },
+        "state": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Legal metadata."
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Legal metadata."
+        },
+        "security_correctness": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Legal metadata."
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Legal metadata."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "standard license",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "repository history",
+          "reason": null
+        },
+        "testability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Static file."
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "third-party reuse clarity",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "Apache-2.0",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-33",
+      "priority": "P1",
+      "vertical_status": "partial",
+      "dependencies": [],
+      "summary": "Public PR/history tells one reviewable story",
+      "dimensions": {
+        "functional": {
+          "status": "partial",
+          "evidence": "PR narrative reframed but branch is very large",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "node migrations retained",
+          "reason": null
+        },
+        "integration": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Repository governance."
+        },
+        "security_correctness": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Repository governance."
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Repository governance."
+        },
+        "maintainability": {
+          "status": "partial",
+          "evidence": "90+ commit draft should squash at merge",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "Reality Gate comments/evidence ledger",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "merge gate requires latest-head green",
+          "reason": null
+        },
+        "user_value": {
+          "status": "partial",
+          "evidence": "review burden remains high",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "partial",
+          "evidence": "external reviewer usability not yet proven",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-34",
+      "priority": "P2",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Superseded CI runs cancel automatically",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "workflow concurrency",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "latest-head semantics",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "GitHub Actions",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "CI scheduling."
+        },
+        "performance_scalability": {
+          "status": "verified",
+          "evidence": "avoids redundant workflow load",
+          "reason": null
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "shared concurrency convention",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "Actions history",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "observed cancellation/replacement",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "faster reliable verification",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "GitHub Actions",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-36",
+      "priority": "P1",
+      "vertical_status": "open",
+      "dependencies": [
+        "US-19"
+      ],
+      "summary": "Permit-side evidence remains attributable after Agent Hooks composition",
+      "dimensions": {
+        "functional": {
+          "status": "open",
+          "evidence": "upstream contract does not preserve permit evidence in combined allow",
+          "reason": null
+        },
+        "state": {
+          "status": "partial",
+          "evidence": "direct interceptor evidence exists",
+          "reason": null
+        },
+        "integration": {
+          "status": "partial",
+          "evidence": "reproduction + downstream proposal/CTK candidate",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "partial",
+          "evidence": "audit attribution gap; enforcement still correct",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Audit semantics."
+        },
+        "maintainability": {
+          "status": "partial",
+          "evidence": "downstream workaround intentionally avoided",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "open",
+          "evidence": "permit evidence lost after composition",
+          "reason": null
+        },
+        "testability": {
+          "status": "partial",
+          "evidence": "reproduction exists; no upstream CTK acceptance",
+          "reason": null
+        },
+        "user_value": {
+          "status": "partial",
+          "evidence": "important for audit-grade allow decisions",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "blocked",
+          "evidence": "external issue/PR write currently unavailable",
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "US-37",
+      "priority": "P0",
+      "vertical_status": "closed",
+      "dependencies": [
+        "US-25"
+      ],
+      "summary": "Process-isolated tool-visible observation/prediction boundary",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "separate blind selector/predictor subprocesses",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "trusted harness boundary explicit",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "real AgentAbstain sandboxes",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "source firewall + minimal env + lookup/verify only",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "verified",
+          "evidence": "194 variants batch",
+          "reason": null
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "isolated modules + tests",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "frozen predictions/hash/artifacts",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "unit, subprocess, CI E2E",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "credible non-gold evaluation boundary",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "verified",
+          "evidence": "pinned public runtime/dataset",
+          "reason": null
+        }
+      }
+    }
+  ]
+}
