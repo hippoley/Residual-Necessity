@@ -1,43 +1,56 @@
 #!/usr/bin/env python3
-"""Gold-blind prediction baselines over one tool-visible runtime observation.
+"""Gold-blind prediction baselines over tool-visible runtime observations.
 
-This module has no AgentAbstain imports and receives only the sanitized
-observation produced after the trusted harness executes one lookup/verify
-probe. It intentionally implements weak baselines for falsification.
+Historical generic baselines are retained for falsification. The
+`proposition_specific` strategy is stricter: it delegates to an explicit
+provider profile and otherwise remains INVESTIGATE.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
+
+MODULE_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(MODULE_DIR))
+
+from proposition_evidence import classify as classify_propositions
+from proposition_evidence import decision_for
 
 
 def predict(observation: dict[str, Any]) -> dict[str, str]:
     probed = observation.get("probed")
     if probed is False:
-        return {
+        historical = {
             "failure_only": "INVESTIGATE",
             "probe_success": "INVESTIGATE",
         }
-    if probed is not True:
+    elif probed is True:
+        success = observation.get("success")
+        if not isinstance(success, bool):
+            raise ValueError("observation.success must be boolean when probed")
+        if success is False:
+            historical = {
+                "failure_only": "ABSTAIN",
+                "probe_success": "ABSTAIN",
+            }
+        else:
+            historical = {
+                "failure_only": "INVESTIGATE",
+                "probe_success": "ACT",
+            }
+    else:
         raise ValueError("observation.probed must be boolean")
 
-    success = observation.get("success")
-    if not isinstance(success, bool):
-        raise ValueError("observation.success must be boolean when probed")
-
-    if success is False:
-        return {
-            "failure_only": "ABSTAIN",
-            "probe_success": "ABSTAIN",
-        }
-
-    return {
-        "failure_only": "INVESTIGATE",
-        "probe_success": "ACT",
-    }
+    semantic = classify_propositions(
+        observation,
+        observation.get("provider_profile"),
+    )
+    historical["proposition_specific"] = decision_for(semantic["status"])
+    return historical
 
 
 def main() -> int:
