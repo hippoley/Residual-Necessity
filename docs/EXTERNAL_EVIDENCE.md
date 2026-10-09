@@ -298,3 +298,34 @@ Research rule from this point forward:
 > Predicate-specific probe/evidence semantics may be developed against the development partition. Holdout pair outcomes must not be used to tune the method and should only be scored after a candidate method is frozen.
 
 Both variants of a pair share the same partition because assignment is pair-level.
+
+
+## P3 bounded real residual-necessity pair
+
+Public workflow run **37892134518** exercised the same bounded issue-derived necessity predicate on two real revisions of `andwn/cave-story-md`.
+
+External repository:
+- `https://github.com/andwn/cave-story-md`
+- issue basis: `#169`
+
+Partial revision:
+- commit: `62d8c669e0aa335eed9c50f4fd7b753dd75f3676`
+- predicate: `bsl0000_zero_branch_fails_to_bind_boss_entity`
+- observed status: **TRUE**
+- Residual Necessity verdict: **ACT**
+- receipt SHA-256: `70ca3e0562cf65accb7c217934fd5ffb898a25c80dc6d5e8b7c71aeacf1cbb75`
+
+Final fixed revision:
+- commit: `2c11d40fd1338f17cc84da46005fa29cbf37ca77`
+- same bounded predicate: **FALSE**
+- scoped negative authority present
+- Residual Necessity verdict: **ABSTAIN**
+- receipt SHA-256: `e01d9dd398fe7b9dad89ec34b5dfef61ae668cd9c2bfdab74dbf25b5945453c2`
+
+Artifact:
+- `p3-residual-necessity-pair`
+- artifact id: **11599285242**
+
+The oracle is intentionally bounded to the `CMD_BSL` zero-argument branch. It is derived from issue semantics and current source shape, not by comparing the candidate revision against the final patch.
+
+This establishes one real external ACT→ABSTAIN residual-necessity transition across a partial fix and final fix. It does not establish automatic discovery of arbitrary necessity predicates.
