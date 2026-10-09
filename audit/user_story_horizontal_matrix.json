@@ -1696,14 +1696,14 @@
     },
     {
       "id": "US-26",
-      "priority": "P0",
+      "priority": "P1",
       "vertical_status": "open",
       "dependencies": [
         "US-25",
         "US-37",
         "US-28"
       ],
-      "summary": "Predict ACT/ABSTAIN from tool-visible proposition-specific evidence",
+      "summary": "Generalize proposition-specific evidence prediction to AgentAbstain constraint-heavy runtime cases",
       "dimensions": {
         "functional": {
           "status": "open",
@@ -1747,7 +1747,7 @@
         },
         "user_value": {
           "status": "open",
-          "evidence": "no demonstrated decision improvement",
+          "evidence": "useful cross-benchmark stress/generalization evidence, but not the core necessity acceptance gate",
           "reason": null
         },
         "external_compatibility": {
@@ -1761,12 +1761,12 @@
     },
     {
       "id": "US-27",
-      "priority": "P0",
+      "priority": "P1",
       "vertical_status": "open",
       "dependencies": [
         "US-26"
       ],
-      "summary": "Reduce unnecessary intervention without collapsing ACT recall",
+      "summary": "Demonstrate two-sided utility on a broader external benchmark without semantic collapse",
       "dimensions": {
         "functional": {
           "status": "open",
@@ -1810,7 +1810,7 @@
         },
         "user_value": {
           "status": "open",
-          "evidence": "existential value claim not proven",
+          "evidence": "broad utility remains unproven; no longer treated as core semantic correctness because AgentAbstain gold mixes capability/risk/support constraints",
           "reason": null
         },
         "external_compatibility": {
@@ -2446,6 +2446,134 @@
       },
       "horizontal_status": "partial",
       "closure_status": "partial"
+    },
+    {
+      "id": "US-39",
+      "priority": "P0",
+      "vertical_status": "partial",
+      "dependencies": [
+        "US-01",
+        "US-04",
+        "US-09",
+        "US-29a",
+        "US-38"
+      ],
+      "summary": "Real external necessity pair distinguishes residual partial state from final fixed state",
+      "dimensions": {
+        "functional": {
+          "status": "partial",
+          "evidence": "P3 issue-derived oracle and partial/final E2E workflow implemented; external run pending",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "same external issue target with pinned partial and final revisions",
+          "reason": null
+        },
+        "integration": {
+          "status": "partial",
+          "evidence": "real andwn/cave-story-md checkout workflow implemented; run pending",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "oracle criterion is grounded in issue #169 discussion and inspects only current revision; does not compare against final patch during decision",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Bounded necessity acceptance case, not a throughput feature."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "bounded oracle isolated in experiments/p3/cave_story_issue169_oracle.py",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "receipt authority binds issue reference, revision, source path, predicate and evidence_ref",
+          "reason": null
+        },
+        "testability": {
+          "status": "partial",
+          "evidence": "synthetic counterexamples exist; pinned external partial/final E2E pending",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "directly tests the core question: residual violation still requires action while final fixed state requires abstention",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "partial",
+          "evidence": "real public P3 task + GitHub issue/revisions; public CI pending",
+          "reason": null
+        }
+      },
+      "horizontal_status": "partial",
+      "closure_status": "partial"
+    },
+    {
+      "id": "US-40",
+      "priority": "P0",
+      "vertical_status": "closed",
+      "dependencies": [],
+      "summary": "Verified Closed requires both vertical requirement closure and ten-dimensional horizontal system closure",
+      "dimensions": {
+        "functional": {
+          "status": "verified",
+          "evidence": "machine-readable horizontal matrix computes horizontal_status and closure_status",
+          "reason": null
+        },
+        "state": {
+          "status": "verified",
+          "evidence": "story status, dependencies and evidence live in one versioned matrix",
+          "reason": null
+        },
+        "integration": {
+          "status": "verified",
+          "evidence": "validator and impact graph are wired into core CI",
+          "reason": null
+        },
+        "security_correctness": {
+          "status": "verified",
+          "evidence": "validator rejects missing dimensions, invalid statuses, unknown dependencies and false verified_closed states",
+          "reason": null
+        },
+        "performance_scalability": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Repository audit metadata is small and evaluated in CI."
+        },
+        "maintainability": {
+          "status": "verified",
+          "evidence": "single status vocabulary and reusable impact analyzer",
+          "reason": null
+        },
+        "observability_traceability": {
+          "status": "verified",
+          "evidence": "each applicable dimension requires explicit evidence; N/A requires reason",
+          "reason": null
+        },
+        "testability": {
+          "status": "verified",
+          "evidence": "tests/test_horizontal_audit.py covers dependency expansion; CI executes validator",
+          "reason": null
+        },
+        "user_value": {
+          "status": "verified",
+          "evidence": "prevents module-level green tests from being mislabeled whole-system completion",
+          "reason": null
+        },
+        "external_compatibility": {
+          "status": "not_applicable",
+          "evidence": null,
+          "reason": "Internal repository governance/control; external standards are evaluated per story."
+        }
+      },
+      "horizontal_status": "verified",
+      "closure_status": "verified_closed"
     }
   ]
 }
