@@ -1581,7 +1581,7 @@
       "dimensions": {
         "functional": {
           "status": "verified",
-          "evidence": "Language-neutral process-stdio conformance runner executed successfully in CI run 37893874090",
+          "evidence": "Local executable conformance vectors plus schema-valid Agent Hooks CTK candidate",
           "reason": null
         },
         "state": {
@@ -1591,7 +1591,7 @@
         },
         "integration": {
           "status": "partial",
-          "evidence": "External-process protocol is implemented and CI-verified; no independent third-party implementation result yet",
+          "evidence": "Candidate validated against pinned Agent Hooks official CTK schema in run 37897846550; not yet accepted upstream",
           "reason": null
         },
         "security_correctness": {
@@ -1616,22 +1616,22 @@
         },
         "testability": {
           "status": "verified",
-          "evidence": "Reference evaluator passes all semantic vectors; invalid evaluator protocol is independently rejected by tests and CI",
+          "evidence": "Official upstream ajv-cli@5.0.0 + ajv-formats@3.0.1 validation passed",
           "reason": null
         },
         "user_value": {
           "status": "partial",
-          "evidence": "Third parties can execute the pack without importing RN internals, but no external consumer has reported a result",
+          "evidence": "Upstream-ready compatibility artifact exists; no independent upstream consumer/acceptance yet",
           "reason": null
         },
         "external_compatibility": {
-          "status": "partial",
-          "evidence": "Implementation-neutral stdio contract exists; Agent Hooks CTK candidate/upstream acceptance still absent",
+          "status": "blocked",
+          "evidence": "Agent Hooks candidate is schema-valid; issue/PR creation is blocked by GitHub integration 403",
           "reason": null
         }
       },
-      "horizontal_status": "partial",
-      "closure_status": "partial"
+      "horizontal_status": "blocked",
+      "closure_status": "blocked"
     },
     {
       "id": "US-25",
@@ -2289,8 +2289,8 @@
       "summary": "Permit-side evidence remains attributable after Agent Hooks composition",
       "dimensions": {
         "functional": {
-          "status": "open",
-          "evidence": "upstream contract does not preserve permit evidence in combined allow",
+          "status": "verified",
+          "evidence": "Real Agent Hooks Beta reproduction plus proposal option analysis and schema-valid CTK candidate",
           "reason": null
         },
         "state": {
@@ -2300,7 +2300,7 @@
         },
         "integration": {
           "status": "partial",
-          "evidence": "reproduction + downstream proposal/CTK candidate",
+          "evidence": "Downstream reproduction and pinned upstream-schema validation run 37897846550 are green",
           "reason": null
         },
         "security_correctness": {
@@ -2314,28 +2314,28 @@
           "reason": "Audit semantics."
         },
         "maintainability": {
-          "status": "partial",
-          "evidence": "downstream workaround intentionally avoided",
+          "status": "verified",
+          "evidence": "Proposal follows Agent Hooks proposal-first governance; candidate vector follows official CTK shape",
           "reason": null
         },
         "observability_traceability": {
-          "status": "open",
-          "evidence": "permit evidence lost after composition",
+          "status": "verified",
+          "evidence": "proposal/vector hashes and artifact 11601501045 preserved",
           "reason": null
         },
         "testability": {
-          "status": "partial",
-          "evidence": "reproduction exists; no upstream CTK acceptance",
+          "status": "verified",
+          "evidence": "Official pinned Agent Hooks vectors.schema.json accepts candidate",
           "reason": null
         },
         "user_value": {
           "status": "partial",
-          "evidence": "important for audit-grade allow decisions",
+          "evidence": "Audit gap is reproducible and upstream-ready but has not been accepted or discussed upstream",
           "reason": null
         },
         "external_compatibility": {
           "status": "blocked",
-          "evidence": "external issue/PR write currently unavailable",
+          "evidence": "External write path to responsibleai/agent-hooks returns 403 Resource not accessible by integration",
           "reason": null
         }
       },
