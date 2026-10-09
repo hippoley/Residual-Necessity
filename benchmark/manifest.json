@@ -1,5 +1,5 @@
 {
-  "schema_version": "residual-necessity-benchmark/0.1",
+  "schema_version": "residual-necessity-benchmark/0.2",
   "benchmark_name": "Residual Necessity Reality Benchmark",
   "design_principles": [
     "No single aggregate leaderboard score across semantically different tracks.",
@@ -178,5 +178,6 @@
   "aggregation": {
     "single_total_score": false,
     "rationale": "Tracks test distinct semantics and failure modes; one weighted score could hide a safety failure in another track."
-  }
+  },
+  "benchmark_version": "0.2"
 }
