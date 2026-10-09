@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any
 
 BLIND_SELECTOR = Path(__file__).resolve().with_name("blind_probe.py")
+BINDING_PROFILES = Path(__file__).resolve().with_name("probe_binding_profiles.json")
 
 
 RUNTIME_CATEGORIES = (
@@ -94,9 +95,22 @@ def _safe_catalog(menv: Any, allowed: set[str] | None) -> list[dict[str, Any]]:
 
 
 
+def _load_binding_profiles() -> list[dict[str, Any]]:
+    value = json.loads(BINDING_PROFILES.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError("binding profile registry must be an object")
+    if value.get("schema_version") != "probe-binding-profiles/0.1":
+        raise ValueError("unsupported binding profile registry version")
+    profiles = value.get("profiles")
+    if not isinstance(profiles, list) or not all(isinstance(x, dict) for x in profiles):
+        raise ValueError("binding profile registry profiles must be objects")
+    return profiles
+
+
 def _select_in_blind_subprocess(
     catalog: list[dict[str, Any]],
     instruction: str = "",
+    profiles: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     """Run selector in a separate process with a deliberately minimal environment."""
     with tempfile.TemporaryDirectory(prefix="rn-blind-probe-") as tmp:
@@ -105,7 +119,11 @@ def _select_in_blind_subprocess(
         out_path = tmp_path / "selected.json"
         catalog_path.write_text(
             json.dumps(
-                {"instruction": instruction, "tools": catalog},
+                {
+                    "instruction": instruction,
+                    "tools": catalog,
+                    "profiles": profiles or [],
+                },
                 sort_keys=True,
                 ensure_ascii=False,
             )
@@ -161,6 +179,7 @@ def main() -> int:
     from abstention_factory.runtime.multi import build_multi_environment
 
     attempts: list[str] = []
+    profiles = _load_binding_profiles()
 
     for category, task_id, task_type in _iter_variants(args.data_dir):
         bundle = BaseAgent.load_task_bundle(category, task_id, task_type)
@@ -169,7 +188,7 @@ def main() -> int:
 
         catalog = _safe_catalog(menv, allowed)
         instruction = str(bundle.task_yaml.get("instruction") or "")
-        selected = _select_in_blind_subprocess(catalog, instruction)
+        selected = _select_in_blind_subprocess(catalog, instruction, profiles)
         if selected is None:
             attempts.append(f"{category}/{task_id}/{task_type}: no zero-arg safe tool")
             continue
@@ -217,6 +236,8 @@ def main() -> int:
             "error": error,
             "result": _jsonable(result),
             "arguments": arguments,
+            "profile_id": selected.get("profile_id"),
+            "binding_provenance": selected.get("provenance") or {},
             "binding_complete": binding_complete,
             "unbound_fields": unbound_fields,
             "execution_log_length": len(log),
