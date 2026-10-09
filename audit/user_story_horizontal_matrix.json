@@ -2618,8 +2618,8 @@
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "Croissant 1.1 official validator and core CI pass; current-head AgentAbstain full Reality Gate rerun is still pending",
+          "status": "verified",
+          "evidence": "Current-head CI run 37903176285/CI workflow is green across Python 3.10/3.11/3.12; AgentAbstain Reality Gate run 37903176241 completed blind-runtime-slice and tool-visible-probe successfully.",
           "reason": null
         },
         "security_correctness": {
@@ -2643,8 +2643,8 @@
           "reason": null
         },
         "testability": {
-          "status": "partial",
-          "evidence": "Core tests and metadata validators are green; latest full AgentAbstain benchmark rerun not completed on current head",
+          "status": "verified",
+          "evidence": "Core schema/governance tests, official Croissant 1.1 validation, split audit, pair-bootstrap scoring, holdout policy, Method Card schema, and full AgentAbstain external rerun all pass.",
           "reason": null
         },
         "user_value": {
@@ -2658,8 +2658,8 @@
           "reason": null
         }
       },
-      "horizontal_status": "partial",
-      "closure_status": "partial"
+      "horizontal_status": "verified",
+      "closure_status": "verified_closed"
     }
   ]
 }
