@@ -38,3 +38,20 @@ def test_duplicate_profile_id_is_rejected() -> None:
     )
     errors = validator.validate(registry, schema)
     assert any("duplicate profile_id" in error for error in errors)
+
+
+def test_provider_profile_requires_auditable_contract_reference() -> None:
+    registry=json.loads(REGISTRY.read_text(encoding="utf-8"))
+    profile=registry["profiles"][0]
+    profile["source"].pop("contract_ref",None)
+    errors=validator.validate(registry,SCHEMA_DOC)
+    assert any("contract_ref" in error for error in errors)
+
+
+def test_fixture_contract_cannot_claim_complete_task_coverage() -> None:
+    registry=json.loads(REGISTRY.read_text(encoding="utf-8"))
+    profile=registry["profiles"][0]
+    profile["source"]["contract_type"]="pinned_fixture_contract"
+    profile["decision_scope"]["task_coverage"]="complete"
+    errors=validator.validate(registry,SCHEMA_DOC)
+    assert any("fixture-bounded" in error for error in errors)
