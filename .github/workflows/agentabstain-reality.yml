@@ -4,10 +4,13 @@ on:
   pull_request:
   workflow_dispatch:
 
-
 concurrency:
   group: residual-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  AGENTABSTAIN_CODE_SHA: cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3
+  AGENTABSTAIN_DATA_SHA: 842228426c2a703347396501af61c7890972c7ee
 
 jobs:
   blind-runtime-slice:
@@ -17,93 +20,264 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
-      - name: Download external AgentAbstain dataset
+
+      - name: Download pinned AgentAbstain task index
         run: |
-          curl -fL             https://huggingface.co/datasets/antiquality/agentabstain/resolve/842228426c2a703347396501af61c7890972c7ee/tasks.jsonl             -o /tmp/agentabstain-tasks.jsonl
+          curl -fL \
+            "https://huggingface.co/datasets/antiquality/agentabstain/resolve/${AGENTABSTAIN_DATA_SHA}/tasks.jsonl" \
+            -o /tmp/agentabstain-tasks.jsonl
           test -s /tmp/agentabstain-tasks.jsonl
-      - name: Build gold-hidden runtime slice
+
+      - name: Partition inference, execution, and scoring views
         run: |
-          python experiments/agentabstain/prepare_runtime_blind_slice.py             /tmp/agentabstain-tasks.jsonl             --blind-out /tmp/runtime-blind.json             --labels-out /tmp/runtime-labels.json             | tee /tmp/runtime-summary.json
+          python experiments/agentabstain/prepare_runtime_blind_slice.py \
+            /tmp/agentabstain-tasks.jsonl \
+            --blind-out /tmp/runtime-blind.json \
+            --labels-out /tmp/runtime-labels.json \
+            --runtime-map-out /tmp/runtime-map.json \
+            | tee /tmp/runtime-summary.json
+
       - name: Inspect blind runtime shape
         run: python experiments/agentabstain/inspect_blind_shape.py /tmp/runtime-blind.json
+
       - name: Score preregistered trivial baselines
         run: |
-          python experiments/agentabstain/baselines.py /tmp/runtime-labels.json | tee /tmp/runtime-baselines.json
+          python experiments/agentabstain/baselines.py \
+            /tmp/runtime-labels.json \
+            | tee /tmp/runtime-baselines.json
 
-      - name: Verify no gold fields leaked
+      - name: Verify planner view contains no gold or source locator
         run: |
           python - <<'PY'
           import json
           rows = json.load(open("/tmp/runtime-blind.json"))
           forbidden = {
               "task_type", "abstention_trigger", "execution_dag",
-              "critical_actions", "category", "transformation_dimension"
+              "critical_actions", "category", "transformation_dimension",
+              "source_pair_id",
           }
           assert rows, "expected non-empty runtime slice"
           for row in rows:
               assert forbidden.isdisjoint(row)
               assert "/" not in str(row["pair_id"]), "pair_id leaks category"
+              assert "/" not in str(row["case_id"]), "case_id leaks locator"
           print(f"BLIND_RUNTIME_VARIANTS={len(rows)}")
           PY
 
+      - name: Preserve planner input
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-planner-input
+          path: /tmp/runtime-blind.json
+          if-no-files-found: error
+
+      - name: Preserve executor-only runtime map
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-executor-runtime-map
+          path: /tmp/runtime-map.json
+          if-no-files-found: error
+
+      - name: Preserve scoring-only labels
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-scoring-labels
+          path: /tmp/runtime-labels.json
+          if-no-files-found: error
 
   tool-visible-probe:
+    needs: blind-runtime-slice
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
+
+      - name: Download executor-only runtime map
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: agentabstain-executor-runtime-map
+          path: /tmp/executor-map
 
       - name: Checkout pinned AgentAbstain runtime
         run: |
           git clone https://github.com/AntiQuality/agentabstain.git /tmp/agentabstain
           cd /tmp/agentabstain
-          git checkout cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3
-          test "$(git rev-parse HEAD)" = "cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3"
+          git checkout "${AGENTABSTAIN_CODE_SHA}"
+          test "$(git rev-parse HEAD)" = "${AGENTABSTAIN_CODE_SHA}"
 
-      - name: Install minimal AgentAbstain sandbox dependencies
+      - name: Install proven sandbox dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install PyYAML==6.0.3 pydantic==2.14.0 fastmcp==4.1.0 mcp==2.3.0 huggingface_hub==2.2.0
+          python -m pip install \
+            PyYAML==6.0.3 \
+            pydantic==2.14.0 \
+            fastmcp==4.1.0 \
+            mcp==2.3.0 \
+            huggingface_hub==2.2.0
 
-      - name: Download public AgentAbstain executable dataset
+      - name: Download pinned executable dataset
         run: |
           python - <<'PY'
+          import os
           from huggingface_hub import HfApi, snapshot_download
-          revision = "842228426c2a703347396501af61c7890972c7ee"
+
+          revision = os.environ["AGENTABSTAIN_DATA_SHA"]
           info = HfApi().dataset_info("antiquality/agentabstain", revision=revision)
           assert info.sha == revision, (info.sha, revision)
           print("AGENTABSTAIN_DATASET_SHA=", info.sha)
-          path = snapshot_download(
+          snapshot_download(
               "antiquality/agentabstain",
               repo_type="dataset",
               revision=revision,
               local_dir="/tmp/agentabstain-data",
           )
-          print("AGENTABSTAIN_DATA_DIR=", path)
           PY
 
-      - name: Obtain one read-only runtime observation
+      - name: Reproduce one direct read-only observation
         run: |
           python experiments/agentabstain/probe_runtime_observation.py \
             --agentabstain-root /tmp/agentabstain \
             --data-dir /tmp/agentabstain-data \
             --out /tmp/agentabstain-probe.json
+
+      - name: Build planner-safe probe surface
+        run: |
+          python experiments/agentabstain/build_probe_surface.py \
+            --agentabstain-root /tmp/agentabstain \
+            --data-dir /tmp/agentabstain-data \
+            --runtime-map /tmp/executor-map/runtime-map.json \
+            --out /tmp/probe-surface.json \
+            --limit 32
           python - <<'PY'
           import json
-          record = json.load(open("/tmp/agentabstain-probe.json"))
-          assert record["tool_kind"] in {"lookup", "verify"}
-          assert record["gold_fields_exposed"] is False
-          assert record["raw_state_read"] is False
-          assert "/" not in record["case_id"]
-          print(json.dumps(record, indent=2, sort_keys=True))
+          rows = json.load(open("/tmp/probe-surface.json"))
+          assert rows
+          for row in rows:
+              assert row["raw_state_exposed"] is False
+              assert row["runtime_locator_exposed"] is False
+              for tool in row["safe_tools"]:
+                  assert tool["kind"] in {"lookup", "verify"}
+          print("SAFE_SURFACE_CASES=", len(rows))
           PY
 
-      - name: Preserve probe evidence
+      - name: Preserve direct probe evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: agentabstain-tool-visible-probe
           path: /tmp/agentabstain-probe.json
+          if-no-files-found: error
+
+      - name: Preserve planner-safe probe surface
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-probe-surface
+          path: /tmp/probe-surface.json
+          if-no-files-found: error
+
+  smoke-plan:
+    needs: tool-visible-probe
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Download planner-safe surface only
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: agentabstain-probe-surface
+          path: /tmp/planner-surface
+
+      - name: Produce smoke plan without runtime locator or labels
+        run: |
+          python experiments/agentabstain/make_smoke_probe_plan.py \
+            /tmp/planner-surface/probe-surface.json \
+            --out /tmp/probe-plan.json
+
+      - name: Preserve planner output
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-probe-plan
+          path: /tmp/probe-plan.json
+          if-no-files-found: error
+
+  execute-readonly-plan:
+    needs: [blind-runtime-slice, smoke-plan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Download executor runtime map
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: agentabstain-executor-runtime-map
+          path: /tmp/executor-map
+
+      - name: Download planner output
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: agentabstain-probe-plan
+          path: /tmp/planner-plan
+
+      - name: Checkout pinned AgentAbstain runtime
+        run: |
+          git clone https://github.com/AntiQuality/agentabstain.git /tmp/agentabstain
+          cd /tmp/agentabstain
+          git checkout "${AGENTABSTAIN_CODE_SHA}"
+          test "$(git rev-parse HEAD)" = "${AGENTABSTAIN_CODE_SHA}"
+
+      - name: Install proven sandbox dependencies
+        run: |
+          python -m pip install \
+            PyYAML==6.0.3 \
+            pydantic==2.14.0 \
+            fastmcp==4.1.0 \
+            mcp==2.3.0 \
+            huggingface_hub==2.2.0
+
+      - name: Download pinned executable dataset
+        run: |
+          python - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+
+          snapshot_download(
+              "antiquality/agentabstain",
+              repo_type="dataset",
+              revision=os.environ["AGENTABSTAIN_DATA_SHA"],
+              local_dir="/tmp/agentabstain-data",
+          )
+          PY
+
+      - name: Execute plan behind live read-only firewall
+        run: |
+          python experiments/agentabstain/execute_probe_plan.py \
+            --agentabstain-root /tmp/agentabstain \
+            --data-dir /tmp/agentabstain-data \
+            --runtime-map /tmp/executor-map/runtime-map.json \
+            --plan /tmp/planner-plan/probe-plan.json \
+            --out /tmp/probe-observations.json
+          python - <<'PY'
+          import json
+          rows = json.load(open("/tmp/probe-observations.json"))
+          assert rows
+          for row in rows:
+              assert row["runtime_locator_exposed"] is False
+              assert row["gold_exposed"] is False
+              assert row["raw_state_read"] is False
+              for obs in row["observations"]:
+                  assert obs["tool_kind"] in {"lookup", "verify"}
+          print(json.dumps(rows, indent=2, sort_keys=True))
+          PY
+
+      - name: Preserve executor observations
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-probe-observations
+          path: /tmp/probe-observations.json
           if-no-files-found: error
