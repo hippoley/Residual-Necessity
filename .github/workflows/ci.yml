@@ -23,6 +23,7 @@ jobs:
       - run: python -m pip install pytest==9.1.1 jsonschema==4.26.0
       - run: pytest -q
       - run: python audit/validate_horizontal_matrix.py
+      - run: python audit/validate_external_modules.py
       - run: python benchmark/validate_manifest.py
       - run: python benchmark/validate_provider_profiles.py
       - run: python benchmark/validate_holdout_policy.py
