@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hippoley/Residual-Necessity/benchmark/provider_profile_registry.schema.json",
+  "title": "Residual Necessity Provider Profile Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profiles"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "probe-binding-profiles/0.2"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
+    }
+  },
+  "$defs": {
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "all_terms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "any_terms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "extractor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "pattern"
+          ],
+          "properties": {
+            "kind": {
+              "const": "regex"
+            },
+            "pattern": {
+              "type": "string",
+              "minLength": 1
+            },
+            "group": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "ignore_case": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "enum_literal"
+            },
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean"
+                ]
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      ]
+    },
+    "proposition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "kind",
+            "left_path",
+            "right_path",
+            "authority"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "fields_differ"
+            },
+            "left_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "right_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "authority": {
+              "const": "complete_result_field"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "kind",
+            "path",
+            "markers",
+            "authority"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "forbidden_markers_absent"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "markers": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "authority": {
+              "const": "complete_result_field"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "kind",
+            "expression",
+            "authority"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "cel"
+            },
+            "expression": {
+              "type": "string",
+              "minLength": 1
+            },
+            "authority": {
+              "const": "complete_result_field"
+            }
+          }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upstream",
+        "version_or_commit",
+        "contract_basis",
+        "contract_type",
+        "contract_ref"
+      ],
+      "properties": {
+        "upstream": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_or_commit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_type": {
+          "enum": [
+            "upstream_tool_schema",
+            "upstream_documented_contract",
+            "pinned_fixture_contract"
+          ]
+        },
+        "contract_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "tool",
+        "source",
+        "required_fields",
+        "extractors",
+        "propositions",
+        "decision_scope",
+        "non_claims"
+      ],
+      "properties": {
+        "profile_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "activation": {
+          "$ref": "#/$defs/activation"
+        },
+        "required_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "extractors": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/extractor"
+          }
+        },
+        "propositions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/proposition"
+          }
+        },
+        "decision_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "intervention",
+            "task_coverage"
+          ],
+          "properties": {
+            "intervention": {
+              "type": "string",
+              "minLength": 1
+            },
+            "task_coverage": {
+              "enum": [
+                "partial",
+                "complete"
+              ]
+            }
+          }
+        },
+        "non_claims": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
