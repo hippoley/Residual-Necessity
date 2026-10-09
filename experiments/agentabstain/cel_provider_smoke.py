@@ -56,7 +56,7 @@ def main() -> int:
 
     missing=classify({"current":"old"})
     assert missing["status"]=="UNKNOWN",missing
-    assert missing["propositions"]["change_needed"]["reason"]=="cel_evaluation_error"
+    assert missing["propositions"]["change_needed"]["reason"]=="cel_no_boolean_result"
 
     non_bool_profile={
         **PROFILE,
@@ -82,7 +82,7 @@ def main() -> int:
         non_bool_profile,
     )
     assert non_bool["status"]=="UNKNOWN",non_bool
-    assert non_bool["propositions"]["bad_type"]["reason"]=="cel_expression_not_boolean"
+    assert non_bool["propositions"]["bad_type"]["reason"]=="cel_no_boolean_result"
 
     print("CEL_PROVIDER_RUNTIME=PASS")
     return 0
