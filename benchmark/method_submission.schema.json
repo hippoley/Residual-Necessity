@@ -9,15 +9,20 @@
     "method_id",
     "track_id",
     "code_commit",
+    "method_config_sha256",
+    "split_manifest_sha256",
+    "benchmark_manifest_sha256",
     "provider_profile_sha256",
     "development_report_sha256",
     "holdout_status",
     "dependencies",
-    "claims"
+    "claims",
+    "prediction_protocol",
+    "holdout_prediction_sha256"
   ],
   "properties": {
     "schema_version": {
-      "const": "rn-method-card/0.1"
+      "const": "rn-method-card/0.2"
     },
     "method_id": {
       "type": "string",
@@ -112,6 +117,25 @@
         "null"
       ],
       "pattern": "^[0-9a-f]{40}$"
+    },
+    "benchmark_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "split_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "method_config_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "holdout_prediction_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
     }
   },
   "allOf": [
@@ -127,6 +151,9 @@
         "properties": {
           "holdout_release_commit": {
             "type": "null"
+          },
+          "holdout_prediction_sha256": {
+            "type": "null"
           }
         }
       }
@@ -141,12 +168,17 @@
       },
       "then": {
         "required": [
-          "holdout_release_commit"
+          "holdout_release_commit",
+          "holdout_prediction_sha256"
         ],
         "properties": {
           "holdout_release_commit": {
             "type": "string",
             "pattern": "^[0-9a-f]{40}$"
+          },
+          "holdout_prediction_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         }
       }
