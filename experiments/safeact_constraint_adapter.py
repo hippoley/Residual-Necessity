@@ -41,6 +41,10 @@ def project(
     case_id=str(document.get("case_id") or "")
     if not case_id:
         raise ValueError("SafeAct document missing case_id")
+    if not isinstance(target_identity, str) or not target_identity:
+        raise ValueError("target_identity must be a non-empty string")
+    if not isinstance(target_revision, str) or not target_revision:
+        raise ValueError("target_revision must be a non-empty string")
 
     traces=document.get("rule_execution_trace")
     if not isinstance(traces,list) or not traces:
@@ -48,11 +52,15 @@ def project(
 
     predicates=[]
     observations={}
+    seen_rule_ids: set[str]=set()
 
     for index, trace in enumerate(traces):
         if not isinstance(trace,dict):
             raise ValueError("SafeAct rule_execution_trace must contain objects")
         rule_id=str(trace.get("rule_id") or f"rule-{index}")
+        if rule_id in seen_rule_ids:
+            raise ValueError(f"duplicate SafeAct rule_id: {rule_id}")
+        seen_rule_ids.add(rule_id)
         predicate_id=f"safeact:{case_id}:{rule_id}"
         status=_status(trace)
 
