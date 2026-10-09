@@ -19,6 +19,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from experiments.agentabstain.freeze_pair_split import assign as split_assignment
+
+RUNTIME_CATEGORIES = {
+    "critical_tool_failure",
+    "conflicting_evidence",
+    "emergent_risk_discovery",
+}
 EVAL_PATH = ROOT / "src" / "eval.py"
 BOOTSTRAP_PATH = ROOT / "src" / "bootstrap.py"
 
@@ -67,10 +73,12 @@ def score(
         case_id = label.get("case_id")
         pair_id = label.get("pair_id")
         task_type = label.get("task_type")
+        category = label.get("category")
         if (
             not isinstance(case_id, str)
             or not isinstance(pair_id, str)
             or task_type not in {"act", "abstain"}
+            or category not in RUNTIME_CATEGORIES
         ):
             raise ValueError("invalid development label row")
         if split_assignment(pair_id) != "development":
@@ -98,6 +106,7 @@ def score(
                 "pair_id": pair_id,
                 "expected": str(task_type).upper(),
                 "actual": actual,
+                "category": category,
             }
         )
 
@@ -106,6 +115,18 @@ def score(
         records,
         evaluate_fn=metrics.evaluate,
     )
+    by_category: dict[str, Any] = {}
+    for category in sorted(RUNTIME_CATEGORIES):
+        subset = [row for row in records if row["category"] == category]
+        if not subset:
+            raise ValueError(f"missing development category: {category}")
+        category_report = metrics.evaluate(subset)
+        category_report["confidence_intervals"] = bootstrap.confidence_intervals(
+            subset,
+            evaluate_fn=metrics.evaluate,
+        )
+        by_category[category] = category_report
+
     report.update(
         {
             "partition": "development",
@@ -122,6 +143,7 @@ def score(
             ),
             "profile_counts": profile_counts,
             "holdout_labels_consumed": False,
+            "by_category": by_category,
         }
     )
     return report
