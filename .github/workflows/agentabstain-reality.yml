@@ -35,6 +35,13 @@ jobs:
             --out /tmp/runtime-pair-split.json
           sha256sum /tmp/runtime-pair-split.json | tee /tmp/runtime-pair-split.sha256
 
+      - name: Audit hidden-category split coverage
+        run: |
+          python benchmark/audit_agentabstain_split.py \
+            --labels /tmp/runtime-labels.json \
+            --split /tmp/runtime-pair-split.json \
+            --out /tmp/runtime-split-audit.json
+
       - name: Preserve Reality Gate split manifest
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -42,6 +49,7 @@ jobs:
           path: |
             /tmp/runtime-pair-split.json
             /tmp/runtime-pair-split.sha256
+            /tmp/runtime-split-audit.json
           if-no-files-found: error
       - name: Score preregistered trivial baselines
         run: |
