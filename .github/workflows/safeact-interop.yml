@@ -69,6 +69,21 @@ jobs:
             /tmp/safeact \
             --out /tmp/safeact-necessity-signal-inventory.json
 
+      - name: Audit entire SafeAct materialized evidence corpus
+        run: |
+          python experiments/safeact_corpus_audit.py \
+            /tmp/safeact \
+            --out /tmp/safeact-corpus-audit.json
+          python - <<'PY'
+          import json
+          report=json.load(open("/tmp/safeact-corpus-audit.json"))
+          assert report["corpus_audit_pass"] is True
+          assert report["negative_authority_count"] == 0
+          assert report["materialized_files"] > 0
+          assert report["predicate_count"] > 0
+          print("SAFEACT_CORPUS_CONSTRAINT_BOUNDARY=PASS")
+          PY
+
       - name: Prove SafeAct support cannot masquerade as necessity
         run: |
           python - <<'PY'
@@ -108,4 +123,5 @@ jobs:
             /tmp/safeact-supported.json
             /tmp/safeact-missing.json
             /tmp/safeact-necessity-signal-inventory.json
+            /tmp/safeact-corpus-audit.json
           if-no-files-found: error
