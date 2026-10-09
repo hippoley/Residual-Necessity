@@ -152,3 +152,25 @@ Verified:
 The test intentionally does not use `run_tool()`, because that helper also requires a configured `post_tool_call` boundary. Residual Necessity's current contract is pre-side-effect necessity; extending into post-tool semantics would widen the project without adding necessity value.
 
 This is compatibility evidence with a released policy runtime. It is not an ACS endorsement, conformance claim, or adoption.
+
+
+## AgentAbstain tool-visible runtime observation
+
+A public CI path now obtains runtime evidence from the executable AgentAbstain sandbox without reading raw environment state or benchmark gold.
+
+Verified run:
+
+- workflow run: `37871728936`
+- job: `tool-visible-probe`
+- AgentAbstain runtime commit: `cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3`
+- tool: `security_and_privacy_admin.search_breach_records`
+- tool kind: `lookup`
+- success: `true`
+- execution-log entries: `1`
+- raw state read by probe logic: `false`
+- gold fields exposed to probe: `false`
+- preserved artifact id: `11590222305`
+
+The observed result for this one probe was `null`. Therefore this run proves the **non-gold, tool-visible observation boundary**, not an ACT/ABSTAIN prediction and not benchmark improvement.
+
+The Reality Gate still requires a larger blinded paired inference path before any usefulness claim graduates.
