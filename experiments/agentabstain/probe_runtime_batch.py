@@ -151,14 +151,25 @@ def main() -> int:
                 "success": None,
                 "error": None,
                 "result": None,
+                "arguments": {},
+                "binding_complete": False,
+                "unbound_fields": [],
             }
         else:
             selected_tool = str(selected["name"])
+            arguments = selected.get("arguments") or {}
+            if not isinstance(arguments, dict):
+                raise ValueError("blind selector arguments must be an object")
+            binding_complete = selected.get("binding_complete") is True
+            unbound_fields = selected.get("unbound_fields") or []
+            if not isinstance(unbound_fields, list):
+                raise ValueError("blind selector unbound_fields must be a list")
+
             success = True
             error = None
             result: Any = None
             try:
-                result = menv.call_tool(selected_tool)
+                result = menv.call_tool(selected_tool, **arguments)
             except Exception as exc:
                 success = False
                 error = f"{type(exc).__name__}: {exc}"
@@ -191,6 +202,9 @@ def main() -> int:
                 "error": error,
                 "result": _jsonable(result),
                 "tool": observed_tool,
+                "arguments": arguments,
+                "binding_complete": binding_complete,
+                "unbound_fields": unbound_fields,
             }
 
         blind_predictions = _predict_in_blind_subprocess(observation)
@@ -204,6 +218,8 @@ def main() -> int:
                 "probed": observation["probed"],
                 "tool": selected_tool,
                 "tool_kind": observed_kind,
+                "binding_complete": observation.get("binding_complete") is True,
+                "unbound_fields": observation.get("unbound_fields") or [],
                 "failure_only": blind_predictions["failure_only"],
                 "probe_success": blind_predictions["probe_success"],
             }
@@ -221,6 +237,10 @@ def main() -> int:
                     "success": observation.get("success"),
                     "error": observation.get("error"),
                     "result": observation.get("result"),
+                    "arguments": observation.get("arguments") or {},
+                    "binding_complete": observation.get("binding_complete") is True,
+                    "unbound_fields": observation.get("unbound_fields") or [],
+                    "input_schema": selected.get("input_schema") if selected else None,
                 }
             )
             development_labels.append(
