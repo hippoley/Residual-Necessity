@@ -1580,8 +1580,8 @@
       "summary": "External implementer can consume a conformance pack, not prose",
       "dimensions": {
         "functional": {
-          "status": "partial",
-          "evidence": "local executable vectors exist",
+          "status": "verified",
+          "evidence": "Language-neutral process-stdio conformance runner executed successfully in CI run 37893874090",
           "reason": null
         },
         "state": {
@@ -1591,7 +1591,7 @@
         },
         "integration": {
           "status": "partial",
-          "evidence": "Agent Hooks CTK candidate exists but not upstream",
+          "evidence": "External-process protocol is implemented and CI-verified; no independent third-party implementation result yet",
           "reason": null
         },
         "security_correctness": {
@@ -1606,7 +1606,7 @@
         },
         "maintainability": {
           "status": "verified",
-          "evidence": "machine-readable core-cases",
+          "evidence": "Versioned manifest, receipt-schema version, isolated per-vector process protocol, and reproducible pack lock generator",
           "reason": null
         },
         "observability_traceability": {
@@ -1616,17 +1616,17 @@
         },
         "testability": {
           "status": "verified",
-          "evidence": "local conformance test executes vectors",
+          "evidence": "Reference evaluator passes all semantic vectors; invalid evaluator protocol is independently rejected by tests and CI",
           "reason": null
         },
         "user_value": {
           "status": "partial",
-          "evidence": "not yet useful as accepted external compatibility target",
+          "evidence": "Third parties can execute the pack without importing RN internals, but no external consumer has reported a result",
           "reason": null
         },
         "external_compatibility": {
           "status": "partial",
-          "evidence": "no upstream CTK/conformance claim accepted",
+          "evidence": "Implementation-neutral stdio contract exists; Agent Hooks CTK candidate/upstream acceptance still absent",
           "reason": null
         }
       },

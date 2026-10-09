@@ -351,3 +351,26 @@ The P0 semantic/system closure set passed on the same validated branch state bef
   - reference gate/evaluator smoke tests passed.
 
 This checkpoint is the evidence basis for marking US-38, US-39 and US-40 as Verified Closed.
+
+
+## Language-neutral conformance pack
+
+Core CI run **37893874090** verified the implementation-neutral conformance boundary.
+
+Protocol:
+- one evaluator process per vector;
+- receipt JSON on stdin;
+- one JSON object with `verdict` on stdout;
+- allowed verdicts: ACT / ABSTAIN / INVESTIGATE / ESCALATE;
+- non-zero exit, timeout, invalid JSON, or invalid verdict is a conformance failure.
+
+The reference gate passed the current semantic vectors through this external-process interface, while an intentionally invalid evaluator was rejected.
+
+The pack includes:
+- `conformance/manifest.json`
+- `conformance/core-cases.json`
+- `conformance/run_external.py`
+- `conformance/reference_stdio.py`
+- `conformance/freeze_pack.py`
+
+This establishes implementation-neutral consumability inside public CI. It is **not** evidence of third-party adoption; US-22 remains partial until an independent implementation or upstream conformance process consumes it.
