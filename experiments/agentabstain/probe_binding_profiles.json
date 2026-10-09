@@ -29,7 +29,11 @@
           ],
           "authority": "complete_result_field"
         }
-      ]
+      ],
+      "decision_scope": {
+        "intervention": "publish_saved_bio_to_public_profile",
+        "task_coverage": "partial"
+      }
     }
   ]
 }
