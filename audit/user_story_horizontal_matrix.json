@@ -1590,8 +1590,8 @@
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "Candidate validated against pinned Agent Hooks official CTK schema in run 37897846550; not yet accepted upstream",
+          "status": "verified",
+          "evidence": "Official Agent Hooks CTK cross-contract run 37919563212; 51-vector reference corpus 47 pass/4 capability skips/0 fail plus RN pre_tool_call seam cases",
           "reason": null
         },
         "security_correctness": {
@@ -1616,7 +1616,7 @@
         },
         "testability": {
           "status": "verified",
-          "evidence": "Official upstream ajv-cli@5.0.0 + ajv-formats@3.0.1 validation passed",
+          "evidence": "Local conformance vectors + official agent-hooks-sdk[ctk] cross-contract workflow",
           "reason": null
         },
         "user_value": {
@@ -1625,13 +1625,13 @@
           "reason": null
         },
         "external_compatibility": {
-          "status": "blocked",
-          "evidence": "Agent Hooks candidate is schema-valid; issue/PR creation is blocked by GitHub integration 403",
+          "status": "partial",
+          "evidence": "Official CTK semantics consumed successfully; no upstream §13 host claim or accepted RN-specific vector yet",
           "reason": null
         }
       },
-      "horizontal_status": "blocked",
-      "closure_status": "blocked"
+      "horizontal_status": "partial",
+      "closure_status": "partial"
     },
     {
       "id": "US-25",
