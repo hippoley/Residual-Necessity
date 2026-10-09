@@ -2427,7 +2427,7 @@
         },
         "integration": {
           "status": "verified",
-          "evidence": "SafeAct evidence interop workflow consumes pinned real SafeAct materialized evidence",
+          "evidence": "SafeAct evidence interop run 37911867246 executes pinned upstream safeact_contract.py before RN projection",
           "reason": null
         },
         "security_correctness": {
@@ -2452,7 +2452,7 @@
         },
         "testability": {
           "status": "verified",
-          "evidence": "adapter unit tests plus public real SafeAct E2E",
+          "evidence": "unit delegation tests + pinned SafeAct real-corpus workflow + corpus-wide constraint audit",
           "reason": null
         },
         "user_value": {
@@ -2462,7 +2462,7 @@
         },
         "external_compatibility": {
           "status": "verified",
-          "evidence": "pinned SafeAct commit 841816cf; MIT code and CC BY 4.0 data licenses verified in repository/workflow",
+          "evidence": "SafeAct commit 841816cf1e376e6fbf8600cffac5df1736e1d369; MIT code and CC BY 4.0 data licenses verified in CI",
           "reason": null
         }
       },
