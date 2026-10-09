@@ -5,10 +5,16 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 MODULE=ROOT/"audit"/"impact.py"
+VALIDATOR=ROOT/"audit"/"validate_horizontal_matrix.py"
 spec=importlib.util.spec_from_file_location("horizontal_impact",MODULE)
 assert spec and spec.loader
 impact=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(impact)
+
+validator_spec=importlib.util.spec_from_file_location("horizontal_validator",VALIDATOR)
+assert validator_spec and validator_spec.loader
+validator=importlib.util.module_from_spec(validator_spec)
+validator_spec.loader.exec_module(validator)
 
 def test_core_semantic_change_expands_to_dependent_integrations() -> None:
     result=impact.impacted(["US-01"])
@@ -22,3 +28,18 @@ def test_gold_firewall_change_retests_reality_gate() -> None:
     assert "US-27" in result
     assert "US-28" in result
     assert "US-37" in result
+
+
+def test_current_horizontal_matrix_and_story_ledger_are_consistent() -> None:
+    data=impact.load()
+    assert validator.validate(data) == []
+
+
+def test_dependency_cycle_is_detected() -> None:
+    stories=[
+        {"id":"US-1","dependencies":["US-2"]},
+        {"id":"US-2","dependencies":["US-1"]},
+    ]
+    cycle=validator._dependency_cycle(stories)
+    assert cycle is not None
+    assert cycle[0] == cycle[-1]
