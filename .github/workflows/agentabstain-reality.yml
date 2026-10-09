@@ -42,5 +42,65 @@ jobs:
           assert rows, "expected non-empty runtime slice"
           for row in rows:
               assert forbidden.isdisjoint(row)
+              assert "/" not in str(row["pair_id"]), "pair_id leaks category"
           print(f"BLIND_RUNTIME_VARIANTS={len(rows)}")
           PY
+
+
+  tool-visible-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Checkout pinned AgentAbstain runtime
+        run: |
+          git clone https://github.com/AntiQuality/agentabstain.git /tmp/agentabstain
+          cd /tmp/agentabstain
+          git checkout cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3
+          test "$(git rev-parse HEAD)" = "cfc3faf7ab1cfd4892cde1158d6e43b2f312ddc3"
+
+      - name: Install minimal AgentAbstain sandbox dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install PyYAML pydantic fastmcp mcp huggingface_hub
+
+      - name: Download public AgentAbstain executable dataset
+        run: |
+          python - <<'PY'
+          from huggingface_hub import HfApi, snapshot_download
+          info = HfApi().dataset_info("antiquality/agentabstain")
+          print("AGENTABSTAIN_DATASET_SHA=", info.sha)
+          path = snapshot_download(
+              "antiquality/agentabstain",
+              repo_type="dataset",
+              local_dir="/tmp/agentabstain-data",
+          )
+          print("AGENTABSTAIN_DATA_DIR=", path)
+          PY
+
+      - name: Obtain one read-only runtime observation
+        run: |
+          python experiments/agentabstain/probe_runtime_observation.py \
+            --agentabstain-root /tmp/agentabstain \
+            --data-dir /tmp/agentabstain-data \
+            --out /tmp/agentabstain-probe.json
+          python - <<'PY'
+          import json
+          record = json.load(open("/tmp/agentabstain-probe.json"))
+          assert record["tool_kind"] in {"lookup", "verify"}
+          assert record["gold_fields_exposed"] is False
+          assert record["raw_state_read"] is False
+          assert "/" not in record["case_id"]
+          print(json.dumps(record, indent=2, sort_keys=True))
+          PY
+
+      - name: Preserve probe evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentabstain-tool-visible-probe
+          path: /tmp/agentabstain-probe.json
+          if-no-files-found: error
