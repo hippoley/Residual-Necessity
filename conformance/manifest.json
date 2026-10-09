@@ -1,0 +1,18 @@
+{
+  "schema_version": "rn-conformance-pack/0.1",
+  "receipt_schema_version": "0.3",
+  "vectors": "core-cases.json",
+  "evaluator_protocol": {
+    "transport": "process-stdio-json/v1",
+    "input": "one receipt JSON object on stdin",
+    "output": "one JSON object on stdout with required verdict member",
+    "verdicts": [
+      "ACT",
+      "ABSTAIN",
+      "INVESTIGATE",
+      "ESCALATE"
+    ],
+    "exit_code": "0 means protocol response produced; non-zero is harness failure",
+    "isolation": "one evaluator process per vector"
+  }
+}
