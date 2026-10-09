@@ -60,9 +60,20 @@ Track A reports both action directions:
 - ACT recall;
 - investigate/escalate burden;
 - paired accuracy;
+- ACT recall;
+- ABSTAIN recall;
+- two-sided recall geometric mean;
+- pair-outcome taxonomy (`both_correct / act_only / abstain_only / neither`);
+- decision coverage;
+- trigger-category-stratified metrics;
 - probe coverage;
 - provider-profile coverage;
 - complete-binding coverage.
+
+`decisive_accuracy` is diagnostic-only. It must never be presented without
+decision coverage and may not by itself support a success claim. This prevents
+a method that decides on only a tiny easy subset and returns `INVESTIGATE`
+elsewhere from appearing strong.
 
 Point estimates are accompanied by deterministic **95% pair-preserving bootstrap confidence intervals** (5,000 samples, fixed seed 20261009). ACT/ABSTAIN variants are resampled together.
 
@@ -70,7 +81,7 @@ Point estimates are accompanied by deterministic **95% pair-preserving bootstrap
 
 A generic `probe_success` heuristic is already falsified. It preserves high ACT recall but still causes very high unnecessary intervention. This demonstrates that tool availability/success is not proposition-level necessity evidence.
 
-The current proposition-specific development candidate is **not holdout-ready**: provider-profile coverage remains very low. No holdout superiority claim is made.
+The current proposition-specific development candidate is **not holdout-ready**: provider-profile coverage remains very low (1.56% in the latest public development run), decision coverage is only 0.78%, and ACT recall is 0%. Its 100% decisive accuracy is therefore explicitly treated as non-headline diagnostic information, not evidence of benchmark success. No holdout superiority claim is made.
 
 ## Intended use
 
