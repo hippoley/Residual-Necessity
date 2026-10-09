@@ -51,7 +51,7 @@ Status vocabulary:
 | US-23 | As an evaluator, unnecessary intervention and missed required action use the correct class-conditional denominators. | CLOSED after audit fix | Expected-ABSTAIN ACTs count as unnecessary intervention; expected-ACT **any non-ACT** counts as false abstention / missed required action; `act_recall` is reported so always-INVESTIGATE cannot game the metric. |
 | US-24 | As an evaluator, paired accuracy only scores complete ACT/ABSTAIN pairs. | CLOSED | Incomplete pairs excluded; duplicate members rejected. |
 | US-25 | As a benchmark consumer, hidden gold never leaks into inference. | CLOSED for data preparation | AgentAbstain blind-slice tests and CI boundary. |
-| US-26 | As a benchmark consumer, Residual Necessity actually predicts AgentAbstain outcomes from **tool-visible** current-state observations before labels are revealed. | OPEN — implementation debt, not data unavailability | AgentAbstain publicly ships the executable environments and runtime export path. Directly reading hidden initial state or gold task fields is disallowed; a read/verify-tool probe runner is still missing. |
+| US-26 | As a benchmark consumer, Residual Necessity actually predicts AgentAbstain outcomes from **tool-visible, proposition-specific** current-state observations before labels are revealed. | OPEN — semantic predictor missing | The gold firewall, process-isolated selector/predictor, 194-variant runtime runner, frozen prediction protocol, and development-only observation corpus all exist and are green. What is still missing is the actual proposition-specific evidence mapping; generic probe-success/failure semantics were falsified in run 37875541342. |
 | US-27 | As a project, I can demonstrate lower unnecessary intervention without collapsing legitimate-action recall. | OPEN — primary Reality Gate | No superiority result yet. |
 | US-28 | As a project, I compare against always-act, always-abstain, and at least one reasonable evidence/repair baseline. | CLOSED for first evidence baseline | Run 37875541342 scored frozen gold-blind `failure_only` and `probe_success` runtime-evidence baselines. `probe_success` retained 88.66% ACT recall but still caused 81.44% unnecessary intervention and only 7.22% paired accuracy, falsifying generic probe-success semantics. |
 | US-29a | As a project, residual/partial-fix semantics are grounded in a real external software history rather than only synthetic fixtures. | CLOSED | P3 run 37876394371 froze a pinned real-world base → two partial attempts → expected-fix sequence from `andwn/cave-story-md`; evidence hash `4a34d59c...`, artifact 11592786218. |
@@ -83,8 +83,8 @@ Status vocabulary:
 
 The repository should not expand framework surface until these are resolved in order:
 
-1. **US-26 / US-27 / US-28 — blinded AgentAbstain prediction and measurement.**
-   US-37 now proves one read/verify-only external observation path. The next existential step is to turn tool-visible observations into frozen predictions across paired cases, then reveal labels and measure both error directions.
+1. **US-26 / US-27 — proposition-specific AgentAbstain prediction.**
+   The runtime runner, process isolation, frozen prediction protocol, and US-28 generic evidence baselines are already real. The remaining existential step is narrower: derive explicit current-world propositions from development-only tool-visible observations, preserve UNKNOWN when observation lacks authority, freeze that method, and only then score holdout.
 2. **US-29b — agentic partial-fix behavior.**
    US-29a is now grounded by a pinned P3 real-world sequence. The remaining question is whether an agentic probe can identify a residual predicate after an intermediate fix without leaking gold.
 3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
