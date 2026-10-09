@@ -33,7 +33,7 @@ def receipt(status: str = "TRUE"):
         observation["negative_authority"] = authority("violation_exists")
 
     return {
-        "schema_version": "0.2",
+        "schema_version": "0.3",
         "intervention": {
             "id": "repair",
             "kind": "modify_state",
@@ -42,7 +42,7 @@ def receipt(status: str = "TRUE"):
         },
         "target": {"identity": "service:payments", "revision": "r1"},
         "predicates": [
-            {"id": "violation_exists", "required": True, "kind": "reality"},
+            {"id": "violation_exists", "required": True, "kind": "reality", "role": "necessity"},
         ],
         "observations": {"violation_exists": observation},
     }
