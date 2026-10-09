@@ -16,16 +16,23 @@ def load(path: str | Path) -> dict[str, Any]:
     return value
 
 
+def _has_only_keys(value: Any, allowed: set[str]) -> bool:
+    return isinstance(value, dict) and set(value).issubset(allowed)
+
+
 def _authority_matches(
     authority: Any,
     *,
     predicate_id: str,
     target: dict[str, Any],
 ) -> bool:
-    if not isinstance(authority, dict):
+    if not _has_only_keys(authority, {"scope", "basis", "evidence_ref"}):
         return False
     scope = authority.get("scope")
-    if not isinstance(scope, dict):
+    if not _has_only_keys(
+        scope,
+        {"predicate_id", "target_identity", "target_revision"},
+    ):
         return False
     if scope.get("predicate_id") != predicate_id:
         return False
@@ -47,6 +54,12 @@ def _authority_matches(
 
 
 def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
+    if not _has_only_keys(
+        receipt,
+        {"schema_version", "intervention", "target", "predicates", "observations"},
+    ):
+        return "INVESTIGATE", "unknown top-level receipt field"
+
     if receipt.get("schema_version") != "0.2":
         return "INVESTIGATE", "unsupported or missing schema_version"
 
@@ -67,6 +80,11 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
     ):
         return "INVESTIGATE", "missing predicates, observations, target identity/revision, or intervention"
 
+    if not _has_only_keys(intervention, {"id", "kind", "description", "justified_by"}):
+        return "INVESTIGATE", "unknown intervention field"
+    if not _has_only_keys(target, {"identity", "revision", "environment"}):
+        return "INVESTIGATE", "unknown target field"
+
     justified_by = intervention.get("justified_by")
     if (
         not isinstance(justified_by, list)
@@ -77,8 +95,11 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
 
     predicate_map: dict[str, dict[str, Any]] = {}
     for predicate in predicates:
-        if not isinstance(predicate, dict):
-            continue
+        if not _has_only_keys(
+            predicate,
+            {"id", "required", "kind", "human_only"},
+        ):
+            return "INVESTIGATE", "malformed or unknown predicate field"
         pid = predicate.get("id")
         if not isinstance(pid, str) or not pid:
             continue
@@ -114,6 +135,19 @@ def evaluate(receipt: dict[str, Any]) -> tuple[str, str]:
 
         observation = observations.get(pid)
         if not isinstance(observation, dict):
+            unresolved.append(pid)
+            continue
+        if not _has_only_keys(
+            observation,
+            {
+                "status",
+                "source",
+                "observed_at",
+                "positive_authority",
+                "negative_authority",
+                "details",
+            },
+        ):
             unresolved.append(pid)
             continue
 
