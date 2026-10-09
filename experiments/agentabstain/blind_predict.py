@@ -49,7 +49,7 @@ def predict(observation: dict[str, Any]) -> dict[str, str]:
         observation,
         observation.get("provider_profile"),
     )
-    historical["proposition_specific"] = decision_for(semantic["status"])
+    historical["proposition_specific"] = decision_for(semantic)
     return historical
 
 
