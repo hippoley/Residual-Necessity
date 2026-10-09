@@ -92,10 +92,10 @@ def context(status: str, *, receipt_revision: str = "r1"):
 async def assert_true_allows() -> None:
     emitter = InterceptionEmitter().register(mod.ResidualNecessityInterceptor())
     outcome = await emitter.emit(context("TRUE"))
-    assert outcome.verdict.decision.value == "allow"
-    assert outcome.verdict.reason == "residual_necessity:act"
-    assert outcome.verdict.evidence is not None
-    assert outcome.verdict.evidence.artefact.startswith("sha256:")
+    assert outcome.record.verdict.decision.value == "allow"
+    assert outcome.record.verdict.reason == "residual_necessity:act"
+    assert outcome.record.verdict.evidence is not None
+    assert outcome.record.verdict.evidence.artefact.startswith("sha256:")
 
 
 async def assert_false_blocks() -> None:
