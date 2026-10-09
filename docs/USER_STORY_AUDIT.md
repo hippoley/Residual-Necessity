@@ -42,7 +42,7 @@ Status vocabulary:
 | US-19 | As an Agent Hooks host, scoped ACT permits while ABSTAIN/unresolved evidence blocks before the side effect. | CLOSED for canonical control contract | Agent Hooks Beta E2E is green on push and PR runs using the real InterceptionEmitter. |
 | US-20 | As an ACS/audit consumer, each verdict is bound to the exact receipt used for the decision. | CLOSED in bridge | Annotation includes receipt SHA-256 digest; ACS evidence artefact references it. Released ACS 0.3.1b1 PRE_TOOL_CALL compatibility is green. |
 | US-21 | As an external project, I can independently reproduce a real Residual-Necessity workload result. | CLOSED for one upstream evidence record | ExecSurface maintainers independently qualified one run as genuine external real-workload evidence. |
-| US-22 | As a standards implementer, I can use an executable conformance pack rather than prose examples. | PARTIAL | `conformance/core-cases.json` exists and is executed in tests; Agent Hooks interoperability is green, but no upstream CTK/conformance claim exists yet. |
+| US-22 | As a standards implementer, I can use executable conformance machinery rather than prose examples. | PARTIAL, externally strengthened | Local core vectors are executable and run 37919563212 additionally used the official `agent-hooks-sdk[ctk]==0.1.0b1` corpus: 47 pass / 4 capability-gated skip / 0 fail on the official ReferenceHarness, plus four RN interceptor seam cases passing in the same pinned SDK. This is cross-contract evidence, not an Agent Hooks §13 host-conformance claim or upstream acceptance. |
 
 ## Evaluation / Reality Gate
 
