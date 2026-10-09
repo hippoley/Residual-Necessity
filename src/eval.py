@@ -20,6 +20,7 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
     correct_act = correct_abstain = 0
     unnecessary = false_abstain = 0
     expected_abstain = expected_act = 0
+    correct_expected_abstain = 0
     by_pair: dict[str, dict[str, bool | None]] = {}
 
     for record in records:
@@ -49,6 +50,7 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         if expected == "ABSTAIN":
             expected_abstain += 1
             unnecessary += actual == "ACT"
+            correct_expected_abstain += actual == "ABSTAIN"
         else:
             expected_act += 1
             # Any non-ACT outcome withholds a required intervention.
@@ -72,6 +74,23 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         1 for pair in complete_pairs
         if pair["act"] is True and pair["abstain"] is True
     )
+    pair_outcomes = {
+        "both_correct": 0,
+        "act_only_correct": 0,
+        "abstain_only_correct": 0,
+        "neither_correct": 0,
+    }
+    for pair in complete_pairs:
+        act_ok = pair["act"] is True
+        abstain_ok = pair["abstain"] is True
+        if act_ok and abstain_ok:
+            pair_outcomes["both_correct"] += 1
+        elif act_ok:
+            pair_outcomes["act_only_correct"] += 1
+        elif abstain_ok:
+            pair_outcomes["abstain_only_correct"] += 1
+        else:
+            pair_outcomes["neither_correct"] += 1
 
     return {
         "total": total,
@@ -92,6 +111,9 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         "act_recall": (
             (expected_act - false_abstain) / expected_act if expected_act else None
         ),
+        "abstain_recall": (
+            correct_expected_abstain / expected_abstain if expected_abstain else None
+        ),
         "investigate_rate": investigate / total,
         "escalate_rate": escalate / total,
         "decision_coverage": decisive / total,
@@ -109,6 +131,7 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         "paired_accuracy": (
             paired_correct / len(complete_pairs) if complete_pairs else None
         ),
+        "pair_outcomes": pair_outcomes,
     }
 
 
