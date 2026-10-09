@@ -233,8 +233,10 @@ jobs:
           assert report["holdout_consumed"] is False
           assert report["authority_granted"] is False
           assert report["development_pairs"] == 64
-          assert report["candidates"]
-          print("TOP_PROVIDER_GAP=", json.dumps(report["candidates"][0], sort_keys=True))
+          assert report["coverage_candidates"]
+          assert report["authority_readiness_candidates"]
+          print("TOP_COVERAGE_GAP=", json.dumps(report["coverage_candidates"][0], sort_keys=True))
+          print("TOP_AUTHORITY_READY_GAP=", json.dumps(report["authority_readiness_candidates"][0], sort_keys=True))
           PY
 
       - name: Freeze proposition-provider profile registry
