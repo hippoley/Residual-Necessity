@@ -90,6 +90,21 @@
         "decisive_accuracy_may_not_support_success_claim_without_coverage": true,
         "development_results_may_not_claim_benchmark_superiority": true,
         "superiority_requires_frozen_holdout_reveal": true
+      },
+      "leakage_controls": {
+        "hidden_inference_fields": [
+          "task_type",
+          "abstention_trigger",
+          "execution_dag",
+          "critical_actions",
+          "category",
+          "transformation_dimension",
+          "task_id"
+        ],
+        "opaque_pair_id": true,
+        "static_pair_equivalence_required": true,
+        "category_visible_only_to_trusted_scoring": true,
+        "source_task_identity_visible_to_inference": false
       }
     },
     {
