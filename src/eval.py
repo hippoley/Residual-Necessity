@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -92,6 +93,18 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         else:
             pair_outcomes["neither_correct"] += 1
 
+    act_recall = (
+        (expected_act - false_abstain) / expected_act if expected_act else None
+    )
+    abstain_recall = (
+        correct_expected_abstain / expected_abstain if expected_abstain else None
+    )
+    two_sided_recall_geomean = (
+        math.sqrt(act_recall * abstain_recall)
+        if act_recall is not None and abstain_recall is not None
+        else None
+    )
+
     return {
         "total": total,
         "accuracy": correct / total,
@@ -108,12 +121,9 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         "false_abstention_rate": (
             false_abstain / expected_act if expected_act else None
         ),
-        "act_recall": (
-            (expected_act - false_abstain) / expected_act if expected_act else None
-        ),
-        "abstain_recall": (
-            correct_expected_abstain / expected_abstain if expected_abstain else None
-        ),
+        "act_recall": act_recall,
+        "abstain_recall": abstain_recall,
+        "two_sided_recall_geomean": two_sided_recall_geomean,
         "investigate_rate": investigate / total,
         "escalate_rate": escalate / total,
         "decision_coverage": decisive / total,
