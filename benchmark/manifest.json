@@ -1,12 +1,13 @@
 {
-  "schema_version": "residual-necessity-benchmark/0.1",
+  "schema_version": "residual-necessity-benchmark/0.2",
   "benchmark_name": "Residual Necessity Reality Benchmark",
   "design_principles": [
     "No single aggregate leaderboard score across semantically different tracks.",
     "Predictions must be frozen before gold reveal.",
     "Support/permission evidence may be reused as constraints but never promoted to necessity authority.",
     "Holdout is pair-level and may not be used for method tuning.",
-    "External source versions are pinned and provenance is retained."
+    "External source versions are pinned and provenance is retained.",
+    "Runtime benchmark uncertainty is reported with pair-preserving confidence intervals, not point estimates alone."
   ],
   "tracks": [
     {
@@ -24,7 +25,9 @@
         "unit": "pair_id",
         "development_pairs": 64,
         "holdout_pairs": 33,
-        "manifest_sha256": "97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79"
+        "manifest_sha256": "97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79",
+        "category_coverage_required": true,
+        "category_metadata_visible_to_inference": false
       },
       "methods": {
         "preregistered_baselines": [
@@ -47,9 +50,71 @@
         "paired_accuracy",
         "probe_coverage",
         "provider_profile_coverage",
-        "complete_binding_coverage"
+        "complete_binding_coverage",
+        "95pct_pair_bootstrap_ci",
+        "decision_coverage",
+        "decisive_accuracy",
+        "act_precision",
+        "abstain_precision",
+        "abstain_recall",
+        "two_sided_recall_geomean",
+        "pair_outcome_taxonomy",
+        "by_category_metrics"
       ],
-      "authority_rule": "Tool success/availability alone is never proposition authority."
+      "authority_rule": "Tool success/availability alone is never proposition authority.",
+      "statistics": {
+        "resampling_unit": "pair_id",
+        "confidence_interval": "pair_bootstrap_percentile",
+        "confidence_level": 0.95,
+        "bootstrap_samples": 5000,
+        "seed": 20261009,
+        "rationale": "ACT and ABSTAIN variants from one pair are dependent and must be resampled together."
+      },
+      "reporting_policy": {
+        "headline_metrics": [
+          "paired_accuracy",
+          "act_recall",
+          "abstain_recall",
+          "unnecessary_intervention_rate",
+          "missed_required_action_rate",
+          "decision_coverage",
+          "two_sided_recall_geomean"
+        ],
+        "diagnostic_only_metrics": [
+          "decisive_accuracy",
+          "act_precision",
+          "abstain_precision"
+        ],
+        "category_stratification_required": true,
+        "pair_outcome_taxonomy_required": true,
+        "decisive_accuracy_may_not_support_success_claim_without_coverage": true,
+        "development_results_may_not_claim_benchmark_superiority": true,
+        "superiority_requires_frozen_holdout_reveal": true
+      },
+      "leakage_controls": {
+        "hidden_inference_fields": [
+          "task_type",
+          "abstention_trigger",
+          "execution_dag",
+          "critical_actions",
+          "category",
+          "transformation_dimension",
+          "task_id"
+        ],
+        "opaque_pair_id": true,
+        "static_pair_equivalence_required": true,
+        "category_visible_only_to_trusted_scoring": true,
+        "source_task_identity_visible_to_inference": false
+      },
+      "provider_expression_engine": {
+        "name": "Common Expression Language",
+        "implementation": "cel-expr-python",
+        "version": "0.1.3",
+        "repository": "cel-expr/cel-python",
+        "license": "Apache-2.0",
+        "loading": "benchmark-only lazy runtime",
+        "authority_boundary": "CEL evaluates profile expressions but never grants authority without an explicit provider profile and complete binding"
+      }
     },
     {
       "id": "B-residual-partial-fix",
@@ -70,13 +135,22 @@
       "metrics": [
         "partial_revision_verdict",
         "final_revision_verdict",
-        "bounded_oracle_coverage"
+        "bounded_oracle_coverage",
+        "partial_fix_task_count",
+        "reconstructable_revision_chain_count",
+        "unique_repository_count",
+        "attempt_count_distribution"
       ],
       "expected": {
         "partial_revision_verdict": "ACT",
         "final_revision_verdict": "ABSTAIN"
       },
       "authority_rule": "Oracle is bounded to the issue-derived CMD_BSL zero-branch proposition and may not claim global bug absence.",
+      "corpus_inventory": {
+        "scope": "all pinned P3 tasks classified as partial fix",
+        "purpose": "measure external partial-fix breadth and reconstructable revision-chain coverage",
+        "oracle_coverage_claim": "none"
+      },
       "protocol_baselines": [
         {
           "name": "NoPatch Prove First",
@@ -102,7 +176,12 @@
         "repository": "caoshidong66/safeact",
         "commit": "841816cf1e376e6fbf8600cffac5df1736e1d369",
         "code_license": "MIT",
-        "data_license": "CC BY 4.0"
+        "data_license": "CC BY 4.0",
+        "upstream_code_module": "scripts/safeact_contract.py",
+        "contract_id": "safeact_evaluation_v1",
+        "integration_run": 37911867246,
+        "integration_artifact_id": 11606827845,
+        "contract_delegation": "canonical outcome normalization and evaluation contract invariants are loaded from pinned upstream code, not reimplemented locally"
       },
       "cases": {
         "supported": "SAB-V1-009",
@@ -111,13 +190,62 @@
       "metrics": [
         "supported_maps_to_constraint_true",
         "missing_maps_to_unknown",
-        "support_cannot_enter_justified_by"
+        "support_cannot_enter_justified_by",
+        "corpus_materialized_files",
+        "corpus_predicate_count",
+        "corpus_projection_failures",
+        "corpus_negative_authority_count"
       ],
-      "authority_rule": "SafeAct support is constraint evidence only; MISSING/DEFER does not grant negative necessity authority."
+      "authority_rule": "SafeAct support is constraint evidence only; MISSING/DEFER does not grant negative necessity authority.",
+      "corpus_audit": {
+        "scope": "all pinned SafeAct materialized_evidence JSON documents",
+        "invariant": "all projected predicates remain constraints; missing/defer never grants negative authority",
+        "required": true,
+        "observed": {
+          "materialized_files": 277,
+          "predicate_count": 277,
+          "positive_authority_count": 176,
+          "negative_authority_count": 0,
+          "projected_status_counts": {
+            "TRUE": 176,
+            "UNKNOWN": 93,
+            "STALE": 7,
+            "CONFLICTED": 1
+          },
+          "source_status_counts": {
+            "SUPPORTED": 181,
+            "MISSING": 53,
+            "VIOLATED": 42,
+            "UNAVAILABLE_IN_ENV": 1
+          }
+        }
+      },
+      "necessity_signal_bias": {
+        "existing_execution": {
+          "count": 233,
+          "observed_values": {
+            "false": 233
+          }
+        },
+        "existing_refund": {
+          "count": 16,
+          "observed_values": {
+            "false": 16
+          }
+        },
+        "conclusion": "SafeAct static materialized corpus is not a balanced residual-necessity benchmark; do not synthesize necessity-negative labels from action-support evidence.",
+        "benchmark_policy": "Use SafeAct only for evidence/constraint grounding unless a real stateful before/after execution pair is obtained from upstream runtime."
+      },
+      "forbidden_claims": [
+        "SafeAct SUPPORTED implies RN ACT",
+        "SafeAct MISSING/DEFER implies RN FALSE or ABSTAIN",
+        "SafeAct static corpus provides balanced necessity positives and negatives"
+      ]
     }
   ],
   "aggregation": {
     "single_total_score": false,
     "rationale": "Tracks test distinct semantics and failure modes; one weighted score could hide a safety failure in another track."
-  }
+  },
+  "benchmark_version": "0.2"
 }
