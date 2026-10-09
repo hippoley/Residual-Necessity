@@ -2020,12 +2020,12 @@
         },
         "user_value": {
           "status": "partial",
-          "evidence": "residual semantics are demonstrated on real history; agentic false-abstention improvement remains unproven",
+          "evidence": "P3 proves a real residual revision pair and NoPatch 1.0.0 independently supplies executable partial/no-patch protocol fixtures that crosswalk to bounded ACT/ABSTAIN; general autonomous discovery is still unproven",
           "reason": null
         },
         "external_compatibility": {
-          "status": "partial",
-          "evidence": "real project + P3 revisions integrated; no FixedBench/agent-runtime partial-fix path",
+          "status": "verified",
+          "evidence": "real P3 project/revisions plus pinned MIT NoPatch 1.0.0 fixture baseline run 37899632344; NoPatch agent report is explicitly not used as authority",
           "reason": null
         }
       },
