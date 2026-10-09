@@ -15,9 +15,18 @@ from typing import Any
 
 
 def predict(observation: dict[str, Any]) -> dict[str, str]:
+    probed = observation.get("probed")
+    if probed is False:
+        return {
+            "failure_only": "INVESTIGATE",
+            "probe_success": "INVESTIGATE",
+        }
+    if probed is not True:
+        raise ValueError("observation.probed must be boolean")
+
     success = observation.get("success")
     if not isinstance(success, bool):
-        raise ValueError("observation.success must be boolean")
+        raise ValueError("observation.success must be boolean when probed")
 
     if success is False:
         return {
