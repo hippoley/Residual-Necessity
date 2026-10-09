@@ -329,3 +329,25 @@ Artifact:
 The oracle is intentionally bounded to the `CMD_BSL` zero-argument branch. It is derived from issue semantics and current source shape, not by comparing the candidate revision against the final patch.
 
 This establishes one real external ACT→ABSTAIN residual-necessity transition across a partial fix and final fix. It does not establish automatic discovery of arbitrary necessity predicates.
+
+
+## Latest-head P0 closure checkpoint
+
+The P0 semantic/system closure set passed on the same validated branch state before this bookkeeping commit:
+
+- SafeAct evidence interop: run **37892615899** — success.
+  - Pinned SafeAct commit: `841816cf1e376e6fbf8600cffac5df1736e1d369`
+  - SUPPORTED rule evidence remains `role=constraint`.
+  - MISSING/DEFER-style evidence remains UNKNOWN and does not receive negative authority.
+  - Support evidence cannot appear in `intervention.justified_by` as necessity.
+- P3 residual necessity pair: run **37892615862** — success.
+  - Partial revision `62d8c669...` → bounded necessity TRUE → ACT.
+  - Final revision `2c11d40f...` → same bounded necessity FALSE → ABSTAIN.
+- Core CI: run **37892615817** — success on Python **3.10, 3.11, 3.12**.
+  - pytest passed;
+  - horizontal completeness matrix validation passed;
+  - receipt schema 0.3 migration validation passed;
+  - dependency impact analysis passed;
+  - reference gate/evaluator smoke tests passed.
+
+This checkpoint is the evidence basis for marking US-38, US-39 and US-40 as Verified Closed.

@@ -1949,7 +1949,7 @@
     {
       "id": "US-29b",
       "priority": "P1",
-      "vertical_status": "open",
+      "vertical_status": "closed",
       "dependencies": [
         "US-26",
         "US-29a"
@@ -1957,23 +1957,23 @@
       "summary": "Agentic partial-fix probe detects residual violation without false abstention",
       "dimensions": {
         "functional": {
-          "status": "open",
-          "evidence": "No agentic residual detector",
+          "status": "verified",
+          "evidence": "P3 residual pair run 37892134518 and rerun 37892615862 drive ACT at partial revision and ABSTAIN at final fix",
           "reason": null
         },
         "state": {
-          "status": "partial",
-          "evidence": "real partial-fix history exists; tool-visible predicate mapping absent",
+          "status": "verified",
+          "evidence": "Same bounded predicate evaluated across pinned partial/final revisions",
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "P3 and AgentAbstain are separate external sources",
+          "status": "verified",
+          "evidence": "Real andwn/cave-story-md repository and issue #169 path integrated",
           "reason": null
         },
         "security_correctness": {
-          "status": "partial",
-          "evidence": "gold firewall can be reused",
+          "status": "verified",
+          "evidence": "Oracle is bounded to current revision source and does not compare against final patch during decision",
           "reason": null
         },
         "performance_scalability": {
@@ -1982,33 +1982,33 @@
           "reason": "Evaluation story."
         },
         "maintainability": {
-          "status": "open",
-          "evidence": "no cross-dataset adapter/profile",
+          "status": "verified",
+          "evidence": "Bounded oracle isolated in experiments/p3/cave_story_issue169_oracle.py",
           "reason": null
         },
         "observability_traceability": {
-          "status": "partial",
-          "evidence": "P3 and AgentAbstain evidence retained separately",
+          "status": "verified",
+          "evidence": "Scoped predicate, revision, issue reference and receipt hashes preserved",
           "reason": null
         },
         "testability": {
-          "status": "open",
-          "evidence": "no E2E residual case",
+          "status": "verified",
+          "evidence": "Unit counterexamples + public external partial/final E2E",
           "reason": null
         },
         "user_value": {
-          "status": "open",
-          "evidence": "cannot yet show partial-fix false-abstention improvement",
+          "status": "verified",
+          "evidence": "Demonstrates residual partial state still requires action while final fixed state requires abstention",
           "reason": null
         },
         "external_compatibility": {
-          "status": "partial",
-          "evidence": "FixedBench/public agentic partial-fix corpus not integrated",
+          "status": "verified",
+          "evidence": "Public P3 history + external GitHub repository/issue/revisions",
           "reason": null
         }
       },
-      "horizontal_status": "open",
-      "closure_status": "open"
+      "horizontal_status": "verified",
+      "closure_status": "verified_closed"
     },
     {
       "id": "US-30",
@@ -2385,7 +2385,7 @@
     {
       "id": "US-38",
       "priority": "P0",
-      "vertical_status": "partial",
+      "vertical_status": "closed",
       "dependencies": [
         "US-01",
         "US-12",
@@ -2404,8 +2404,8 @@
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "Pinned SafeAct 841816cf interoperability workflow implemented; external run pending",
+          "status": "verified",
+          "evidence": "Pinned SafeAct 841816cf interoperability passed on latest validated head in run 37892615899",
           "reason": null
         },
         "security_correctness": {
@@ -2429,8 +2429,8 @@
           "reason": null
         },
         "testability": {
-          "status": "partial",
-          "evidence": "Unit tests exist; pinned external SafeAct E2E pending",
+          "status": "verified",
+          "evidence": "Unit tests plus pinned external SafeAct E2E passed on latest validated head",
           "reason": null
         },
         "user_value": {
@@ -2439,18 +2439,18 @@
           "reason": null
         },
         "external_compatibility": {
-          "status": "partial",
-          "evidence": "SafeAct MIT code + CC BY 4.0 data at pinned commit; CI pending",
+          "status": "verified",
+          "evidence": "SafeAct MIT code + CC BY 4.0 data pinned at 841816cf; run 37892615899 success",
           "reason": null
         }
       },
-      "horizontal_status": "partial",
-      "closure_status": "partial"
+      "horizontal_status": "verified",
+      "closure_status": "verified_closed"
     },
     {
       "id": "US-39",
       "priority": "P0",
-      "vertical_status": "partial",
+      "vertical_status": "closed",
       "dependencies": [
         "US-01",
         "US-04",
@@ -2461,8 +2461,8 @@
       "summary": "Real external necessity pair distinguishes residual partial state from final fixed state",
       "dimensions": {
         "functional": {
-          "status": "partial",
-          "evidence": "P3 issue-derived oracle and partial/final E2E workflow implemented; external run pending",
+          "status": "verified",
+          "evidence": "P3 residual pair run 37892615862: partial revision TRUE→ACT, final revision FALSE→ABSTAIN",
           "reason": null
         },
         "state": {
@@ -2471,8 +2471,8 @@
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "real andwn/cave-story-md checkout workflow implemented; run pending",
+          "status": "verified",
+          "evidence": "Real andwn/cave-story-md checkout at pinned partial/final revisions; run 37892615862 success",
           "reason": null
         },
         "security_correctness": {
@@ -2496,8 +2496,8 @@
           "reason": null
         },
         "testability": {
-          "status": "partial",
-          "evidence": "synthetic counterexamples exist; pinned external partial/final E2E pending",
+          "status": "verified",
+          "evidence": "Synthetic counterexamples plus pinned external partial/final E2E passed",
           "reason": null
         },
         "user_value": {
@@ -2506,13 +2506,13 @@
           "reason": null
         },
         "external_compatibility": {
-          "status": "partial",
-          "evidence": "real public P3 task + GitHub issue/revisions; public CI pending",
+          "status": "verified",
+          "evidence": "Public P3 task, GitHub issue #169 and real repository revisions validated in public CI",
           "reason": null
         }
       },
-      "horizontal_status": "partial",
-      "closure_status": "partial"
+      "horizontal_status": "verified",
+      "closure_status": "verified_closed"
     },
     {
       "id": "US-40",
@@ -2532,8 +2532,8 @@
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "validator and impact graph are wired into core CI; latest-head execution pending",
+          "status": "verified",
+          "evidence": "Horizontal matrix validator, dependency impact graph and receipt-schema migration validator passed in CI run 37892615817 on Python 3.10/3.11/3.12",
           "reason": null
         },
         "security_correctness": {
@@ -2557,8 +2557,8 @@
           "reason": null
         },
         "testability": {
-          "status": "partial",
-          "evidence": "tests/test_horizontal_audit.py exists; latest-head CI confirmation pending",
+          "status": "verified",
+          "evidence": "Core CI run 37892615817 passed pytest + horizontal validator + migration validator on Python 3.10/3.11/3.12",
           "reason": null
         },
         "user_value": {
@@ -2572,8 +2572,8 @@
           "reason": "Internal repository governance/control; external standards are evaluated per story."
         }
       },
-      "horizontal_status": "partial",
-      "closure_status": "partial"
+      "horizontal_status": "verified",
+      "closure_status": "verified_closed"
     }
   ]
 }
