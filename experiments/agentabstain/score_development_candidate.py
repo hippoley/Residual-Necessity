@@ -52,6 +52,7 @@ def score(
     records: list[dict[str, Any]] = []
     profile_counts: dict[str, int] = {}
     complete_binding = 0
+    profiled_variants = 0
 
     for label in development_labels:
         case_id = label.get("case_id")
@@ -79,6 +80,7 @@ def score(
         profile_id = prediction.get("profile_id")
         if isinstance(profile_id, str) and profile_id:
             profile_counts[profile_id] = profile_counts.get(profile_id, 0) + 1
+            profiled_variants += 1
         if prediction.get("binding_complete") is True:
             complete_binding += 1
 
@@ -98,6 +100,13 @@ def score(
             "development_variants": len(records),
             "development_pairs": len({row["pair_id"] for row in records}),
             "complete_binding_variants": complete_binding,
+            "profiled_variants": profiled_variants,
+            "provider_profile_coverage": (
+                profiled_variants / len(records) if records else 0.0
+            ),
+            "complete_binding_coverage": (
+                complete_binding / len(records) if records else 0.0
+            ),
             "profile_counts": profile_counts,
             "holdout_labels_consumed": False,
         }
