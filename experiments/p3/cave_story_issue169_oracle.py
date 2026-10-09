@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Issue-derived bounded oracle for P3 cave-story-md issue #169.
+"""Issue-derived bounded structural oracle for P3 cave-story-md issue #169.
 
 External issue discussion establishes the relevant invariant before the final
 fix: special bosses use <BSL0000>, and zero should resolve through bossEntity.
 The probe inspects only the current revision's CMD_BSL zero branch.
+The predicate is deliberately structural and bounded: it does not claim that
+all possible special-boss health-bar defects are absent when FALSE.
 
 It does not compare against the final patch and does not use the P3
 classification while deciding the predicate.
@@ -18,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 
-PREDICATE_ID="bsl0000_special_boss_lookup_still_broken"
+PREDICATE_ID="bsl0000_zero_branch_fails_to_bind_boss_entity"
 TARGET_ID="repo:andwn/cave-story-md:src/tsc.c:CMD_BSL"
 ISSUE_REF="github:andwn/cave-story-md#169"
 
