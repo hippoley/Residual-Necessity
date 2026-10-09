@@ -18,7 +18,9 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -201,8 +203,6 @@ def main() -> int:
             "selection_module": "blind_probe.py",
             "selection_process_isolated": True,
             "trusted_harness_knows_variant": True,
-            "selection_process_isolated": True,
-            "trusted_harness_knows_variant": True,
             "gold_fields_exposed_to_selector": False,
             "raw_state_exposed_to_selector": False,
         }
@@ -215,6 +215,8 @@ def main() -> int:
             "tool": observed_tool,
             "tool_kind": observed_kind,
             "success": success,
+            "selection_process_isolated": True,
+            "trusted_harness_knows_variant": True,
             "gold_fields_exposed_to_selector": False,
             "raw_state_exposed_to_selector": False,
         }, sort_keys=True))
