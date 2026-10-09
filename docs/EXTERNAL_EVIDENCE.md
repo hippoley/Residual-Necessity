@@ -133,3 +133,22 @@ The E2E also exposed a standards-level question: an individual interceptor can r
 The individual interceptor's reason survives in the per-interceptor record summary, while its evidence pointer is not preserved on the combined permit verdict.
 
 The finding is documented in `docs/AGENT_HOOKS_PERMIT_EVIDENCE_NOTE.md`. An attempt to open the upstream issue was blocked by the current GitHub integration's external-write permission, so no upstream discussion is claimed yet.
+
+
+## Microsoft ACS pre-tool compatibility
+
+Residual Necessity also has a lower-level compatibility proof against the released Microsoft ACS Python runtime:
+
+- workflow: `ACS end to end`
+- successful run: 37870420582
+- package: `agent-control-specification==0.3.1b1`
+- boundary tested: `PRE_TOOL_CALL` via `evaluate_intervention_point`
+
+Verified:
+- authoritative TRUE → allow;
+- authoritative FALSE → deny;
+- UNKNOWN → not allow.
+
+The test intentionally does not use `run_tool()`, because that helper also requires a configured `post_tool_call` boundary. Residual Necessity's current contract is pre-side-effect necessity; extending into post-tool semantics would widen the project without adding necessity value.
+
+This is compatibility evidence with a released policy runtime. It is not an ACS endorsement, conformance claim, or adoption.
