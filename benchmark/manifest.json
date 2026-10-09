@@ -45,7 +45,9 @@
         "act_recall",
         "investigate_rate",
         "paired_accuracy",
-        "probe_coverage"
+        "probe_coverage",
+        "provider_profile_coverage",
+        "complete_binding_coverage"
       ],
       "authority_rule": "Tool success/availability alone is never proposition authority."
     },
