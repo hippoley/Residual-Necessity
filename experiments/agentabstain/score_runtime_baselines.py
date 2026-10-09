@@ -12,11 +12,20 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 EVAL_PATH = ROOT / "src" / "eval.py"
+BOOTSTRAP_PATH = ROOT / "src" / "bootstrap.py"
 
 spec = importlib.util.spec_from_file_location("residual_eval_for_agentabstain", EVAL_PATH)
 assert spec and spec.loader
 metrics = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(metrics)
+
+bootstrap_spec = importlib.util.spec_from_file_location(
+    "residual_bootstrap_for_agentabstain",
+    BOOTSTRAP_PATH,
+)
+assert bootstrap_spec and bootstrap_spec.loader
+bootstrap = importlib.util.module_from_spec(bootstrap_spec)
+bootstrap_spec.loader.exec_module(bootstrap)
 
 
 STRATEGIES = ("failure_only", "probe_success")
@@ -88,6 +97,10 @@ def main() -> int:
             )
 
         report = metrics.evaluate(records)
+        report["confidence_intervals"] = bootstrap.confidence_intervals(
+            records,
+            evaluate_fn=metrics.evaluate,
+        )
         report["partition"] = "all-preregistered"
         report["probed_variants"] = probed
         report["probe_coverage"] = probed / len(records) if records else 0.0
