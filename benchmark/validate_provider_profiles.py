@@ -61,6 +61,26 @@ def validate(registry: dict, schema: dict) -> list[str]:
             version = source.get("version_or_commit")
             if not isinstance(version, str) or not version:
                 errors.append(f"{pid}: external source must be pinned")
+            contract_type = source.get("contract_type")
+            contract_ref = source.get("contract_ref")
+            if contract_type not in {
+                "upstream_tool_schema",
+                "upstream_documented_contract",
+                "pinned_fixture_contract",
+            }:
+                errors.append(f"{pid}: invalid or missing contract_type")
+            if not isinstance(contract_ref, str) or not contract_ref.strip():
+                errors.append(f"{pid}: contract_ref required")
+
+            scope = profile.get("decision_scope") or {}
+            if (
+                contract_type == "pinned_fixture_contract"
+                and isinstance(scope, dict)
+                and scope.get("task_coverage") == "complete"
+            ):
+                errors.append(
+                    f"{pid}: fixture-bounded contract may not claim complete task coverage"
+                )
 
         non_claims = profile.get("non_claims")
         if not isinstance(non_claims, list) or not non_claims:
