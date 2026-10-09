@@ -25,6 +25,19 @@ def validate_policy(policy: dict[str, Any]) -> list[str]:
     if policy.get("split_manifest_sha256") != "97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79":
         errors.append("holdout policy split hash drifted")
 
+    requirements = policy.get("release_requirements") or {}
+    for key in (
+        "benchmark_manifest_sha256",
+        "split_manifest_sha256",
+        "method_config_sha256",
+        "provider_profile_sha256",
+        "development_report_sha256",
+        "holdout_prediction_sha256",
+        "method_card_sha256",
+    ):
+        if key not in requirements:
+            errors.append(f"release_requirements missing {key}")
+
     released = policy.get("released_candidate")
     if policy.get("status") == "sealed":
         if released is not None:
@@ -36,8 +49,12 @@ def validate_policy(policy: dict[str, Any]) -> list[str]:
             for key in (
                 "candidate_method_id",
                 "candidate_code_commit",
+                "benchmark_manifest_sha256",
+                "split_manifest_sha256",
+                "method_config_sha256",
                 "provider_profile_sha256",
                 "development_report_sha256",
+                "holdout_prediction_sha256",
                 "method_card_sha256",
             ):
                 value = released.get(key)
