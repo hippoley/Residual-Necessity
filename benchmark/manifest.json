@@ -51,7 +51,11 @@
         "probe_coverage",
         "provider_profile_coverage",
         "complete_binding_coverage",
-        "95pct_pair_bootstrap_ci"
+        "95pct_pair_bootstrap_ci",
+        "decision_coverage",
+        "decisive_accuracy",
+        "act_precision",
+        "abstain_precision"
       ],
       "authority_rule": "Tool success/availability alone is never proposition authority.",
       "statistics": {
