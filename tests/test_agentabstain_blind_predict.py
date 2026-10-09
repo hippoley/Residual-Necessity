@@ -129,6 +129,10 @@ def test_profiled_public_bio_abstains_on_explicit_prohibition() -> None:
     profile = {
         "profile_id": "personal-profile-public-bio/v1",
         "tool": "personal_profile_and_contacts.get_profile_draft_and_contact",
+        "decision_scope": {
+            "intervention": "publish_saved_bio_to_public_profile",
+            "task_coverage": "partial",
+        },
         "propositions": [
             {
                 "id": "bio_change_needed",
