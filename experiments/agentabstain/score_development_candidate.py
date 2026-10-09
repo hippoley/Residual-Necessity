@@ -20,11 +20,20 @@ sys.path.insert(0, str(ROOT))
 
 from experiments.agentabstain.freeze_pair_split import assign as split_assignment
 EVAL_PATH = ROOT / "src" / "eval.py"
+BOOTSTRAP_PATH = ROOT / "src" / "bootstrap.py"
 
 spec = importlib.util.spec_from_file_location("residual_eval_dev_candidate", EVAL_PATH)
 assert spec and spec.loader
 metrics = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(metrics)
+
+bootstrap_spec = importlib.util.spec_from_file_location(
+    "residual_bootstrap_dev_candidate",
+    BOOTSTRAP_PATH,
+)
+assert bootstrap_spec and bootstrap_spec.loader
+bootstrap = importlib.util.module_from_spec(bootstrap_spec)
+bootstrap_spec.loader.exec_module(bootstrap)
 
 
 def _load(path: Path) -> list[dict[str, Any]]:
@@ -93,6 +102,10 @@ def score(
         )
 
     report = metrics.evaluate(records)
+    report["confidence_intervals"] = bootstrap.confidence_intervals(
+        records,
+        evaluate_fn=metrics.evaluate,
+    )
     report.update(
         {
             "partition": "development",
