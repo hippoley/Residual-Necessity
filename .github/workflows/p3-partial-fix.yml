@@ -29,6 +29,22 @@ jobs:
       - name: Install parser dependency
         run: python -m pip install PyYAML==6.0.3
 
+      - name: Inventory pinned P3 partial-fix corpus
+        run: |
+          python experiments/p3/summarize_partial_fix_corpus.py \
+            /tmp/p3 \
+            --p3-commit bfd73658 \
+            --out /tmp/p3-corpus-inventory.json
+          python - <<'PY'
+          import json
+          report=json.load(open("/tmp/p3-corpus-inventory.json"))
+          assert report["partial_fix_tasks"] > 0
+          assert report["reconstructable_revision_chains"] > 0
+          assert report["unique_repositories"] > 0
+          assert report["oracle_coverage_claim"] == "none"
+          print("P3_CORPUS_INVENTORY=PASS")
+          PY
+
       - name: Normalize one curated real partial-fix sequence
         run: |
           python experiments/p3/normalize_partial_fix.py \
@@ -49,7 +65,9 @@ jobs:
           PY
 
       - name: Freeze external partial-fix evidence
-        run: sha256sum /tmp/p3-partial-fix.json | tee /tmp/p3-partial-fix.sha256
+        run: |
+          sha256sum /tmp/p3-partial-fix.json | tee /tmp/p3-partial-fix.sha256
+          sha256sum /tmp/p3-corpus-inventory.json | tee /tmp/p3-corpus-inventory.sha256
 
       - name: Preserve P3 evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -58,4 +76,6 @@ jobs:
           path: |
             /tmp/p3-partial-fix.json
             /tmp/p3-partial-fix.sha256
+            /tmp/p3-corpus-inventory.json
+            /tmp/p3-corpus-inventory.sha256
           if-no-files-found: error
