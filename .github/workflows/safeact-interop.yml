@@ -1,0 +1,111 @@
+name: SafeAct evidence interop
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: residual-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  safeact-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Checkout pinned SafeAct
+        run: |
+          git clone https://github.com/caoshidong66/safeact.git /tmp/safeact
+          cd /tmp/safeact
+          git checkout 841816cf1e376e6fbf8600cffac5df1736e1d369
+          test "$(git rev-parse HEAD)" = "841816cf1e376e6fbf8600cffac5df1736e1d369"
+
+      - name: Project supported SafeAct rule as constraint
+        run: |
+          python experiments/safeact_constraint_adapter.py \
+            /tmp/safeact/env/customer_policy_qa/materialized_evidence/SAB-V1-009.json \
+            --target-identity resource:safeact:SAB-V1-009 \
+            --target-revision 2026-08-02-customer-v13 \
+            --out /tmp/safeact-supported.json
+
+          python - <<'PY'
+          import json
+          value=json.load(open("/tmp/safeact-supported.json"))
+          predicate=value["predicates"][0]
+          observation=value["observations"][predicate["id"]]
+          assert predicate["role"]=="constraint"
+          assert observation["status"]=="TRUE"
+          assert "positive_authority" in observation
+          assert value["semantic_boundary"]["provides_residual_necessity"] is False
+          PY
+
+      - name: Project missing SafeAct rule conservatively
+        run: |
+          python experiments/safeact_constraint_adapter.py \
+            /tmp/safeact/env/customer_policy_qa/materialized_evidence/SAB-V0-001.json \
+            --target-identity resource:safeact:SAB-V0-001 \
+            --target-revision 2026-08-02-customer-v13 \
+            --out /tmp/safeact-missing.json
+
+          python - <<'PY'
+          import json
+          value=json.load(open("/tmp/safeact-missing.json"))
+          predicate=value["predicates"][0]
+          observation=value["observations"][predicate["id"]]
+          assert predicate["role"]=="constraint"
+          assert observation["status"]=="UNKNOWN"
+          assert "negative_authority" not in observation
+          PY
+
+      - name: Inventory current-state necessity signals
+        run: |
+          python experiments/safeact_necessity_signal_inventory.py \
+            /tmp/safeact \
+            --out /tmp/safeact-necessity-signal-inventory.json
+
+      - name: Prove SafeAct support cannot masquerade as necessity
+        run: |
+          python - <<'PY'
+          import json, importlib.util
+          from pathlib import Path
+
+          root=Path.cwd()
+          spec=importlib.util.spec_from_file_location("gate",root/"src"/"gate.py")
+          gate=importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(gate)
+
+          value=json.load(open("/tmp/safeact-supported.json"))
+          predicate=value["predicates"][0]
+          pid=predicate["id"]
+          receipt={
+              "schema_version":"0.3",
+              "intervention":{
+                  "id":"unsafe-semantic-collapse",
+                  "kind":"write",
+                  "description":"must not treat action support as necessity",
+                  "justified_by":[pid],
+              },
+              "target":value["target"],
+              "predicates":[predicate],
+              "observations":value["observations"],
+          }
+          verdict,reason=gate.evaluate(receipt)
+          assert verdict=="INVESTIGATE",(verdict,reason)
+          print("SAFEACT_SUPPORT_IS_NOT_NECESSITY=PASS")
+          PY
+
+      - name: Preserve interoperability evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: safeact-constraint-interop
+          path: |
+            /tmp/safeact-supported.json
+            /tmp/safeact-missing.json
+            /tmp/safeact-necessity-signal-inventory.json
+          if-no-files-found: error

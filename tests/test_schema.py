@@ -61,3 +61,25 @@ def test_false_without_negative_authority_is_schema_valid_but_unresolved() -> No
         if case["id"] == "absence-without-negative-authority-investigate"
     )
     validate_receipt(receipt)
+
+
+def test_authority_scope_requires_target_revision() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    authority = receipt["observations"]["residual_failure_exists"]["positive_authority"]
+    authority["scope"].pop("target_revision")
+    errors = list(VALIDATOR.iter_errors(receipt))
+    assert errors
+
+
+def test_predicate_role_is_required_by_schema() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    receipt["predicates"][0].pop("role")
+    errors = list(VALIDATOR.iter_errors(receipt))
+    assert errors
+
+
+def test_non_reality_predicate_cannot_have_necessity_role_in_schema() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    receipt["predicates"][1]["role"] = "necessity"
+    errors = list(VALIDATOR.iter_errors(receipt))
+    assert errors

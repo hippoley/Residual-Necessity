@@ -152,6 +152,16 @@ Residual Necessity should survive only if it remains distinct from those layers 
 
 See `docs/POSITIONING.md`, `docs/LANDSCAPE.md`, and `docs/USER_STORY_AUDIT.md`.
 
+## Receipt 0.3 semantic boundary
+
+Receipt 0.3 makes the distinction between **support/permission** and **necessity** machine-visible.
+
+- `role=necessity` means the predicate is a current violated condition that may justify the proposed intervention.
+- `role=constraint` means supporting context, freshness, scope, authority, permission, or other preconditions.
+- `intervention.justified_by` may reference only required `kind=reality, role=necessity` predicates.
+
+This is intentionally stricter than a generic pre-action support check: a provider may prove that an action is allowed or supported without proving that the action is still necessary.
+
 ## Conformance vectors
 
 Draft executable cases live in `conformance/core-cases.json`. They currently cover:

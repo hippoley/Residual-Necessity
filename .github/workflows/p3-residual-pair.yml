@@ -1,0 +1,101 @@
+name: P3 residual necessity pair
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: residual-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  external-pair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Checkout external real project
+        run: |
+          git clone https://github.com/andwn/cave-story-md.git /tmp/cave-story-md
+
+      - name: Install Agent Hooks Beta SDK
+        run: python -m pip install agent-hooks-sdk==0.1.0b1
+
+      - name: Evaluate P3 partial revision
+        run: |
+          cd /tmp/cave-story-md
+          git checkout 62d8c669e0aa335eed9c50f4fd7b753dd75f3676
+          test "$(git rev-parse HEAD)" = "62d8c669e0aa335eed9c50f4fd7b753dd75f3676"
+          cd "$GITHUB_WORKSPACE"
+
+          python experiments/p3/cave_story_issue169_oracle.py \
+            /tmp/cave-story-md/src/tsc.c \
+            --revision 62d8c669e0aa335eed9c50f4fd7b753dd75f3676 \
+            --out /tmp/p3-residual-partial.json
+
+          python - <<'PY'
+          import json
+          r=json.load(open("/tmp/p3-residual-partial.json"))
+          obs=next(iter(r["observations"].values()))
+          assert obs["status"]=="TRUE"
+          assert r["predicates"][0]["role"]=="necessity"
+          PY
+
+          python src/gate.py /tmp/p3-residual-partial.json
+
+          python experiments/p3_agent_hooks_e2e.py \
+            --source /tmp/cave-story-md/src/tsc.c \
+            --revision 62d8c669e0aa335eed9c50f4fd7b753dd75f3676 \
+            --expected ACT
+
+      - name: Evaluate P3 final fixed revision
+        run: |
+          cd /tmp/cave-story-md
+          git checkout 2c11d40fd1338f17cc84da46005fa29cbf37ca77
+          test "$(git rev-parse HEAD)" = "2c11d40fd1338f17cc84da46005fa29cbf37ca77"
+          cd "$GITHUB_WORKSPACE"
+
+          python experiments/p3/cave_story_issue169_oracle.py \
+            /tmp/cave-story-md/src/tsc.c \
+            --revision 2c11d40fd1338f17cc84da46005fa29cbf37ca77 \
+            --out /tmp/p3-residual-final.json
+
+          python - <<'PY'
+          import json
+          r=json.load(open("/tmp/p3-residual-final.json"))
+          obs=next(iter(r["observations"].values()))
+          assert obs["status"]=="FALSE"
+          assert "negative_authority" in obs
+          PY
+
+          set +e
+          python src/gate.py /tmp/p3-residual-final.json
+          RC=$?
+          set -e
+          test "$RC" = "3"
+
+          python experiments/p3_agent_hooks_e2e.py \
+            --source /tmp/cave-story-md/src/tsc.c \
+            --revision 2c11d40fd1338f17cc84da46005fa29cbf37ca77 \
+            --expected ABSTAIN
+
+      - name: Freeze paired necessity evidence
+        run: |
+          sha256sum /tmp/p3-residual-partial.json | tee /tmp/p3-residual-partial.sha256
+          sha256sum /tmp/p3-residual-final.json | tee /tmp/p3-residual-final.sha256
+
+      - name: Preserve pair
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: p3-residual-necessity-pair
+          path: |
+            /tmp/p3-residual-partial.json
+            /tmp/p3-residual-partial.sha256
+            /tmp/p3-residual-final.json
+            /tmp/p3-residual-final.sha256
+          if-no-files-found: error

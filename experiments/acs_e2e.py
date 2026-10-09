@@ -38,7 +38,7 @@ def receipt(status: str) -> dict[str, Any]:
         observation["negative_authority"] = authority("residual_violation_exists")
 
     return {
-        "schema_version": "0.2",
+        "schema_version": "0.3",
         "intervention": {
             "id": "dangerous-write",
             "kind": "write",
@@ -51,6 +51,7 @@ def receipt(status: str) -> dict[str, Any]:
                 "id": "residual_violation_exists",
                 "required": True,
                 "kind": "reality",
+                "role": "necessity",
             },
         ],
         "observations": {

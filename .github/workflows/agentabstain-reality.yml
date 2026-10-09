@@ -1,6 +1,7 @@
 name: AgentAbstain reality
 
 on:
+  push:
   pull_request:
   workflow_dispatch:
 
@@ -26,6 +27,22 @@ jobs:
           python experiments/agentabstain/prepare_runtime_blind_slice.py             /tmp/agentabstain-tasks.jsonl             --blind-out /tmp/runtime-blind.json             --labels-out /tmp/runtime-labels.json             | tee /tmp/runtime-summary.json
       - name: Inspect blind runtime shape
         run: python experiments/agentabstain/inspect_blind_shape.py /tmp/runtime-blind.json
+
+      - name: Freeze gold-free development holdout split
+        run: |
+          python experiments/agentabstain/freeze_pair_split.py \
+            /tmp/runtime-blind.json \
+            --out /tmp/runtime-pair-split.json
+          sha256sum /tmp/runtime-pair-split.json | tee /tmp/runtime-pair-split.sha256
+
+      - name: Preserve Reality Gate split manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-pair-split
+          path: |
+            /tmp/runtime-pair-split.json
+            /tmp/runtime-pair-split.sha256
+          if-no-files-found: error
       - name: Score preregistered trivial baselines
         run: |
           python experiments/agentabstain/baselines.py /tmp/runtime-labels.json | tee /tmp/runtime-baselines.json
@@ -95,10 +112,32 @@ jobs:
           import json
           record = json.load(open("/tmp/agentabstain-probe.json"))
           assert record["tool_kind"] in {"lookup", "verify"}
-          assert record["gold_fields_exposed"] is False
-          assert record["raw_state_read"] is False
+          assert record["gold_fields_exposed_to_selector"] is False
+          assert record["raw_state_exposed_to_selector"] is False
+          assert record["selection_module"] == "blind_probe.py"
+          assert record["trusted_harness_knows_variant"] is True
+          assert record["selection_process_isolated"] is True
+          assert isinstance(record["binding_complete"], bool)
+          assert isinstance(record["unbound_fields"], list)
+          if record["binding_complete"] is False:
+              assert record["unbound_fields"], record
           assert "/" not in record["case_id"]
           print(json.dumps(record, indent=2, sort_keys=True))
+          PY
+
+      - name: Verify blind selector source isolation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path("experiments/agentabstain/blind_probe.py").read_text()
+          forbidden = {
+              "AntiQuality", "agentabstain", "BaseAgent", "TaskBundle",
+              "task_type", "execution_dag", "abstention_trigger",
+              "critical_actions", "initial_states", "raw_state"
+          }
+          for token in forbidden:
+              assert token not in source, token
+          print("BLIND_SELECTOR_SOURCE_FIREWALL=PASS")
           PY
 
       - name: Preserve probe evidence
@@ -106,4 +145,102 @@ jobs:
         with:
           name: agentabstain-tool-visible-probe
           path: /tmp/agentabstain-probe.json
+          if-no-files-found: error
+
+      - name: Run blinded runtime-evidence baselines
+        run: |
+          python experiments/agentabstain/probe_runtime_batch.py \
+            --agentabstain-root /tmp/agentabstain \
+            --data-dir /tmp/agentabstain-data \
+            --tasks-jsonl /tmp/agentabstain-data/tasks.jsonl \
+            --predictions-out /tmp/runtime-evidence-predictions.json \
+            --labels-out /tmp/runtime-evidence-labels.json \
+            --summary-out /tmp/runtime-evidence-summary.json \
+            --development-observations-out /tmp/runtime-development-observations.json \
+            --development-labels-out /tmp/runtime-development-labels.json
+
+          python - <<'PY'
+          import json
+          predictions = json.load(open("/tmp/runtime-evidence-predictions.json"))
+          assert predictions, "expected frozen predictions"
+          forbidden = {
+              "task_type", "abstention_trigger", "execution_dag",
+              "critical_actions", "category", "transformation_dimension",
+              "source_pair_id"
+          }
+          for row in predictions:
+              assert forbidden.isdisjoint(row), row
+              assert row["failure_only"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
+              assert row["probe_success"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
+              assert row["proposition_specific"] in {"ACT", "ABSTAIN", "INVESTIGATE"}
+              assert isinstance(row["binding_complete"], bool)
+              assert isinstance(row["unbound_fields"], list)
+          print("RUNTIME_EVIDENCE_PREDICTIONS=", len(predictions))
+
+          dev_obs = json.load(open("/tmp/runtime-development-observations.json"))
+          dev_labels = json.load(open("/tmp/runtime-development-labels.json"))
+          assert len(dev_obs) == len(dev_labels) == 128, (len(dev_obs), len(dev_labels))
+          assert {row["case_id"] for row in dev_obs} == {row["case_id"] for row in dev_labels}
+          for row in dev_obs:
+              assert "task_type" not in row
+              assert "category" not in row
+              assert "abstention_trigger" not in row
+          print("DEVELOPMENT_VARIANTS_EXPORTED=", len(dev_obs))
+          print("HOLDOUT_OBSERVATION_PAYLOAD_EXPORTED=false")
+          PY
+
+      - name: Profile development-only observations
+        run: |
+          python experiments/agentabstain/summarize_development_observations.py \
+            --observations /tmp/runtime-development-observations.json \
+            --labels /tmp/runtime-development-labels.json \
+            --out /tmp/runtime-development-profile.json
+
+      - name: Freeze proposition-provider profile registry
+        run: |
+          sha256sum experiments/agentabstain/probe_binding_profiles.json | tee /tmp/proposition-provider-profiles.sha256
+
+      - name: Score proposition candidate on development only
+        run: |
+          python experiments/agentabstain/score_development_candidate.py \
+            --predictions /tmp/runtime-evidence-predictions.json \
+            --development-labels /tmp/runtime-development-labels.json \
+            --out /tmp/runtime-development-candidate-score.json
+          python - <<'PY'
+          import json
+          report = json.load(open("/tmp/runtime-development-candidate-score.json"))
+          assert report["partition"] == "development"
+          assert report["holdout_labels_consumed"] is False
+          assert report["development_variants"] == 128
+          assert report["development_pairs"] == 64
+          print("DEVELOPMENT_CANDIDATE_PAIRED_ACCURACY=", report["paired_accuracy"])
+          print("DEVELOPMENT_CANDIDATE_ACT_RECALL=", report["act_recall"])
+          print("DEVELOPMENT_CANDIDATE_UNNECESSARY_INTERVENTION=", report["unnecessary_intervention_rate"])
+          PY
+
+      - name: Freeze predictions before gold scoring
+        run: |
+          sha256sum /tmp/runtime-evidence-predictions.json | tee /tmp/runtime-evidence-predictions.sha256
+
+      - name: Reveal labels and score runtime-evidence baselines
+        run: |
+          python experiments/agentabstain/score_runtime_baselines.py \
+            --predictions /tmp/runtime-evidence-predictions.json \
+            --labels /tmp/runtime-evidence-labels.json \
+            --out /tmp/runtime-evidence-scores.json
+
+      - name: Preserve runtime-evidence Reality Gate artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agentabstain-runtime-evidence-baselines
+          path: |
+            /tmp/runtime-evidence-predictions.json
+            /tmp/runtime-evidence-predictions.sha256
+            /tmp/runtime-evidence-summary.json
+            /tmp/runtime-evidence-scores.json
+            /tmp/runtime-development-observations.json
+            /tmp/runtime-development-labels.json
+            /tmp/runtime-development-profile.json
+            /tmp/runtime-development-candidate-score.json
+            /tmp/proposition-provider-profiles.sha256
           if-no-files-found: error
