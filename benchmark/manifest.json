@@ -76,7 +76,22 @@
         "partial_revision_verdict": "ACT",
         "final_revision_verdict": "ABSTAIN"
       },
-      "authority_rule": "Oracle is bounded to the issue-derived CMD_BSL zero-branch proposition and may not claim global bug absence."
+      "authority_rule": "Oracle is bounded to the issue-derived CMD_BSL zero-branch proposition and may not claim global bug absence.",
+      "protocol_baselines": [
+        {
+          "name": "NoPatch Prove First",
+          "repository": "alessiomarcone/no-patch",
+          "commit": "30d7048132c996684d6f9d3946772c205e9fe47c",
+          "version": "1.0.0",
+          "license": "MIT",
+          "role": "external agentic protocol baseline; not a necessity authority provider",
+          "crosswalk": {
+            "partial": "bounded residual TRUE -> RN ACT",
+            "no-patch": "bounded reported-defect FALSE -> RN ABSTAIN",
+            "blocked": "insufficient evidence -> RN INVESTIGATE"
+          }
+        }
+      ]
     },
     {
       "id": "C-evidence-support-boundary",
