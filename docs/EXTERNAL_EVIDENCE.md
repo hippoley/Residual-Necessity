@@ -439,3 +439,43 @@ Receipt hashes from the same run:
 - final: `e01d9dd398fe7b9dad89ec34b5dfef61ae668cd9c2bfdab74dbf25b5945453c2`
 
 This closes the **cross-module control-plane integration** gap for one bounded real external partial-fix case. It still does not establish a general agent capability to discover arbitrary residual predicates automatically.
+
+
+## NoPatch protocol baseline
+
+Residual Necessity now consumes a pinned external **NoPatch / Prove First 1.0.0** fixture corpus as a Track B protocol baseline.
+
+Pinned source:
+- repository: `alessiomarcone/no-patch`
+- commit: `30d7048132c996684d6f9d3946772c205e9fe47c`
+- license: MIT
+- protocol version: 1.0.0
+
+Public run: **37899632344**
+
+The crosswalk deliberately does **not** use an agent-generated Prove Report as authority. It materializes NoPatch's own deterministic forward-evaluation fixtures and runs their focused tests directly.
+
+Verified bounded crosswalk:
+
+- NoPatch `partial` fixture:
+  - known-good top-level case passes;
+  - residual nested case fails;
+  - RN bounded residual predicate = TRUE;
+  - RN verdict = **ACT**.
+
+- NoPatch `no-patch` fixture:
+  - focused reported behavior passes in the current fixture;
+  - RN bounded residual predicate = FALSE;
+  - RN verdict = **ABSTAIN**.
+
+The protocol classification remains a baseline/semantic comparison, not a source of necessity authority.
+
+Frozen receipt hashes:
+- partial: `de9a61506ccd635ac020e5b79e60aa2bb2dc9253c9b75fc6b20856d8f1c93ad0`
+- no-patch: `85af250ce50fbaa87e3f89a440412234c41bd1e24c4e4028a28411c716c99941`
+
+Artifact:
+- `nopatch-protocol-baseline`
+- artifact id **11601334725**
+
+This strengthens Track B with a second independent, versioned partial/no-patch protocol source in addition to the real P3 history. It still does not prove general autonomous residual-predicate discovery.

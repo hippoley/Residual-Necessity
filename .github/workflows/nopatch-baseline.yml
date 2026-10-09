@@ -1,0 +1,62 @@
+name: NoPatch protocol baseline
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: residual-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nopatch-crosswalk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Checkout pinned NoPatch
+        run: |
+          git clone https://github.com/alessiomarcone/no-patch.git /tmp/no-patch
+          cd /tmp/no-patch
+          git checkout 30d7048132c996684d6f9d3946772c205e9fe47c
+          test "$(git rev-parse HEAD)" = "30d7048132c996684d6f9d3946772c205e9fe47c"
+          grep -q "MIT License" LICENSE
+          python - <<'PY'
+          import json
+          value=json.load(open("manifest.json"))
+          assert value["protocol_version"]=="1.0.0"
+          assert value["version"]=="1.0.0"
+          PY
+
+      - name: Run deterministic NoPatch fixture crosswalk
+        run: |
+          mkdir -p /tmp/nopatch-crosswalk
+          python experiments/nopatch_fixture_crosswalk.py             --nopatch-root /tmp/no-patch             --nopatch-commit 30d7048132c996684d6f9d3946772c205e9fe47c             --out-dir /tmp/nopatch-crosswalk
+
+          python - <<'PY'
+          import json
+          value=json.load(open("/tmp/nopatch-crosswalk/summary.json"))
+          assert value["partial_expected_protocol_status"]=="partial"
+          assert value["partial_rn_verdict"]=="ACT"
+          assert value["no_patch_expected_protocol_status"]=="no-patch"
+          assert value["no_patch_rn_verdict"]=="ABSTAIN"
+          assert value["agent_report_used_as_authority"] is False
+          print(json.dumps(value,sort_keys=True))
+          PY
+
+      - name: Freeze crosswalk evidence
+        run: |
+          sha256sum /tmp/nopatch-crosswalk/partial-receipt.json             | tee /tmp/nopatch-crosswalk/partial-receipt.sha256
+          sha256sum /tmp/nopatch-crosswalk/no-patch-receipt.json             | tee /tmp/nopatch-crosswalk/no-patch-receipt.sha256
+
+      - name: Preserve NoPatch protocol baseline
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: nopatch-protocol-baseline
+          path: /tmp/nopatch-crosswalk
+          if-no-files-found: error
