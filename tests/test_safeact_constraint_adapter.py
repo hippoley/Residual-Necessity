@@ -58,3 +58,41 @@ def test_missing_rule_stays_unknown_without_negative_authority() -> None:
     observation=value["observations"][predicate["id"]]
     assert observation["status"]=="UNKNOWN"
     assert "negative_authority" not in observation
+
+
+def test_empty_target_identity_is_rejected() -> None:
+    try:
+        adapter.project(
+            {
+                "case_id": "SAB-X",
+                "rule_execution_trace": [
+                    {"rule_id": "R1", "status": "SUPPORTED", "predicate_result": "TRUE"}
+                ],
+            },
+            target_identity="",
+            target_revision="r1",
+        )
+    except ValueError as exc:
+        assert "target_identity" in str(exc)
+    else:
+        raise AssertionError("empty target identity must be rejected")
+
+
+def test_duplicate_rule_ids_are_rejected() -> None:
+    document = {
+        "case_id": "SAB-X",
+        "rule_execution_trace": [
+            {"rule_id": "R1", "status": "SUPPORTED", "predicate_result": "TRUE"},
+            {"rule_id": "R1", "status": "MISSING", "predicate_result": "FALSE"},
+        ],
+    }
+    try:
+        adapter.project(
+            document,
+            target_identity="resource:test",
+            target_revision="r1",
+        )
+    except ValueError as exc:
+        assert "duplicate SafeAct rule_id" in str(exc)
+    else:
+        raise AssertionError("duplicate rule ids must fail closed")
