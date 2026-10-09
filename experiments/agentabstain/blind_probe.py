@@ -75,6 +75,7 @@ def choose_zero_arg_probe(
                 "kind": tool.get("kind"),
                 "description": str(tool.get("description") or ""),
                 "input_schema": input_schema,
+                "provider_profile": profile,
                 **bound,
             }
         else:
@@ -86,6 +87,7 @@ def choose_zero_arg_probe(
                 "description": str(tool.get("description") or ""),
                 "input_schema": input_schema,
                 "profile_id": None,
+                "provider_profile": None,
                 "arguments": {},
                 "bound_fields": [],
                 "unbound_fields": sorted(str(key) for key in properties),
