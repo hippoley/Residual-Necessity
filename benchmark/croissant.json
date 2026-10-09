@@ -57,8 +57,8 @@
     "Residual Necessity Benchmark",
     "RN Reality Benchmark"
   ],
-  "description": "A multi-track evaluation contract for determining whether current, externally grounded evidence still justifies a proposed state transition. The benchmark composes pinned external sources without redistributing them: AgentAbstain for paired runtime necessity, P3 for real partial-fix histories, and SafeAct for action-support versus necessity-boundary interoperability. Tracks remain semantically separate and are not collapsed into one aggregate leaderboard score.",
-  "version": "0.1",
+  "description": "A multi-track evaluation contract for determining whether current, externally grounded evidence still justifies a proposed state transition. Version 0.2 hardens static-leakage controls, pair-level holdout governance, two-sided/category-stratified scoring, provider-profile provenance, P3 corpus breadth auditing, and SafeAct corpus-level support-versus-necessity boundary checks. Raw upstream datasets are not redistributed.",
+  "version": "0.2",
   "datePublished": "2026-10-09",
   "creator": {
     "@type": "sc:Person",
@@ -110,7 +110,7 @@
     "@id": "rn-reality-gate",
     "description": "Pinned external sources are transformed into gold-hidden slices, bounded evidence receipts, frozen predictions, confidence intervals, and preserved CI artifacts. Holdout pair outcomes are not used for candidate tuning."
   },
-  "citeAs": "Residual Necessity Reality Benchmark, version 0.1 (2026). https://github.com/hippoley/Residual-Necessity",
+  "citeAs": "Residual Necessity Reality Benchmark, version 0.2 (2026). https://github.com/hippoley/Residual-Necessity",
   "recordSet": [
     {
       "@type": "cr:RecordSet",
