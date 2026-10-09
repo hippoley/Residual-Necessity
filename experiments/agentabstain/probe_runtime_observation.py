@@ -93,14 +93,22 @@ def _safe_catalog(menv: Any, allowed: set[str] | None) -> list[dict[str, Any]]:
 
 
 
-def _select_in_blind_subprocess(catalog: list[dict[str, Any]]) -> dict[str, Any] | None:
+def _select_in_blind_subprocess(
+    catalog: list[dict[str, Any]],
+    instruction: str = "",
+) -> dict[str, Any] | None:
     """Run selector in a separate process with a deliberately minimal environment."""
     with tempfile.TemporaryDirectory(prefix="rn-blind-probe-") as tmp:
         tmp_path = Path(tmp)
         catalog_path = tmp_path / "catalog.json"
         out_path = tmp_path / "selected.json"
         catalog_path.write_text(
-            json.dumps(catalog, sort_keys=True, ensure_ascii=False) + "\n",
+            json.dumps(
+                {"instruction": instruction, "tools": catalog},
+                sort_keys=True,
+                ensure_ascii=False,
+            )
+            + "\n",
             encoding="utf-8",
         )
         subprocess.run(
@@ -159,7 +167,8 @@ def main() -> int:
         allowed = _apply_runtime_surface(bundle, menv)
 
         catalog = _safe_catalog(menv, allowed)
-        selected = _select_in_blind_subprocess(catalog)
+        instruction = str(bundle.task_yaml.get("instruction") or "")
+        selected = _select_in_blind_subprocess(catalog, instruction)
         if selected is None:
             attempts.append(f"{category}/{task_id}/{task_type}: no zero-arg safe tool")
             continue
