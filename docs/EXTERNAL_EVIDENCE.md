@@ -374,3 +374,32 @@ The pack includes:
 - `conformance/freeze_pack.py`
 
 This establishes implementation-neutral consumability inside public CI. It is **not** evidence of third-party adoption; US-22 remains partial until an independent implementation or upstream conformance process consumes it.
+
+
+## AgentAbstain generalization kill decision
+
+The project intentionally stops treating broad AgentAbstain superiority as an active success criterion.
+
+Latest development-only proposition-specific result, public run **37894155290**:
+- development pairs: **64**
+- variants: **128**
+- accuracy: **0.78%**
+- ACT recall: **0%**
+- paired accuracy: **0%**
+- investigate rate: **99.22%**
+- unnecessary intervention: **0%**
+- matched provider profile: `personal-profile-public-bio/v1` on **2 variants**
+
+Earlier generic runtime-evidence result on all 97 pairs:
+- probe-success ACT recall: **88.66%**
+- unnecessary intervention: **82.47%**
+- paired accuracy: **6.19%** on the latest rerun
+
+Interpretation:
+
+> AgentAbstain is useful as a falsification / anti-overclaim benchmark, but its runtime abstention gold mixes capability failure, conflicting evidence, emergent risk, support and other constraints. Those semantics are intentionally distinct from Residual Necessity's question of whether a current state transition is still necessary.
+
+Therefore US-26 and US-27 are **Superseded by Evidence**, not silently abandoned and not falsely marked Verified Closed. Their replacement path is:
+- SafeAct for mature evidence/support constraints (US-38),
+- P3/real current-state sources for actual residual necessity (US-39),
+- implementation-neutral conformance + upstream control-plane integration for adoption (US-22/US-36).

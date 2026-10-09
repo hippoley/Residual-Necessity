@@ -83,3 +83,39 @@ def test_verified_closed_requires_dependencies_verified_closed() -> None:
     closures = validator._dependency_aware_closures(stories)
     assert closures["US-B"] == "partial"
     assert closures["US-A"] == "partial"
+
+
+def test_superseded_story_has_distinct_closure() -> None:
+    dims = {
+        "functional": {"status": "open", "evidence": "negative result", "reason": None},
+    }
+    story = {
+        "id": "US-X",
+        "vertical_status": "superseded",
+        "dependencies": [],
+        "dimensions": dims,
+    }
+    assert validator._base_closure(story) == "superseded"
+
+
+def test_dependency_aware_closure_does_not_treat_superseded_as_verified() -> None:
+    dims = {
+        "functional": {"status": "verified", "evidence": "x", "reason": None},
+    }
+    stories = [
+        {
+            "id": "US-A",
+            "vertical_status": "closed",
+            "dependencies": ["US-B"],
+            "dimensions": dims,
+        },
+        {
+            "id": "US-B",
+            "vertical_status": "superseded",
+            "dependencies": [],
+            "dimensions": dims,
+        },
+    ]
+    closures = validator._dependency_aware_closures(stories)
+    assert closures["US-B"] == "superseded"
+    assert closures["US-A"] == "partial"

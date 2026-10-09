@@ -1697,12 +1697,8 @@
     {
       "id": "US-26",
       "priority": "P1",
-      "vertical_status": "open",
-      "dependencies": [
-        "US-25",
-        "US-37",
-        "US-28"
-      ],
+      "vertical_status": "superseded",
+      "dependencies": [],
       "summary": "Generalize proposition-specific evidence prediction to AgentAbstain constraint-heavy runtime cases",
       "dimensions": {
         "functional": {
@@ -1757,15 +1753,23 @@
         }
       },
       "horizontal_status": "open",
-      "closure_status": "open"
+      "closure_status": "superseded",
+      "supersession": {
+        "date": "2026-10-09",
+        "reason": "AgentAbstain constraint-heavy gold does not align with residual-necessity semantics; development candidate collapses to almost-all INVESTIGATE rather than establishing a useful necessity generalization.",
+        "evidence": "Run 37894155290 development partition: accuracy 0.0078125, ACT recall 0.0, paired accuracy 0.0, investigate rate 0.9921875; only one provider profile matched 2 variants.",
+        "replacement": [
+          "US-38",
+          "US-39",
+          "US-22"
+        ]
+      }
     },
     {
       "id": "US-27",
       "priority": "P1",
-      "vertical_status": "open",
-      "dependencies": [
-        "US-26"
-      ],
+      "vertical_status": "superseded",
+      "dependencies": [],
       "summary": "Demonstrate two-sided utility on a broader external benchmark without semantic collapse",
       "dimensions": {
         "functional": {
@@ -1820,7 +1824,17 @@
         }
       },
       "horizontal_status": "open",
-      "closure_status": "open"
+      "closure_status": "superseded",
+      "supersession": {
+        "date": "2026-10-09",
+        "reason": "Broad AgentAbstain superiority is no longer a valid acceptance gate because its abstention labels mix capability, risk, support, and other constraints that RN intentionally keeps distinct from necessity.",
+        "evidence": "Generic runtime-evidence baseline had 82.47% unnecessary intervention for probe-success; proposition-specific development candidate had 0% ACT recall and 0% paired accuracy.",
+        "replacement": [
+          "US-39",
+          "US-22",
+          "US-36"
+        ]
+      }
     },
     {
       "id": "US-28",
@@ -2015,7 +2029,8 @@
       "priority": "P2",
       "vertical_status": "blocked",
       "dependencies": [
-        "US-27"
+        "US-22",
+        "US-33"
       ],
       "summary": "Versioned installable stable API",
       "dimensions": {
@@ -2046,7 +2061,7 @@
         },
         "maintainability": {
           "status": "blocked",
-          "evidence": "API must not freeze before Reality Gate",
+          "evidence": "API freeze remains deferred until US-22 external consumption and US-33 public reviewability mature.",
           "reason": null
         },
         "observability_traceability": {
@@ -2061,7 +2076,7 @@
         },
         "user_value": {
           "status": "blocked",
-          "evidence": "premature until utility proven",
+          "evidence": "Stable packaging should follow an independently consumable conformance contract and a reviewable public checkpoint, not a superseded AgentAbstain benchmark target.",
           "reason": null
         },
         "external_compatibility": {

@@ -51,8 +51,8 @@ Status vocabulary:
 | US-23 | As an evaluator, unnecessary intervention and missed required action use the correct class-conditional denominators. | CLOSED after audit fix | Expected-ABSTAIN ACTs count as unnecessary intervention; expected-ACT **any non-ACT** counts as false abstention / missed required action; `act_recall` is reported so always-INVESTIGATE cannot game the metric. |
 | US-24 | As an evaluator, paired accuracy only scores complete ACT/ABSTAIN pairs. | CLOSED | Incomplete pairs excluded; duplicate members rejected. |
 | US-25 | As a benchmark consumer, hidden gold never leaks into inference. | CLOSED for data preparation | AgentAbstain blind-slice tests and CI boundary. |
-| US-26 | As a cross-benchmark stress test, Residual Necessity-derived evidence semantics should generalize to AgentAbstain's tool-visible runtime cases without collapsing capability/risk/support into necessity. | OPEN — P1 generalization | The gold firewall and 194-variant runtime runner are real, and generic probe-success/failure semantics were falsified. AgentAbstain mixes capability limitation, conflicting evidence, and emergent-risk constraints, so it is no longer the primary P0 success benchmark for Residual Necessity. |
-| US-27 | As a project, I can demonstrate two-sided utility on a broader external benchmark without collapsing legitimate-action recall or violating the support-vs-necessity boundary. | OPEN — P1 utility/generalization | Broad benchmark superiority remains unproven. This is important for adoption, but no longer defines core semantic correctness because AgentAbstain gold includes non-necessity constraints. |
+| US-26 | As a cross-benchmark stress test, Residual Necessity-derived evidence semantics should generalize to AgentAbstain's tool-visible runtime cases without collapsing capability/risk/support into necessity. | SUPERSEDED BY EVIDENCE | Development run 37894155290 produced 0.78% accuracy, 0% ACT recall, 0% paired accuracy and 99.2% INVESTIGATE. AgentAbstain's constraint-heavy gold is retained as falsification evidence, not an RN success gate. |
+| US-27 | As a project, I can demonstrate two-sided utility on a broader external benchmark without collapsing legitimate-action recall or violating the support-vs-necessity boundary. | SUPERSEDED BY EVIDENCE | AgentAbstain broader superiority is no longer pursued as an acceptance gate. Generic probe-success caused 82.47% unnecessary intervention and the proposition-specific development candidate still had 0% ACT recall. |
 | US-28 | As a project, I compare against always-act, always-abstain, and at least one reasonable evidence/repair baseline. | CLOSED for first evidence baseline | Run 37875541342 scored frozen gold-blind `failure_only` and `probe_success` runtime-evidence baselines. `probe_success` retained 88.66% ACT recall but still caused 81.44% unnecessary intervention and only 7.22% paired accuracy, falsifying generic probe-success semantics. |
 | US-29a | As a project, residual/partial-fix semantics are grounded in a real external software history rather than only synthetic fixtures. | CLOSED | P3 run 37876394371 froze a pinned real-world base → two partial attempts → expected-fix sequence from `andwn/cave-story-md`; evidence hash `4a34d59c...`, artifact 11592786218. |
 | US-29b | As a project, an agentic partial-fix evaluation shows the gate acts on a residual violation without false abstention after the historical symptom changes. | CLOSED for one bounded real external path | Public P3 residual-pair run 37892134518 checked real `andwn/cave-story-md` revisions: partial revision `62d8c669...` produced scoped TRUE necessity → ACT; final fix `2c11d40f...` produced scoped FALSE necessity → ABSTAIN. This is a bounded issue-derived oracle, not a claim that all residual bugs are automatically discoverable. |
@@ -61,7 +61,7 @@ Status vocabulary:
 
 | ID | User story | Status | Acceptance evidence |
 | --- | --- | --- | --- |
-| US-30 | As a third-party developer, I can install a versioned package and import a stable API. | BLOCKED BY REALITY GATE | Packaging now would prematurely freeze an unvalidated API. Keep importable adapters in-tree until US-26/27 survive real paired evaluation. |
+| US-30 | As a third-party developer, I can install a versioned package and import a stable API. | BLOCKED — external consumption/reviewability first | Packaging remains intentionally deferred until US-22 has an independent external consumer and US-33 yields a reviewable public checkpoint. It no longer depends on superseded AgentAbstain utility goals. |
 | US-31 | As a third-party developer, schema changes are versioned and examples cannot silently drift. | CLOSED for current draft | Receipt schema bumped to 0.3; examples/conformance validated by JSON Schema in CI. |
 | US-32 | As a third-party developer, the repository has a canonical license file. | CLOSED | Full canonical Apache-2.0 license text installed. |
 | US-33 | As a reviewer, one PR tells one coherent story. | PARTIAL, materially improved | PR #2 is now reframed around one Reality Gate foundation: receipt semantics + benchmark boundary + canonical runtime/evidence interoperability + explicit node migration. It remains a large 90+ commit draft until latest-head CI is green and it is squash-merged. |
@@ -88,7 +88,7 @@ The repository should not expand framework surface until these are resolved in o
 
 1. **P0 — CLOSED.**
    US-38 SafeAct semantic-boundary interop, US-39 real P3 residual pair, and US-40 horizontal-closure enforcement all passed on the latest validated head. New work may move to P1 only while these P0 regressions remain green.
-2. **US-26 / US-27 — proposition-specific AgentAbstain prediction.**
+2. **US-26 / US-27 — SUPERSEDED BY EVIDENCE.** AgentAbstain remains a falsification benchmark; no further profile tuning is justified by current development results.
    P0 correctness is now narrower and explicit: schema-valid probes are not evidence until semantic arguments are bound (US-38), and local positive evidence cannot authorize an uncovered composite task (US-39). Development-only scoring is holdout-safe (US-40). The current P1 candidate has one real provider profile; expand only from development evidence, freeze the registry, then reveal holdout once.
 3. **US-29b — agentic partial-fix behavior.**
    US-29a is now grounded by a pinned P3 real-world sequence. The remaining question is whether an agentic probe can identify a residual predicate after an intermediate fix without leaking gold.
@@ -96,7 +96,7 @@ The repository should not expand framework surface until these are resolved in o
    Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
 6. **US-33 — PR/history cleanup.**
    Latest-head CI must be green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
-7. **US-30 — package only after necessity-specific value survives broader validation.**
+7. **US-30 — package only after independent conformance consumption + reviewable public checkpoint.**
    Do not freeze an API before the existential benchmark result.
 8. **US-26 / US-27 — P1 cross-benchmark generalization.**
    Keep AgentAbstain as a constraint/fail-closed stress test, not as the definition of residual-necessity correctness.

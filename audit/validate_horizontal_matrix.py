@@ -8,6 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 PATH=ROOT/"audit"/"user_story_horizontal_matrix.json"
 AUDIT_PATH=ROOT/"docs"/"USER_STORY_AUDIT.md"
 VALID={"verified","partial","open","blocked","not_applicable"}
+VALID_VERTICAL={"closed","open","partial","blocked","superseded"}
 
 
 def _audit_story_ids() -> set[str]:
@@ -58,6 +59,8 @@ def _horizontal_status(story: dict) -> str:
 
 
 def _base_closure(story: dict) -> str:
+    if story["vertical_status"]=="superseded":
+        return "superseded"
     horizontal=_horizontal_status(story)
     if story["vertical_status"]=="closed" and horizontal=="verified":
         return "verified_closed"
@@ -102,6 +105,16 @@ def validate(data: dict) -> list[str]:
     for story in data["stories"]:
         sid=story["id"]
         if sid in ids: errors.append(f"duplicate story id: {sid}")
+        if story.get("vertical_status") not in VALID_VERTICAL:
+            errors.append(f"{sid}: invalid vertical_status {story.get('vertical_status')!r}")
+        if story.get("vertical_status")=="superseded":
+            supersession=story.get("supersession")
+            if not isinstance(supersession,dict):
+                errors.append(f"{sid}: superseded story requires supersession record")
+            else:
+                for field in ("date","reason","evidence","replacement"):
+                    if not supersession.get(field):
+                        errors.append(f"{sid}: supersession.{field} is required")
         ids.add(sid)
         missing=set(dims)-set(story["dimensions"])
         extra=set(story["dimensions"])-set(dims)
@@ -146,7 +159,14 @@ def validate(data: dict) -> list[str]:
                 f"expected {expected_closure!r} after dependency closure"
             )
         for dep in story.get("dependencies",[]):
-            if dep not in ids: errors.append(f"{story['id']}: unknown dependency {dep}")
+            if dep not in ids:
+                errors.append(f"{story['id']}: unknown dependency {dep}")
+            elif story.get("vertical_status")!="superseded":
+                dep_story=next(s for s in data["stories"] if s["id"]==dep)
+                if dep_story.get("vertical_status")=="superseded":
+                    errors.append(
+                        f"{story['id']}: active story cannot depend on superseded story {dep}"
+                    )
         if story.get("closure_status")=="verified_closed":
             nonverified=[
                 name for name,item in story["dimensions"].items()
