@@ -51,6 +51,21 @@ def validate(data: dict) -> list[str]:
     support=by_id.get("C-evidence-support-boundary",{})
     if "constraint" not in str(support.get("authority_rule","")).lower():
         errors.append("SafeAct track must preserve constraint-only boundary")
+
+    partial=by_id.get("B-residual-partial-fix",{})
+    baselines=partial.get("protocol_baselines") or []
+    nopatch=[x for x in baselines if x.get("name")=="NoPatch Prove First"]
+    if len(nopatch)!=1:
+        errors.append("Track B must declare exactly one pinned NoPatch protocol baseline")
+    else:
+        baseline=nopatch[0]
+        if baseline.get("version")!="1.0.0":
+            errors.append("NoPatch baseline must pin protocol version 1.0.0")
+        if baseline.get("license")!="MIT":
+            errors.append("NoPatch baseline license must be recorded as MIT")
+        role=str(baseline.get("role","")).lower()
+        if "not a necessity authority provider" not in role:
+            errors.append("NoPatch baseline must explicitly remain non-authoritative for necessity")
     return errors
 
 if __name__=="__main__":
