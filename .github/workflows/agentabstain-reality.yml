@@ -182,6 +182,13 @@ jobs:
           print("HOLDOUT_OBSERVATION_PAYLOAD_EXPORTED=false")
           PY
 
+      - name: Profile development-only observations
+        run: |
+          python experiments/agentabstain/summarize_development_observations.py \
+            --observations /tmp/runtime-development-observations.json \
+            --labels /tmp/runtime-development-labels.json \
+            --out /tmp/runtime-development-profile.json
+
       - name: Freeze predictions before gold scoring
         run: |
           sha256sum /tmp/runtime-evidence-predictions.json | tee /tmp/runtime-evidence-predictions.sha256
@@ -204,4 +211,5 @@ jobs:
             /tmp/runtime-evidence-scores.json
             /tmp/runtime-development-observations.json
             /tmp/runtime-development-labels.json
+            /tmp/runtime-development-profile.json
           if-no-files-found: error
