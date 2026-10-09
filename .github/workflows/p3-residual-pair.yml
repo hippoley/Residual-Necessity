@@ -23,6 +23,9 @@ jobs:
         run: |
           git clone https://github.com/andwn/cave-story-md.git /tmp/cave-story-md
 
+      - name: Install Agent Hooks Beta SDK
+        run: python -m pip install agent-hooks-sdk==0.1.0b1
+
       - name: Evaluate P3 partial revision
         run: |
           cd /tmp/cave-story-md
@@ -44,6 +47,11 @@ jobs:
           PY
 
           python src/gate.py /tmp/p3-residual-partial.json
+
+          python experiments/p3_agent_hooks_e2e.py \
+            --source /tmp/cave-story-md/src/tsc.c \
+            --revision 62d8c669e0aa335eed9c50f4fd7b753dd75f3676 \
+            --expected ACT
 
       - name: Evaluate P3 final fixed revision
         run: |
@@ -70,6 +78,11 @@ jobs:
           RC=$?
           set -e
           test "$RC" = "3"
+
+          python experiments/p3_agent_hooks_e2e.py \
+            --source /tmp/cave-story-md/src/tsc.c \
+            --revision 2c11d40fd1338f17cc84da46005fa29cbf37ca77 \
+            --expected ABSTAIN
 
       - name: Freeze paired necessity evidence
         run: |
