@@ -34,9 +34,9 @@
     {
       "id": "agent-hooks",
       "source": "https://github.com/responsibleai/agent-hooks",
-      "pin": "agent-hooks-sdk==0.1.0b1",
-      "upstream_module": "agent_hooks Python SDK",
-      "integration_role": "framework-neutral control/interceptor contract",
+      "pin": "agent-hooks-sdk[ctk]==0.1.0b1",
+      "upstream_module": "agent_hooks Python SDK + official CTK",
+      "integration_role": "framework-neutral control/interceptor contract plus official cross-contract validation",
       "local_glue": "experiments/agent_hooks_interceptor.py",
       "workflow": ".github/workflows/agent-hooks-e2e.yml",
       "semantic_boundary": {
@@ -45,7 +45,8 @@
           "InterceptionEmitter",
           "Verdict",
           "Evidence",
-          "composition"
+          "composition",
+          "official CTK vector semantics and reference harness"
         ],
         "residual_necessity_owns": [
           "necessity receipt semantics",
@@ -55,7 +56,13 @@
           "permit-side evidence is not retained on synthesized combined allow"
         ]
       },
-      "failure_policy": "fail closed; do not emulate Agent Hooks semantics locally"
+      "failure_policy": "fail closed; do not emulate Agent Hooks semantics locally",
+      "ctk": {
+        "official": true,
+        "local_runner": "experiments/agent_hooks_ctk_cross_contract.py",
+        "workflow": ".github/workflows/agent-hooks-ctk-cross-contract.yml",
+        "claim_boundary": "interceptor compatibility only; not an Agent Hooks §13 host conformance claim"
+      }
     },
     {
       "id": "execsurface",
