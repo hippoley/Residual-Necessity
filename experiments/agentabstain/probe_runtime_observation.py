@@ -22,10 +22,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from experiments.agentabstain.blind_probe import choose_zero_arg_probe
+BLIND_SELECTOR = Path(__file__).resolve().with_name("blind_probe.py")
 
 
 RUNTIME_CATEGORIES = (
@@ -93,6 +90,39 @@ def _safe_catalog(menv: Any, allowed: set[str] | None) -> list[dict[str, Any]]:
     return out
 
 
+
+def _select_in_blind_subprocess(catalog: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Run selector in a separate process with a deliberately minimal environment."""
+    with tempfile.TemporaryDirectory(prefix="rn-blind-probe-") as tmp:
+        tmp_path = Path(tmp)
+        catalog_path = tmp_path / "catalog.json"
+        out_path = tmp_path / "selected.json"
+        catalog_path.write_text(
+            json.dumps(catalog, sort_keys=True, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        subprocess.run(
+            [
+                sys.executable,
+                str(BLIND_SELECTOR),
+                "--catalog",
+                str(catalog_path),
+                "--out",
+                str(out_path),
+            ],
+            check=True,
+            cwd=str(tmp_path),
+            env={
+                "PYTHONIOENCODING": "utf-8",
+                "PYTHONDONTWRITEBYTECODE": "1",
+            },
+        )
+        selected = json.loads(out_path.read_text(encoding="utf-8"))
+        if selected is not None and not isinstance(selected, dict):
+            raise ValueError("blind selector output must be an object or null")
+        return selected
+
+
 def _iter_variants(data_dir: Path):
     tasks_root = data_dir / "tasks"
     for category in RUNTIME_CATEGORIES:
@@ -127,7 +157,7 @@ def main() -> int:
         allowed = _apply_runtime_surface(bundle, menv)
 
         catalog = _safe_catalog(menv, allowed)
-        selected = choose_zero_arg_probe(catalog)
+        selected = _select_in_blind_subprocess(catalog)
         if selected is None:
             attempts.append(f"{category}/{task_id}/{task_type}: no zero-arg safe tool")
             continue
@@ -168,8 +198,10 @@ def main() -> int:
             "error": error,
             "result": _jsonable(result),
             "execution_log_length": len(log),
-            "selection_module": "blind_probe.choose_zero_arg_probe",
+            "selection_module": "blind_probe.py",
+            "selection_process_isolated": True,
             "trusted_harness_knows_variant": True,
+            "selection_process_isolated": True,
             "trusted_harness_knows_variant": True,
             "gold_fields_exposed_to_selector": False,
             "raw_state_exposed_to_selector": False,
