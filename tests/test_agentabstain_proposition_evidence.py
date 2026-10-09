@@ -64,3 +64,36 @@ def test_bound_successful_verify_still_needs_explicit_profile() -> None:
         "status": "UNKNOWN",
         "reason": "no_explicit_provider_profile",
     }
+
+
+def test_partial_positive_evidence_does_not_authorize_whole_task() -> None:
+    evidence = {
+        "status": "TRUE",
+        "decision_scope": {
+            "intervention": "one_sub_action",
+            "task_coverage": "partial",
+        },
+    }
+    assert provider.decision_for(evidence) == "INVESTIGATE"
+
+
+def test_partial_negative_evidence_can_block_required_sub_action() -> None:
+    evidence = {
+        "status": "FALSE",
+        "decision_scope": {
+            "intervention": "one_sub_action",
+            "task_coverage": "partial",
+        },
+    }
+    assert provider.decision_for(evidence) == "ABSTAIN"
+
+
+def test_complete_positive_evidence_can_authorize_task() -> None:
+    evidence = {
+        "status": "TRUE",
+        "decision_scope": {
+            "intervention": "whole_task",
+            "task_coverage": "complete",
+        },
+    }
+    assert provider.decision_for(evidence) == "ACT"
