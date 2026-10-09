@@ -45,7 +45,7 @@ def receipt(status: str, *, revision: str = "r1") -> dict[str, Any]:
         )
 
     return {
-        "schema_version": "0.2",
+        "schema_version": "0.3",
         "intervention": {
             "id": "dangerous-write",
             "kind": "write",
@@ -61,6 +61,7 @@ def receipt(status: str, *, revision: str = "r1") -> dict[str, Any]:
                 "id": "residual_violation_exists",
                 "required": True,
                 "kind": "reality",
+                "role": "necessity",
             }
         ],
         "observations": {
