@@ -6,7 +6,8 @@
     "Predictions must be frozen before gold reveal.",
     "Support/permission evidence may be reused as constraints but never promoted to necessity authority.",
     "Holdout is pair-level and may not be used for method tuning.",
-    "External source versions are pinned and provenance is retained."
+    "External source versions are pinned and provenance is retained.",
+    "Runtime benchmark uncertainty is reported with pair-preserving confidence intervals, not point estimates alone."
   ],
   "tracks": [
     {
@@ -24,7 +25,9 @@
         "unit": "pair_id",
         "development_pairs": 64,
         "holdout_pairs": 33,
-        "manifest_sha256": "97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79"
+        "manifest_sha256": "97957135fa566fdd0ece3add73fee2dfaa0d594b342910d180fbbbeac4cbcd79",
+        "category_coverage_required": true,
+        "category_metadata_visible_to_inference": false
       },
       "methods": {
         "preregistered_baselines": [
@@ -47,9 +50,18 @@
         "paired_accuracy",
         "probe_coverage",
         "provider_profile_coverage",
-        "complete_binding_coverage"
+        "complete_binding_coverage",
+        "95pct_pair_bootstrap_ci"
       ],
-      "authority_rule": "Tool success/availability alone is never proposition authority."
+      "authority_rule": "Tool success/availability alone is never proposition authority.",
+      "statistics": {
+        "resampling_unit": "pair_id",
+        "confidence_interval": "pair_bootstrap_percentile",
+        "confidence_level": 0.95,
+        "bootstrap_samples": 5000,
+        "seed": 20261009,
+        "rationale": "ACT and ABSTAIN variants from one pair are dependent and must be resampled together."
+      }
     },
     {
       "id": "B-residual-partial-fix",
