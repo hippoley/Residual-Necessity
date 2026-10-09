@@ -25,6 +25,7 @@ from experiments.agentabstain.prepare_runtime_blind_slice import (
     ALLOWED_RUNTIME_CATEGORIES,
     load_jsonl,
 )
+from experiments.agentabstain.freeze_pair_split import assign as split_assignment
 from experiments.agentabstain.probe_runtime_observation import (
     SAFE_KINDS,
     _apply_runtime_surface,
@@ -108,6 +109,8 @@ def main() -> int:
     parser.add_argument("--predictions-out", type=Path, required=True)
     parser.add_argument("--labels-out", type=Path, required=True)
     parser.add_argument("--summary-out", type=Path, required=True)
+    parser.add_argument("--development-observations-out", type=Path)
+    parser.add_argument("--development-labels-out", type=Path)
     args = parser.parse_args()
 
     os.environ["AGENTABSTAIN_DATA"] = str(args.data_dir)
@@ -121,6 +124,8 @@ def main() -> int:
     probed_count = 0
     successful_probe_count = 0
     failed_probe_count = 0
+    development_observations: list[dict[str, Any]] = []
+    development_labels: list[dict[str, Any]] = []
 
     for row in _runtime_rows(load_jsonl(args.tasks_jsonl)):
         category = str(row["category"])
@@ -203,6 +208,29 @@ def main() -> int:
                 "probe_success": blind_predictions["probe_success"],
             }
         )
+
+        if split_assignment(opaque_pair) == "development":
+            development_observations.append(
+                {
+                    "case_id": case_id,
+                    "pair_id": opaque_pair,
+                    "instruction": instruction,
+                    "probed": observation["probed"],
+                    "tool": selected_tool,
+                    "tool_kind": observed_kind,
+                    "success": observation.get("success"),
+                    "error": observation.get("error"),
+                    "result": observation.get("result"),
+                }
+            )
+            development_labels.append(
+                {
+                    "case_id": case_id,
+                    "pair_id": opaque_pair,
+                    "task_type": task_type,
+                }
+            )
+
         labels.append(
             {
                 "case_id": case_id,
@@ -220,6 +248,17 @@ def main() -> int:
         encoding="utf-8",
     )
 
+    if args.development_observations_out is not None:
+        args.development_observations_out.write_text(
+            json.dumps(development_observations, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    if args.development_labels_out is not None:
+        args.development_labels_out.write_text(
+            json.dumps(development_labels, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
     summary = {
         "runtime_variants": len(predictions),
         "runtime_pairs": len({row["pair_id"] for row in labels}),
@@ -229,6 +268,8 @@ def main() -> int:
         "failed_probes": failed_probe_count,
         "blind_selector_process": True,
         "blind_predictor_process": True,
+        "development_variants_exported": len(development_observations),
+        "holdout_observation_payload_exported": False,
     }
     args.summary_out.write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n",
