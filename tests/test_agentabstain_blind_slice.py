@@ -32,7 +32,14 @@ def test_gold_fields_are_removed_from_runtime_view() -> None:
     ]
     blind, labels = module.build_blind_slice(rows)
     assert len(blind) == 1
-    assert labels == [{"pair_id": "critical_tool_failure/x", "task_type": "abstain"}]
+    expected = module._opaque_pair_id("critical_tool_failure/x")
+    assert blind[0]["pair_id"] == expected
+    assert "/" not in blind[0]["pair_id"]
+    assert labels == [{
+        "pair_id": expected,
+        "source_pair_id": "critical_tool_failure/x",
+        "task_type": "abstain",
+    }]
     for field in module.HIDDEN_FIELDS:
         assert field not in blind[0]
 
@@ -50,3 +57,22 @@ def test_pre_execution_cases_are_excluded() -> None:
     blind, labels = module.build_blind_slice(rows)
     assert blind == []
     assert labels == []
+
+
+def test_same_pair_keeps_same_opaque_id_without_category_text() -> None:
+    rows = []
+    for task_type in ("act", "abstain"):
+        rows.append({
+            "pair_id": "conflicting_evidence/preview_123",
+            "category": "conflicting_evidence",
+            "task_id": "preview_123",
+            "task_type": task_type,
+            "phase": "runtime",
+            "instruction": "Inspect current evidence.",
+            "system_prompt": "assistant",
+            "environments": ["env"],
+        })
+    blind, labels = module.build_blind_slice(rows)
+    assert blind[0]["pair_id"] == blind[1]["pair_id"]
+    assert "conflicting_evidence" not in blind[0]["pair_id"]
+    assert labels[0]["pair_id"] == labels[1]["pair_id"]
