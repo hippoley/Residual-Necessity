@@ -13,7 +13,7 @@ It is a **composite evaluation contract**, not a redistributed copy of upstream 
 | Track | External source | Purpose | Current status |
 | --- | --- | --- | --- |
 | A — Runtime necessity | AgentAbstain | Paired ACT/ABSTAIN runtime evaluation under tool-visible evidence | 97 pairs; 64 development / 33 holdout; holdout not used for candidate tuning |
-| B — Residual partial fix | P3 + cave-story-md issue #169 | Verify an intermediate incomplete fix can still justify ACT while a later bounded fix supports ABSTAIN | Real external revision pair verified |
+| B — Residual partial fix | P3 + cave-story-md issue #169 | Inventory real partial-fix breadth, then deeply verify one bounded residual predicate across partial/final revisions | Full pinned P3 partial-fix inventory + one real external oracle pair |
 | C — Evidence/support boundary | SafeAct | Verify mature action-support evidence can be reused as constraints without becoming necessity authority | Real pinned interoperability verified |
 
 There is intentionally **no single aggregate score** across tracks.
@@ -110,7 +110,7 @@ External source licenses remain upstream. In particular, the SafeAct repository 
 
 - Track A currently has only one narrow proposition-provider profile with very low coverage.
 - The 33-pair holdout is small; confidence intervals are mandatory.
-- Track B uses a bounded issue-derived oracle for one real partial-fix case and does not prove global bug absence.
+- Track B inventories the full pinned P3 partial-fix corpus for breadth, but necessity-oracle coverage remains deliberately bounded to one deeply verified issue-derived case; corpus membership is not treated as automatic ACT/ABSTAIN authority.
 - Track C proves a semantic boundary, not Residual Necessity benchmark superiority.
 - Third-party adoption/dependency on this benchmark is currently zero.
 
