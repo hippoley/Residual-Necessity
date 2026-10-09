@@ -45,6 +45,56 @@ def _dependency_cycle(stories: list[dict]) -> list[str] | None:
     return None
 
 
+
+def _horizontal_status(story: dict) -> str:
+    statuses=[item["status"] for item in story["dimensions"].values()]
+    if "blocked" in statuses:
+        return "blocked"
+    if "open" in statuses:
+        return "open"
+    if "partial" in statuses:
+        return "partial"
+    return "verified"
+
+
+def _base_closure(story: dict) -> str:
+    horizontal=_horizontal_status(story)
+    if story["vertical_status"]=="closed" and horizontal=="verified":
+        return "verified_closed"
+    if story["vertical_status"]=="blocked" or horizontal=="blocked":
+        return "blocked"
+    if story["vertical_status"]=="open" or horizontal=="open":
+        return "open"
+    return "partial"
+
+
+def _dependency_aware_closures(stories: list[dict]) -> dict[str,str]:
+    by_id={story["id"]:story for story in stories}
+    memo:dict[str,str]={}
+
+    def resolve(sid: str) -> str:
+        if sid in memo:
+            return memo[sid]
+        story=by_id[sid]
+        base=_base_closure(story)
+        if base!="verified_closed":
+            memo[sid]=base
+            return base
+
+        dep_states=[resolve(dep) for dep in story.get("dependencies",[])]
+        if any(state=="blocked" for state in dep_states):
+            memo[sid]="blocked"
+        elif any(state!="verified_closed" for state in dep_states):
+            memo[sid]="partial"
+        else:
+            memo[sid]="verified_closed"
+        return memo[sid]
+
+    for sid in by_id:
+        resolve(sid)
+    return memo
+
+
 def validate(data: dict) -> list[str]:
     errors=[]
     dims=data["dimensions"]
@@ -68,35 +118,12 @@ def validate(data: dict) -> list[str]:
         for dep in story.get("dependencies",[]):
             if dep==sid: errors.append(f"{sid}: self dependency")
 
-        statuses=[item["status"] for item in story["dimensions"].values()]
-        if "blocked" in statuses:
-            expected_horizontal="blocked"
-        elif "open" in statuses:
-            expected_horizontal="open"
-        elif "partial" in statuses:
-            expected_horizontal="partial"
-        else:
-            expected_horizontal="verified"
+        expected_horizontal=_horizontal_status(story)
 
         if story.get("horizontal_status") != expected_horizontal:
             errors.append(
                 f"{sid}: horizontal_status={story.get('horizontal_status')!r} "
                 f"expected {expected_horizontal!r}"
-            )
-
-        if story["vertical_status"]=="closed" and expected_horizontal=="verified":
-            expected_closure="verified_closed"
-        elif story["vertical_status"]=="blocked" or expected_horizontal=="blocked":
-            expected_closure="blocked"
-        elif story["vertical_status"]=="open" or expected_horizontal=="open":
-            expected_closure="open"
-        else:
-            expected_closure="partial"
-
-        if story.get("closure_status") != expected_closure:
-            errors.append(
-                f"{sid}: closure_status={story.get('closure_status')!r} "
-                f"expected {expected_closure!r}"
             )
     matrix_ids={story["id"] for story in data["stories"]}
     audit_ids=_audit_story_ids()
@@ -109,7 +136,15 @@ def validate(data: dict) -> list[str]:
     if cycle:
         errors.append("dependency cycle: " + " -> ".join(cycle))
 
+    expected_closures={} if cycle else _dependency_aware_closures(data["stories"])
+
     for story in data["stories"]:
+        expected_closure=expected_closures.get(story["id"])
+        if expected_closure and story.get("closure_status") != expected_closure:
+            errors.append(
+                f"{story['id']}: closure_status={story.get('closure_status')!r} "
+                f"expected {expected_closure!r} after dependency closure"
+            )
         for dep in story.get("dependencies",[]):
             if dep not in ids: errors.append(f"{story['id']}: unknown dependency {dep}")
         if story.get("closure_status")=="verified_closed":
