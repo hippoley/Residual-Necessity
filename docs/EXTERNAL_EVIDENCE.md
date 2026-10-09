@@ -53,7 +53,7 @@ Residual Necessity currently chooses the conservative contract:
 - incomplete/unsupported evidence becomes `UNKNOWN`;
 - effect absence does not become `FALSE` without explicit negative authority.
 
-This rule is enforced by the reference gate: `FALSE` without `negative_authority=true` remains unresolved and cannot produce `ABSTAIN`.
+This rule is enforced by the reference gate: `FALSE` without a matching scoped `negative_authority` object remains unresolved and cannot produce `ABSTAIN`.
 
 
 ## AgentAbstain preregistered trivial baselines
@@ -68,12 +68,13 @@ Observed dataset shape:
 
 Preregistered trivial baselines:
 
-| Baseline | Accuracy | Unnecessary intervention | False abstention | Paired accuracy |
-| --- | ---: | ---: | ---: | ---: |
-| always-act | 0.50 | 1.00 | 0.00 | 0.00 |
-| always-abstain | 0.50 | 0.00 | 1.00 | 0.00 |
+| Baseline | Accuracy | Unnecessary intervention | Missed required action | ACT recall | Paired accuracy |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| always-act | 0.50 | 1.00 | 0.00 | 1.00 | 0.00 |
+| always-abstain | 0.50 | 0.00 | 1.00 | 0.00 | 0.00 |
+| always-investigate | 0.00 | 0.00 | 1.00 | 0.00 | 0.00 |
 
-These numbers are not a Residual Necessity result. They are the minimum Reality Gate baselines that any real inference path must beat without collapsing the opposite error direction.
+These numbers are not a Residual Necessity result. They are minimum Reality Gate baselines. The always-investigate row is deliberately included so a system cannot appear safe merely by withholding every required action.
 
 The blind static view contains only:
 `action_type`, `environments`, `instruction`, `pair_id`, `phase`, `system_prompt`, and `task_id`.
