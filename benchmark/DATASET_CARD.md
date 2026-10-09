@@ -13,7 +13,7 @@ It is a **composite evaluation contract**, not a redistributed copy of upstream 
 | Track | External source | Purpose | Current status |
 | --- | --- | --- | --- |
 | A — Runtime necessity | AgentAbstain | Paired ACT/ABSTAIN runtime evaluation under tool-visible evidence | 97 pairs; 64 development / 33 holdout; holdout not used for candidate tuning |
-| B — Residual partial fix | P3 + cave-story-md issue #169 | Inventory real partial-fix breadth, then deeply verify one bounded residual predicate across partial/final revisions | Full pinned P3 partial-fix inventory + one real external oracle pair |
+| B — Residual partial fix | P3 + cave-story-md issue #169 | Inventory real partial-fix breadth, then deeply verify one bounded residual predicate across partial/final revisions | **187** curated partial-fix tasks across **85** repositories, all with reconstructable revision chains, plus one real external oracle pair |
 | C — Evidence/support boundary | SafeAct | Verify mature action-support evidence can be reused as constraints without becoming necessity authority | Real pinned interoperability verified |
 
 There is intentionally **no single aggregate score** across tracks.
@@ -128,3 +128,28 @@ A candidate must freeze its exact code commit, provider-profile hash and develop
 - Holdout release policy: `benchmark/holdout_policy.json`
 
 The Croissant file describes this composite benchmark without vendoring external raw datasets.
+
+
+## Current external corpus coverage
+
+Latest public pinned workflows establish the following corpus-level evidence:
+
+- **Track A / AgentAbstain:** 97 paired runtime cases (194 variants); all **97/97** pairs are statically equivalent after inference-field stripping, with **0** differing pairs. The pair-level split remains 64 development / 33 sealed holdout.
+- **Track B / P3:** **187** tasks classified as partial fix across **85** repositories; **187/187** expose reconstructable base → partial attempt(s) → expected-fix revision chains. Attempt counts range from 1 to 11. This is corpus breadth only; the bounded RN oracle remains one deeply verified case.
+- **Track C / SafeAct:** **277** materialized evidence records audited end-to-end through the RN adapter; **277** constraint predicates produced, **176** with positive authority and **0** with negative authority. Adapter outputs were 176 TRUE, 93 UNKNOWN, 7 STALE and 1 CONFLICTED. No record was promoted to residual-necessity authority.
+
+## Current Track A candidate status
+
+The current proposition-specific development candidate is intentionally reported as **not holdout-ready**:
+
+- development pairs: 64;
+- provider-profile coverage: **1.56%**;
+- complete-binding coverage: **21.875%**;
+- decision coverage: **0.78125%**;
+- ACT recall: **0%**;
+- ABSTAIN recall: **1.5625%**;
+- paired accuracy: **0%**;
+- pair outcomes: **1 abstain-only-correct, 0 act-only-correct, 0 both-correct, 63 neither-correct**;
+- two-sided recall geometric mean: **0**.
+
+The single decisive prediction was correct, so decisive accuracy is 100%, but under the benchmark reporting policy that number is diagnostic-only and cannot support a success or superiority claim.
