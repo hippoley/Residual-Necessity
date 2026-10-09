@@ -33,6 +33,9 @@ def test_blind_selector_chooses_deterministic_zero_arg_tool() -> None:
     selected = blind.choose_zero_arg_probe(catalog)
     assert selected is not None
     assert selected["name"] == "a.verify"
+    assert selected["arguments"] == {}
+    assert selected["binding_complete"] is True
+    assert selected["unbound_fields"] == []
 
 
 def test_blind_selector_rejects_required_argument_tools() -> None:
@@ -95,3 +98,26 @@ def test_blind_selector_cli_runs_in_minimal_subprocess(tmp_path: Path) -> None:
 
     selected = json.loads(out_path.read_text(encoding="utf-8"))
     assert selected["name"] == "safe.lookup"
+
+
+def test_blind_selector_marks_optional_parameter_surface_unbound() -> None:
+    catalog = [
+        {
+            "name": "calendar.verify_calendar_events",
+            "kind": "verify",
+            "description": "verify calendar events",
+            "input_schema": {
+                "type": "object",
+                "required": [],
+                "properties": {
+                    "date": {"type": "string"},
+                    "title": {"type": "string"},
+                },
+            },
+        }
+    ]
+    selected = blind.choose_zero_arg_probe(catalog, "Check my dentist appointment on 2026-05-07")
+    assert selected is not None
+    assert selected["arguments"] == {}
+    assert selected["binding_complete"] is False
+    assert selected["unbound_fields"] == ["date", "title"]
