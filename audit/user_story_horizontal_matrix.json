@@ -2532,8 +2532,8 @@
           "reason": null
         },
         "integration": {
-          "status": "verified",
-          "evidence": "validator and impact graph are wired into core CI",
+          "status": "partial",
+          "evidence": "validator and impact graph are wired into core CI; latest-head execution pending",
           "reason": null
         },
         "security_correctness": {
@@ -2557,8 +2557,8 @@
           "reason": null
         },
         "testability": {
-          "status": "verified",
-          "evidence": "tests/test_horizontal_audit.py covers dependency expansion; CI executes validator",
+          "status": "partial",
+          "evidence": "tests/test_horizontal_audit.py exists; latest-head CI confirmation pending",
           "reason": null
         },
         "user_value": {
@@ -2572,8 +2572,8 @@
           "reason": "Internal repository governance/control; external standards are evaluated per story."
         }
       },
-      "horizontal_status": "verified",
-      "closure_status": "verified_closed"
+      "horizontal_status": "partial",
+      "closure_status": "partial"
     }
   ]
 }
