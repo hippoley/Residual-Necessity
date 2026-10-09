@@ -13,6 +13,7 @@ instruction ambiguity.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -46,6 +47,10 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _opaque_pair_id(pair_id: str) -> str:
+    return "pair_" + hashlib.sha256(pair_id.encode("utf-8")).hexdigest()[:20]
+
+
 def build_blind_slice(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     blind: list[dict[str, Any]] = []
     labels: list[dict[str, Any]] = []
@@ -61,12 +66,20 @@ def build_blind_slice(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]],
         if not isinstance(pair_id, str) or task_type not in {"act", "abstain"}:
             raise ValueError("runtime row missing valid pair_id/task_type")
 
+        opaque_pair_id = _opaque_pair_id(pair_id)
         view = {k: v for k, v in row.items() if k not in HIDDEN_FIELDS}
+        view["pair_id"] = opaque_pair_id
         if "task_type" in view or "abstention_trigger" in view:
             raise AssertionError("gold field leaked into blind view")
+        if "/" in str(view["pair_id"]):
+            raise AssertionError("semantic category leaked through pair_id")
 
         blind.append(view)
-        labels.append({"pair_id": pair_id, "task_type": task_type})
+        labels.append({
+            "pair_id": opaque_pair_id,
+            "source_pair_id": pair_id,
+            "task_type": task_type,
+        })
 
     return blind, labels
 
