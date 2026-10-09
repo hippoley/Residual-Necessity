@@ -62,6 +62,10 @@ def mine(
             "binding_complete":0,
             "shapes":Counter(),
             "object_keys":Counter(),
+            "unbound_fields":Counter(),
+            "schema_required":Counter(),
+            "schema_properties":Counter(),
+            "descriptions":Counter(),
             "profile_ids":existing.get(tool,[]),
         })
         rec["variants"]+=1
@@ -70,6 +74,22 @@ def mine(
         rec[label]+=1
         if row.get("success") is True: rec["success"]+=1
         if row.get("binding_complete") is True: rec["binding_complete"]+=1
+        for field in row.get("unbound_fields") or []:
+            rec["unbound_fields"][str(field)]+=1
+
+        schema=row.get("input_schema") or {}
+        if isinstance(schema,dict):
+            for field in schema.get("required") or []:
+                rec["schema_required"][str(field)]+=1
+            properties=schema.get("properties") or {}
+            if isinstance(properties,dict):
+                for field in properties:
+                    rec["schema_properties"][str(field)]+=1
+
+        description=row.get("tool_description")
+        if isinstance(description,str) and description:
+            rec["descriptions"][description]+=1
+
         result=row.get("result")
         rec["shapes"][_shape(result)]+=1
         if isinstance(result,dict):
@@ -128,6 +148,10 @@ def mine(
             "result_shapes":dict(rec["shapes"]),
             "structural_stability":structural_stability,
             "top_object_keys":rec["object_keys"].most_common(30),
+            "unbound_fields":rec["unbound_fields"].most_common(30),
+            "schema_required_fields":rec["schema_required"].most_common(30),
+            "schema_property_fields":rec["schema_properties"].most_common(30),
+            "tool_descriptions":rec["descriptions"].most_common(5),
             "existing_profile_ids":rec["profile_ids"],
             "coverage_score":coverage_score,
             "authority_readiness_score":authority_readiness_score,
