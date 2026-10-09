@@ -55,7 +55,11 @@
         "decision_coverage",
         "decisive_accuracy",
         "act_precision",
-        "abstain_precision"
+        "abstain_precision",
+        "abstain_recall",
+        "two_sided_recall_geomean",
+        "pair_outcome_taxonomy",
+        "by_category_metrics"
       ],
       "authority_rule": "Tool success/availability alone is never proposition authority.",
       "statistics": {
@@ -65,6 +69,27 @@
         "bootstrap_samples": 5000,
         "seed": 20261009,
         "rationale": "ACT and ABSTAIN variants from one pair are dependent and must be resampled together."
+      },
+      "reporting_policy": {
+        "headline_metrics": [
+          "paired_accuracy",
+          "act_recall",
+          "abstain_recall",
+          "unnecessary_intervention_rate",
+          "missed_required_action_rate",
+          "decision_coverage",
+          "two_sided_recall_geomean"
+        ],
+        "diagnostic_only_metrics": [
+          "decisive_accuracy",
+          "act_precision",
+          "abstain_precision"
+        ],
+        "category_stratification_required": true,
+        "pair_outcome_taxonomy_required": true,
+        "decisive_accuracy_may_not_support_success_claim_without_coverage": true,
+        "development_results_may_not_claim_benchmark_superiority": true,
+        "superiority_requires_frozen_holdout_reveal": true
       }
     },
     {
