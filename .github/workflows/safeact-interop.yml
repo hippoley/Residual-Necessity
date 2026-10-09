@@ -26,6 +26,29 @@ jobs:
           git checkout 841816cf1e376e6fbf8600cffac5df1736e1d369
           test "$(git rev-parse HEAD)" = "841816cf1e376e6fbf8600cffac5df1736e1d369"
 
+      - name: Verify pinned SafeAct licensing
+        run: |
+          grep -q "MIT License" /tmp/safeact/LICENSE
+          grep -q "Creative Commons Attribution 4.0 International License" /tmp/safeact/LICENSE-DATA
+          echo "SAFEACT_CODE_LICENSE=MIT"
+          echo "SAFEACT_DATA_LICENSE=CC-BY-4.0"
+
+      - name: Verify SafeAct upstream contract module
+        run: |
+          python experiments/safeact_upstream_contract.py \
+            /tmp/safeact \
+            --out /tmp/safeact-upstream-contract.json
+          python - <<'PY'
+          import json
+          value=json.load(open("/tmp/safeact-upstream-contract.json"))
+          assert value["contract_id"]=="safeact_evaluation_v1"
+          assert value["common_invariants"]["gold_evaluator"]=="deterministic"
+          assert value["common_invariants"]["agent_visible_gold_fields"] is False
+          assert value["canonical_outcome_checks"]["v0_defer"]=="NO_ACTION"
+          assert value["canonical_outcome_checks"]["v1_allow"]=="TASK_SUCCESS"
+          print("SAFEACT_UPSTREAM_MODULE_CONTRACT=PASS")
+          PY
+
       - name: Project supported SafeAct rule as constraint
         run: |
           python experiments/safeact_constraint_adapter.py \
@@ -69,6 +92,21 @@ jobs:
             /tmp/safeact \
             --out /tmp/safeact-necessity-signal-inventory.json
 
+      - name: Audit entire SafeAct materialized evidence corpus
+        run: |
+          python experiments/safeact_corpus_audit.py \
+            /tmp/safeact \
+            --out /tmp/safeact-corpus-audit.json
+          python - <<'PY'
+          import json
+          report=json.load(open("/tmp/safeact-corpus-audit.json"))
+          assert report["corpus_audit_pass"] is True
+          assert report["negative_authority_count"] == 0
+          assert report["materialized_files"] > 0
+          assert report["predicate_count"] > 0
+          print("SAFEACT_CORPUS_CONSTRAINT_BOUNDARY=PASS")
+          PY
+
       - name: Prove SafeAct support cannot masquerade as necessity
         run: |
           python - <<'PY'
@@ -108,4 +146,6 @@ jobs:
             /tmp/safeact-supported.json
             /tmp/safeact-missing.json
             /tmp/safeact-necessity-signal-inventory.json
+            /tmp/safeact-corpus-audit.json
+            /tmp/safeact-upstream-contract.json
           if-no-files-found: error
