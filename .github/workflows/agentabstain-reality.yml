@@ -95,10 +95,26 @@ jobs:
           import json
           record = json.load(open("/tmp/agentabstain-probe.json"))
           assert record["tool_kind"] in {"lookup", "verify"}
-          assert record["gold_fields_exposed"] is False
-          assert record["raw_state_read"] is False
+          assert record["gold_fields_exposed_to_selector"] is False
+          assert record["raw_state_exposed_to_selector"] is False
+          assert record["selection_module"] == "blind_probe.choose_zero_arg_probe"
           assert "/" not in record["case_id"]
           print(json.dumps(record, indent=2, sort_keys=True))
+          PY
+
+      - name: Verify blind selector source isolation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path("experiments/agentabstain/blind_probe.py").read_text()
+          forbidden = {
+              "AntiQuality", "agentabstain", "BaseAgent", "TaskBundle",
+              "task_type", "execution_dag", "abstention_trigger",
+              "critical_actions", "initial_states", "raw_state"
+          }
+          for token in forbidden:
+              assert token not in source, token
+          print("BLIND_SELECTOR_SOURCE_FIREWALL=PASS")
           PY
 
       - name: Preserve probe evidence
