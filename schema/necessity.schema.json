@@ -56,7 +56,7 @@
   },
   "properties": {
     "schema_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "intervention": {
       "type": "object",
@@ -120,7 +120,8 @@
         "required": [
           "id",
           "required",
-          "kind"
+          "kind",
+          "role"
         ],
         "properties": {
           "id": {
@@ -141,6 +142,12 @@
           "human_only": {
             "type": "boolean",
             "default": false
+          },
+          "role": {
+            "enum": [
+              "necessity",
+              "constraint"
+            ]
           }
         },
         "additionalProperties": false
