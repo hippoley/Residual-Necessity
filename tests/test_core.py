@@ -315,3 +315,30 @@ def test_observation_for_undeclared_predicate_fails_closed() -> None:
     receipt["observations"]["ghost"] = {"status": "UNKNOWN"}
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "INVESTIGATE"
+
+
+def test_true_with_negative_authority_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["observations"]["violation_exists"]["negative_authority"] = (
+        negative_authority("violation_exists")
+    )
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_false_with_positive_authority_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["observations"]["violation_exists"] = {
+        "status": "FALSE",
+        "positive_authority": positive_authority("violation_exists"),
+        "negative_authority": negative_authority("violation_exists"),
+    }
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_non_object_target_environment_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["target"]["environment"] = "prod"
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
