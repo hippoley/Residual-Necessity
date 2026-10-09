@@ -24,6 +24,7 @@ jobs:
       - run: pytest -q
       - run: python audit/validate_horizontal_matrix.py
       - run: python benchmark/validate_manifest.py
+      - run: python benchmark/validate_provider_profiles.py
       - run: python benchmark/validate_holdout_policy.py
       - run: python audit/validate_schema_migration.py
       - run: python audit/impact.py US-25 --json
