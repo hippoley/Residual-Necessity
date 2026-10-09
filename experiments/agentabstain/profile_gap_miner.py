@@ -86,12 +86,34 @@ def mine(
         binding_rate=rec["binding_complete"]/variants if variants else 0.0
         success_rate=rec["success"]/variants if variants else 0.0
 
-        # Ranking is triage only, never authority.
-        score=pair_count*(0.5+0.5*structural_stability)*(0.5+0.5*binding_rate)
+        # Coverage ranking is descriptive only.
+        coverage_score=pair_count*(0.5+0.5*structural_stability)*(0.5+0.5*binding_rate)
         if both_sides==0:
-            score*=0.25
+            coverage_score*=0.25
         if rec["profile_ids"]:
-            score*=0.2
+            coverage_score*=0.2
+
+        # Authority-readiness is intentionally conservative:
+        # AgentAbstain declares verify tools as semantic preconditions, while
+        # lookup tools are read/search surfaces. Structured results and
+        # complete binding are prerequisites for a useful explicit profile.
+        kind_prior = 1.0 if rec["tool_kind"] == "verify" else 0.15
+        structured_prior = (
+            (rec["shapes"].get("object", 0) + rec["shapes"].get("array", 0))
+            / variants
+            if variants else 0.0
+        )
+        authority_readiness_score=(
+            pair_count
+            * kind_prior
+            * binding_rate
+            * structural_stability
+            * structured_prior
+        )
+        if both_sides==0:
+            authority_readiness_score*=0.25
+        if rec["profile_ids"]:
+            authority_readiness_score*=0.2
 
         ranked.append({
             "tool":rec["tool"],
@@ -107,18 +129,27 @@ def mine(
             "structural_stability":structural_stability,
             "top_object_keys":rec["object_keys"].most_common(30),
             "existing_profile_ids":rec["profile_ids"],
-            "triage_score":score,
+            "coverage_score":coverage_score,
+            "authority_readiness_score":authority_readiness_score,
             "authority_granted":False,
         })
 
-    ranked.sort(key=lambda x:(-x["triage_score"],-x["development_pairs"],x["tool"]))
+    coverage_ranked=sorted(
+        ranked,
+        key=lambda x:(-x["coverage_score"],-x["development_pairs"],x["tool"]),
+    )
+    authority_ranked=sorted(
+        ranked,
+        key=lambda x:(-x["authority_readiness_score"],-x["development_pairs"],x["tool"]),
+    )
     return {
         "schema_version":"provider-gap-report/0.1",
         "development_variants":len(observations),
         "development_pairs":len({row["pair_id"] for row in observations}),
         "profiles_currently_registered":sum(bool(x["existing_profile_ids"]) for x in ranked),
         "tools_observed":len(ranked),
-        "candidates":ranked,
+        "coverage_candidates":coverage_ranked,
+        "authority_readiness_candidates":authority_ranked,
         "holdout_consumed":False,
         "authority_granted":False,
         "purpose":"triage_external_tool_surfaces_for_manual_provider_profile_design",
