@@ -376,3 +376,10 @@ def test_non_reality_predicate_cannot_be_necessity_role() -> None:
     receipt["predicates"][1]["role"] = "necessity"
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "INVESTIGATE"
+
+
+def test_legacy_02_receipt_fails_closed() -> None:
+    receipt = base_receipt()
+    receipt["schema_version"] = "0.2"
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
