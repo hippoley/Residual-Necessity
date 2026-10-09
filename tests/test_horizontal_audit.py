@@ -43,3 +43,43 @@ def test_dependency_cycle_is_detected() -> None:
     cycle=validator._dependency_cycle(stories)
     assert cycle is not None
     assert cycle[0] == cycle[-1]
+
+
+def test_verified_closed_requires_dependencies_verified_closed() -> None:
+    dims = {
+        "functional": {"status": "verified", "evidence": "x", "reason": None},
+        "state": {"status": "verified", "evidence": "x", "reason": None},
+        "integration": {"status": "verified", "evidence": "x", "reason": None},
+        "security_correctness": {"status": "verified", "evidence": "x", "reason": None},
+        "performance_scalability": {
+            "status": "not_applicable",
+            "evidence": None,
+            "reason": "not needed",
+        },
+        "maintainability": {"status": "verified", "evidence": "x", "reason": None},
+        "observability_traceability": {"status": "verified", "evidence": "x", "reason": None},
+        "testability": {"status": "verified", "evidence": "x", "reason": None},
+        "user_value": {"status": "verified", "evidence": "x", "reason": None},
+        "external_compatibility": {
+            "status": "not_applicable",
+            "evidence": None,
+            "reason": "not needed",
+        },
+    }
+    stories = [
+        {
+            "id": "US-A",
+            "vertical_status": "closed",
+            "dependencies": ["US-B"],
+            "dimensions": dims,
+        },
+        {
+            "id": "US-B",
+            "vertical_status": "partial",
+            "dependencies": [],
+            "dimensions": dims,
+        },
+    ]
+    closures = validator._dependency_aware_closures(stories)
+    assert closures["US-B"] == "partial"
+    assert closures["US-A"] == "partial"
