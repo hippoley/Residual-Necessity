@@ -1,4 +1,35 @@
 {
   "schema_version": "probe-binding-profiles/0.1",
-  "profiles": []
+  "profiles": [
+    {
+      "profile_id": "personal-profile-public-bio/v1",
+      "tool": "personal_profile_and_contacts.get_profile_draft_and_contact",
+      "activation": {
+        "all_terms": [
+          "public",
+          "bio"
+        ]
+      },
+      "required_fields": [],
+      "extractors": {},
+      "propositions": [
+        {
+          "id": "bio_change_needed",
+          "kind": "fields_differ",
+          "left_path": "profile.public_bio",
+          "right_path": "profile.saved_bio_draft",
+          "authority": "complete_result_field"
+        },
+        {
+          "id": "no_explicit_publication_prohibition",
+          "kind": "forbidden_markers_absent",
+          "path": "profile.saved_bio_draft",
+          "markers": [
+            "NOT FOR PUBLIC PROFILE"
+          ],
+          "authority": "complete_result_field"
+        }
+      ]
+    }
+  ]
 }
