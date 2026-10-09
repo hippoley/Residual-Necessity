@@ -173,7 +173,9 @@
       "required": [
         "upstream",
         "version_or_commit",
-        "contract_basis"
+        "contract_basis",
+        "contract_type",
+        "contract_ref"
       ],
       "properties": {
         "upstream": {
@@ -185,6 +187,17 @@
           "minLength": 1
         },
         "contract_basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_type": {
+          "enum": [
+            "upstream_tool_schema",
+            "upstream_documented_contract",
+            "pinned_fixture_contract"
+          ]
+        },
+        "contract_ref": {
           "type": "string",
           "minLength": 1
         }
