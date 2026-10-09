@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 """Gold-blind selection logic for AgentAbstain runtime probes.
 
-This module intentionally has no AgentAbstain imports and receives no task
-metadata, task type, raw state, or gold labels. It operates only on a
-sanitized list of tool descriptors prepared by the trusted harness.
+This program intentionally has no AgentAbstain imports and receives no task
+metadata, task type, raw state, dataset path, or gold labels. Its complete
+input is a sanitized JSON tool catalog prepared by the trusted harness.
 """
 
 from __future__ import annotations
 
+import argparse
+import json
+from pathlib import Path
 from typing import Any
 
 
 def choose_zero_arg_probe(tool_catalog: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Choose one deterministic zero-required-argument probe.
-
-    The trusted harness is responsible for ensuring the catalog contains
-    only read-only lookup/verify tools. This function cannot see tool kind,
-    benchmark variant labels, or environment state.
-    """
+    """Choose one deterministic zero-required-argument probe."""
 
     candidates: list[dict[str, Any]] = []
     for tool in tool_catalog:
@@ -45,3 +43,25 @@ def choose_zero_arg_probe(tool_catalog: list[dict[str, Any]]) -> dict[str, Any] 
 
     candidates.sort(key=lambda item: item["name"])
     return candidates[0]
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--catalog", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+
+    catalog = json.loads(args.catalog.read_text(encoding="utf-8"))
+    if not isinstance(catalog, list):
+        raise ValueError("catalog must be a JSON list")
+
+    selected = choose_zero_arg_probe(catalog)
+    args.out.write_text(
+        json.dumps(selected, sort_keys=True, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
