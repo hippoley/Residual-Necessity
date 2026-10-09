@@ -72,7 +72,7 @@ Status vocabulary:
 | US-38 | As an evidence consumer, external action-support evidence cannot masquerade as residual necessity, and schema-valid/defaulted tool calls cannot become proposition evidence until required semantics are bound. | VERIFIED CLOSED | Probe artifacts now carry arguments, provenance, bound/unbound fields, and `binding_complete`; incomplete binding is forced to UNKNOWN. This was added after development evidence showed blank/default verify calls for fleet/date/account/portfolio tasks. |
 | US-39 | As a control runtime, a real external residual predicate distinguishes a partial state that still requires action from the final fixed state, while positive evidence for one sub-intervention cannot authorize unrelated work. | VERIFIED CLOSED | Provider profiles declare `decision_scope.intervention` and `task_coverage`. Partial FALSE may block a required sub-action; partial TRUE remains INVESTIGATE. Only complete task coverage can map TRUE to ACT. |
 | US-40 | As a benchmark researcher and maintainer, Verified Closed requires vertical closure plus ten-dimensional horizontal closure, and candidate-development scoring cannot consume holdout labels accidentally. | VERIFIED CLOSED | Development scorer re-checks the frozen hash partition and rejects any pair assigned to holdout. |
-| US-41 | As a third-party benchmark consumer, I can discover, reproduce, interpret, and submit methods against the benchmark without reading implementation internals or silently contaminating holdout. | PARTIAL — latest full Reality Gate rerun pending | Dataset Card + Croissant 1.1 metadata are present; official `mlcroissant==1.1.0` validation passed; benchmark manifest, pair-bootstrap CI, split/category audit, sealed holdout policy, and Method Card schema are machine-verifiable. Full current-head AgentAbstain rerun is the remaining cross-system check before horizontal closure. |
+| US-41 | As a third-party benchmark consumer, I can discover, reproduce, interpret, and submit methods against the benchmark without reading implementation internals or silently contaminating holdout. | VERIFIED CLOSED | Dataset Card + Croissant 1.1 metadata are present and officially validated; benchmark manifest, pair-bootstrap CI, split/category audit, sealed holdout policy, Method Card schema, three-version core CI, and the full current-head AgentAbstain Reality Gate all pass. |
 
 ## Claims deliberately de-scoped
 
@@ -89,8 +89,8 @@ The repository should not expand framework surface until these are resolved in o
 
 1. **P0 — CLOSED, but continuously regression-gated.**
    US-38 SafeAct semantic-boundary interop, US-39 real P3 residual pair, and US-40 horizontal-closure enforcement are the current semantic P0. Any regression reopens P0 immediately.
-2. **US-41 — benchmark asset horizontal closure.**
-   Standardized metadata, uncertainty reporting, split governance, holdout sealing, and Method Card submission now exist. Close only after the latest full AgentAbstain Reality Gate reruns successfully on the same head.
+2. **US-41 — VERIFIED CLOSED; keep regression-gated.**
+   Standardized metadata, uncertainty reporting, split governance, holdout sealing, Method Card submission, official Croissant validation, and a full current-head AgentAbstain rerun are all green. Reopen immediately on any regression.
 3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
    Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
 4. **US-33 — PR/history cleanup.**
