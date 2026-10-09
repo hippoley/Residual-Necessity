@@ -1951,8 +1951,8 @@
       "priority": "P1",
       "vertical_status": "closed",
       "dependencies": [
-        "US-26",
-        "US-29a"
+        "US-29a",
+        "US-39"
       ],
       "summary": "Agentic partial-fix probe detects residual violation without false abstention",
       "dimensions": {
@@ -2388,8 +2388,7 @@
       "vertical_status": "closed",
       "dependencies": [
         "US-01",
-        "US-12",
-        "US-19"
+        "US-12"
       ],
       "summary": "External action-support evidence cannot masquerade as residual necessity",
       "dimensions": {
