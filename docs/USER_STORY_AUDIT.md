@@ -72,6 +72,7 @@ Status vocabulary:
 | US-38 | As an evidence consumer, external action-support evidence cannot masquerade as residual necessity, and schema-valid/defaulted tool calls cannot become proposition evidence until required semantics are bound. | VERIFIED CLOSED | Probe artifacts now carry arguments, provenance, bound/unbound fields, and `binding_complete`; incomplete binding is forced to UNKNOWN. This was added after development evidence showed blank/default verify calls for fleet/date/account/portfolio tasks. |
 | US-39 | As a control runtime, a real external residual predicate distinguishes a partial state that still requires action from the final fixed state, while positive evidence for one sub-intervention cannot authorize unrelated work. | VERIFIED CLOSED | Provider profiles declare `decision_scope.intervention` and `task_coverage`. Partial FALSE may block a required sub-action; partial TRUE remains INVESTIGATE. Only complete task coverage can map TRUE to ACT. |
 | US-40 | As a benchmark researcher and maintainer, Verified Closed requires vertical closure plus ten-dimensional horizontal closure, and candidate-development scoring cannot consume holdout labels accidentally. | VERIFIED CLOSED | Development scorer re-checks the frozen hash partition and rejects any pair assigned to holdout. |
+| US-41 | As a third-party benchmark consumer, I can discover, reproduce, interpret, and submit methods against the benchmark without reading implementation internals or silently contaminating holdout. | PARTIAL — latest full Reality Gate rerun pending | Dataset Card + Croissant 1.1 metadata are present; official `mlcroissant==1.1.0` validation passed; benchmark manifest, pair-bootstrap CI, split/category audit, sealed holdout policy, and Method Card schema are machine-verifiable. Full current-head AgentAbstain rerun is the remaining cross-system check before horizontal closure. |
 
 ## Claims deliberately de-scoped
 
@@ -86,20 +87,18 @@ Status vocabulary:
 
 The repository should not expand framework surface until these are resolved in order:
 
-1. **P0 — CLOSED.**
-   US-38 SafeAct semantic-boundary interop, US-39 real P3 residual pair, and US-40 horizontal-closure enforcement all passed on the latest validated head. New work may move to P1 only while these P0 regressions remain green.
-2. **US-26 / US-27 — SUPERSEDED BY EVIDENCE.** AgentAbstain remains a falsification benchmark; no further profile tuning is justified by current development results.
-   P0 correctness is now narrower and explicit: schema-valid probes are not evidence until semantic arguments are bound (US-38), and local positive evidence cannot authorize an uncovered composite task (US-39). Development-only scoring is holdout-safe (US-40). The current P1 candidate has one real provider profile; expand only from development evidence, freeze the registry, then reveal holdout once.
-3. **US-29b — agentic partial-fix behavior.**
-   US-29a is now grounded by a pinned P3 real-world sequence. The remaining question is whether an agentic probe can identify a residual predicate after an intermediate fix without leaking gold.
-5. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
+1. **P0 — CLOSED, but continuously regression-gated.**
+   US-38 SafeAct semantic-boundary interop, US-39 real P3 residual pair, and US-40 horizontal-closure enforcement are the current semantic P0. Any regression reopens P0 immediately.
+2. **US-41 — benchmark asset horizontal closure.**
+   Standardized metadata, uncertainty reporting, split governance, holdout sealing, and Method Card submission now exist. Close only after the latest full AgentAbstain Reality Gate reruns successfully on the same head.
+3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
    Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
-6. **US-33 — PR/history cleanup.**
-   Latest-head CI must be green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
-7. **US-30 — package only after independent conformance consumption + reviewable public checkpoint.**
-   Do not freeze an API before the existential benchmark result.
-8. **US-26 / US-27 — P1 cross-benchmark generalization.**
-   Keep AgentAbstain as a constraint/fail-closed stress test, not as the definition of residual-necessity correctness.
-9. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
+4. **US-33 — PR/history cleanup.**
+   Latest-head CI must remain green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
+5. **US-30 — package only after independent conformance consumption + reviewable public checkpoint.**
+   Do not freeze an API merely because local integrations work.
+6. **US-26 / US-27 — superseded cross-benchmark hypothesis.**
+   AgentAbstain remains a falsification/stress benchmark. Re-open only if a new proposition-specific external contract changes the semantic mismatch; do not tune profiles simply to chase its labels.
+7. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
 
-If the real evaluation cannot beat reasonable baselines without false-abstention collapse, stop independent framework growth and upstream the useful completeness/conformance pieces.
+If future real-world evidence shows the narrow necessity primitive adds no value beyond mature support/policy/control contracts, stop independent framework growth and upstream only the useful conformance/evidence pieces.
