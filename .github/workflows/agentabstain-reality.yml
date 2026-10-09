@@ -107,7 +107,14 @@ jobs:
       - name: Install minimal AgentAbstain sandbox dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install PyYAML==6.0.3 pydantic==2.14.0 fastmcp==4.1.0 mcp==2.3.0 huggingface_hub==2.2.0
+          python -m pip install PyYAML==6.0.3 pydantic==2.14.0 fastmcp==4.1.0 mcp==2.3.0 huggingface_hub==2.2.0 cel-expr-python==0.1.3
+
+      - name: Validate CEL-backed provider expressions
+        run: |
+          python experiments/agentabstain/validate_cel_profiles.py \
+            --registry experiments/agentabstain/probe_binding_profiles.json
+          python experiments/agentabstain/cel_provider_smoke.py
+
 
       - name: Download public AgentAbstain executable dataset
         run: |
