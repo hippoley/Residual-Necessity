@@ -23,6 +23,7 @@ def test_gap_miner_ranks_unprofiled_two_sided_tool_without_granting_authority() 
     report=miner.mine(obs,labels,{"profiles":[]})
     assert report["holdout_consumed"] is False
     assert report["authority_granted"] is False
-    assert report["candidates"][0]["tool"]=="verify.x"
-    assert report["candidates"][0]["both_label_sides_present"] is True
-    assert report["candidates"][0]["authority_granted"] is False
+    assert report["authority_readiness_candidates"][0]["tool"]=="verify.x"
+    assert report["authority_readiness_candidates"][0]["both_label_sides_present"] is True
+    assert report["authority_readiness_candidates"][0]["authority_granted"] is False
+    assert report["coverage_candidates"]
