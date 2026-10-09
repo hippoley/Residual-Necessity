@@ -1989,8 +1989,8 @@
           "reason": null
         },
         "integration": {
-          "status": "partial",
-          "evidence": "real external GitHub/P3 revisions are exercised, but no agent runtime consumes the oracle yet",
+          "status": "verified",
+          "evidence": "P3 run 37897404767 routes real partial/final revision receipts through Agent Hooks InterceptionEmitter: partial permits, final blocks",
           "reason": null
         },
         "security_correctness": {
@@ -2010,12 +2010,12 @@
         },
         "observability_traceability": {
           "status": "verified",
-          "evidence": "paired receipt hashes/artifacts preserved by public workflow",
+          "evidence": "public run 37897404767 plus receipt SHA-256 artifacts for partial/final revisions",
           "reason": null
         },
         "testability": {
           "status": "verified",
-          "evidence": "unit tests plus real external revision E2E",
+          "evidence": "unit oracle tests + real external revision E2E + Agent Hooks control-plane E2E",
           "reason": null
         },
         "user_value": {
