@@ -282,5 +282,64 @@
         }
       }
     }
+  },
+  {
+    "id": "false-support-constraint-investigate",
+    "expected": "INVESTIGATE",
+    "receipt": {
+      "schema_version": "0.3",
+      "intervention": {
+        "id": "repair-service",
+        "kind": "modify_state",
+        "description": "repair only while violation remains and action support is valid",
+        "justified_by": [
+          "residual_violation_exists"
+        ]
+      },
+      "target": {
+        "identity": "service:payments",
+        "revision": "r10"
+      },
+      "predicates": [
+        {
+          "id": "residual_violation_exists",
+          "required": true,
+          "kind": "reality",
+          "role": "necessity"
+        },
+        {
+          "id": "action_supported",
+          "required": true,
+          "kind": "reality",
+          "role": "constraint"
+        }
+      ],
+      "observations": {
+        "residual_violation_exists": {
+          "status": "TRUE",
+          "positive_authority": {
+            "scope": {
+              "predicate_id": "residual_violation_exists",
+              "target_identity": "service:payments",
+              "target_revision": "r10"
+            },
+            "basis": "current_state_probe",
+            "evidence_ref": "probe:violation:r10"
+          }
+        },
+        "action_supported": {
+          "status": "FALSE",
+          "negative_authority": {
+            "scope": {
+              "predicate_id": "action_supported",
+              "target_identity": "service:payments",
+              "target_revision": "r10"
+            },
+            "basis": "deterministic_support_check",
+            "evidence_ref": "support:false:r10"
+          }
+        }
+      }
+    }
   }
 ]
