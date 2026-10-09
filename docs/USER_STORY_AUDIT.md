@@ -62,7 +62,7 @@ Status vocabulary:
 | ID | User story | Status | Acceptance evidence |
 | --- | --- | --- | --- |
 | US-30 | As a third-party developer, I can install a versioned package and import a stable API. | BLOCKED BY REALITY GATE | Packaging now would prematurely freeze an unvalidated API. Keep importable adapters in-tree until US-26/27 survive real paired evaluation. |
-| US-31 | As a third-party developer, schema changes are versioned and examples cannot silently drift. | CLOSED for current draft | Receipt schema bumped to 0.2; examples/conformance validated by JSON Schema in CI. |
+| US-31 | As a third-party developer, schema changes are versioned and examples cannot silently drift. | CLOSED for current draft | Receipt schema bumped to 0.3; examples/conformance validated by JSON Schema in CI. |
 | US-32 | As a third-party developer, the repository has a canonical license file. | CLOSED | Full canonical Apache-2.0 license text installed. |
 | US-33 | As a reviewer, one PR tells one coherent story. | PARTIAL, materially improved | PR #2 is now reframed around one Reality Gate foundation: receipt semantics + benchmark boundary + canonical runtime/evidence interoperability + explicit node migration. It remains a large 90+ commit draft until latest-head CI is green and it is squash-merged. |
 | US-34 | As a maintainer, latest commits cancel superseded CI so one PR does not accumulate stale runs. | CLOSED | Workflow concurrency + cancel-in-progress added. |
@@ -86,16 +86,18 @@ Status vocabulary:
 
 The repository should not expand framework surface until these are resolved in order:
 
-1. **US-26 / US-27 — proposition-specific AgentAbstain prediction.**
+1. **US-38 — support/permission versus necessity semantic boundary.**
+   Receipt 0.3 and the SafeAct constraint adapter are implemented; pinned external SafeAct CI must be green before this P0 closes.
+2. **US-26 / US-27 — proposition-specific AgentAbstain prediction.**
    P0 correctness is now narrower and explicit: schema-valid probes are not evidence until semantic arguments are bound (US-38), and local positive evidence cannot authorize an uncovered composite task (US-39). Development-only scoring is holdout-safe (US-40). The current P1 candidate has one real provider profile; expand only from development evidence, freeze the registry, then reveal holdout once.
-2. **US-29b — agentic partial-fix behavior.**
+3. **US-29b — agentic partial-fix behavior.**
    US-29a is now grounded by a pinned P3 real-world sequence. The remaining question is whether an agentic probe can identify a residual predicate after an intermediate fix without leaking gold.
-3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
+4. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
    Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
-4. **US-33 — PR/history cleanup.**
+5. **US-33 — PR/history cleanup.**
    Latest-head CI must be green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
-5. **US-30 — package only after US-27 survives.**
+6. **US-30 — package only after US-27 survives.**
    Do not freeze an API before the existential benchmark result.
-6. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
+7. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
 
 If the real evaluation cannot beat reasonable baselines without false-abstention collapse, stop independent framework growth and upstream the useful completeness/conformance pieces.
