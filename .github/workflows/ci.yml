@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install pytest jsonschema
+      - run: python -m pip install pytest==9.1.1 jsonschema==4.26.0
       - run: pytest -q
       - run: python src/gate.py examples/residual-act.json
       - run: python src/eval.py examples/paired-eval.json
