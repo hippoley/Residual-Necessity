@@ -150,7 +150,28 @@
             ]
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "role": {
+                  "const": "necessity"
+                }
+              },
+              "required": [
+                "role"
+              ]
+            },
+            "then": {
+              "properties": {
+                "kind": {
+                  "const": "reality"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "observations": {
