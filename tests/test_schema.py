@@ -76,3 +76,10 @@ def test_predicate_role_is_required_by_schema() -> None:
     receipt["predicates"][0].pop("role")
     errors = list(VALIDATOR.iter_errors(receipt))
     assert errors
+
+
+def test_non_reality_predicate_cannot_have_necessity_role_in_schema() -> None:
+    receipt = json.loads((ROOT / "examples" / "residual-act.json").read_text(encoding="utf-8"))
+    receipt["predicates"][1]["role"] = "necessity"
+    errors = list(VALIDATOR.iter_errors(receipt))
+    assert errors
