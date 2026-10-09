@@ -13,6 +13,8 @@ METRICS = (
     "unnecessary_intervention_rate",
     "missed_required_action_rate",
     "act_recall",
+    "abstain_recall",
+    "two_sided_recall_geomean",
     "investigate_rate",
     "escalate_rate",
     "decision_coverage",
