@@ -92,7 +92,7 @@ The project is currently gated by [Reality Gate #1](https://github.com/hippoley/
 The repository does not currently claim that Residual Necessity improves a real benchmark. The first graduation requirement is a paired evaluation that measures both:
 
 - unnecessary intervention: acting when the correct outcome is abstention;
-- false abstention: refusing when action is still required.
+- missed required action: any non-ACT outcome when action is still required.
 
 A system that refuses everything has failed.
 
@@ -132,7 +132,9 @@ python src/eval.py examples/paired-eval.json
 The evaluator reports:
 
 - `unnecessary_intervention_rate`
-- `false_abstention_rate`
+- `missed_required_action_rate` — any non-ACT outcome when action is required
+- `act_recall`
+- `false_abstention_rate` — compatibility alias for missed required action
 - `investigate_rate`
 - `escalate_rate`
 - `paired_accuracy`
