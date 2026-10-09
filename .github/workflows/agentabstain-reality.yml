@@ -28,6 +28,20 @@ jobs:
       - name: Inspect blind runtime shape
         run: python experiments/agentabstain/inspect_blind_shape.py /tmp/runtime-blind.json
 
+      - name: Audit static pair equivalence
+        run: |
+          python benchmark/audit_agentabstain_static_pair_equivalence.py \
+            /tmp/runtime-blind.json \
+            --out /tmp/runtime-static-pair-equivalence.json
+          python - <<'PY'
+          import json
+          report=json.load(open("/tmp/runtime-static-pair-equivalence.json"))
+          assert report["pair_count"] == 97
+          assert report["differing_pair_count"] == 0
+          assert report["static_pair_equivalence_pass"] is True
+          print("STATIC_PAIR_EQUIVALENCE=PASS")
+          PY
+
       - name: Freeze gold-free development holdout split
         run: |
           python experiments/agentabstain/freeze_pair_split.py \
@@ -50,6 +64,7 @@ jobs:
             /tmp/runtime-pair-split.json
             /tmp/runtime-pair-split.sha256
             /tmp/runtime-split-audit.json
+            /tmp/runtime-static-pair-equivalence.json
           if-no-files-found: error
       - name: Score preregistered trivial baselines
         run: |
@@ -62,7 +77,8 @@ jobs:
           rows = json.load(open("/tmp/runtime-blind.json"))
           forbidden = {
               "task_type", "abstention_trigger", "execution_dag",
-              "critical_actions", "category", "transformation_dimension"
+              "critical_actions", "category", "transformation_dimension",
+              "task_id"
           }
           assert rows, "expected non-empty runtime slice"
           for row in rows:
