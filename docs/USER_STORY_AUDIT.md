@@ -61,13 +61,13 @@ Status vocabulary:
 
 | ID | User story | Status | Acceptance evidence |
 | --- | --- | --- | --- |
-| US-30 | As a third-party developer, I can install a versioned package and import a stable API. | BLOCKED — external consumption/reviewability first | Packaging remains intentionally deferred until US-22 has an independent external consumer and US-33 yields a reviewable public checkpoint. It no longer depends on superseded AgentAbstain utility goals. |
+| US-30 | As a third-party developer, I can install a versioned package and import a stable API. | BLOCKED — external consumption first | Packaging remains intentionally deferred until US-22 has an independent external consumer or accepted upstream/conformance surface. Reviewability is no longer a blocker after clean PR #6 was squash-merged to main. |
 | US-31 | As a third-party developer, schema changes are versioned and examples cannot silently drift. | CLOSED for current draft | Receipt schema bumped to 0.3; examples/conformance validated by JSON Schema in CI. |
 | US-32 | As a third-party developer, the repository has a canonical license file. | CLOSED | Full canonical Apache-2.0 license text installed. |
-| US-33 | As a reviewer, one PR tells one coherent story. | PARTIAL, materially improved | PR #2 is now reframed around one Reality Gate foundation: receipt semantics + benchmark boundary + canonical runtime/evidence interoperability + explicit node migration. It remains a large 90+ commit draft until latest-head CI is green and it is squash-merged. |
+| US-33 | As a reviewer, one PR tells one coherent story. | VERIFIED CLOSED | Long-lived experimental PR #5 exposed 303 commits and was superseded. PR #6 reproduced the exact checkpoint tree as one commit on current main, passed the full merge gate, and was squash-merged as main commit `a26d5978...`. |
 | US-34 | As a maintainer, latest commits cancel superseded CI so one PR does not accumulate stale runs. | CLOSED | Workflow concurrency + cancel-in-progress added. |
 | US-35 | As a runtime integrator, unknown or misspelled control fields cannot silently change semantics even when JSON Schema validation is bypassed. | CLOSED after audit fix | Schema core objects are closed and `gate.evaluate()` independently fails closed on unknown fields, malformed predicates/interventions, and orphan observations. |
-| US-36 | As an Agent Hooks audit consumer, evidence supporting a permit remains attributable after verdict composition. | OPEN upstream-contract gap | Real Beta E2E shows interceptor permit evidence is not preserved on synthesized combined allow; reproduction is frozen in `docs/AGENT_HOOKS_PERMIT_EVIDENCE_NOTE.md`. No upstream acceptance yet. |
+| US-36 | As an Agent Hooks audit consumer, evidence supporting a permit remains attributable after verdict composition. | BLOCKED — upstream-ready, external write unavailable | Real Beta E2E reproduces the gap. A proposal-first draft and CTK candidate are preserved under `upstream/agent-hooks/`; run 37897846550 validated the vector against pinned official Agent Hooks CTK schema using upstream AJV versions. Issue/PR creation against `responsibleai/agent-hooks` remains blocked by integration 403, so no upstream acceptance is claimed. |
 | US-37 | As a Reality Gate runner, I can obtain AgentAbstain observations while keeping probe selection/prediction blind to hidden initial state and gold task metadata. | CLOSED for process-isolated boundary | Run 37875541342 used separate minimal-env subprocesses for selector and predictor, read-only lookup/verify tools only, frozen 194 predictions before gold scoring, and source firewalls; trusted harness knowledge remains explicit. This closes isolation, not predictive value. |
 | US-38 | As an evidence consumer, external action-support evidence cannot masquerade as residual necessity, and schema-valid/defaulted tool calls cannot become proposition evidence until required semantics are bound. | VERIFIED CLOSED | Probe artifacts now carry arguments, provenance, bound/unbound fields, and `binding_complete`; incomplete binding is forced to UNKNOWN. This was added after development evidence showed blank/default verify calls for fleet/date/account/portfolio tasks. |
 | US-39 | As a control runtime, a real external residual predicate distinguishes a partial state that still requires action from the final fixed state, while positive evidence for one sub-intervention cannot authorize unrelated work. | VERIFIED CLOSED | Provider profiles declare `decision_scope.intervention` and `task_coverage`. Partial FALSE may block a required sub-action; partial TRUE remains INVESTIGATE. Only complete task coverage can map TRUE to ACT. |
@@ -93,11 +93,11 @@ The repository should not expand framework surface until these are resolved in o
 3. **US-29b — agentic partial-fix behavior.**
    US-29a is now grounded by a pinned P3 real-world sequence. The remaining question is whether an agentic probe can identify a residual predicate after an intermediate fix without leaking gold.
 5. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
-   Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
-6. **US-33 — PR/history cleanup.**
-   Latest-head CI must be green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
-7. **US-30 — package only after independent conformance consumption + reviewable public checkpoint.**
-   Do not freeze an API before the existential benchmark result.
+   Canonical runtime interoperability is green and the proposal/CTK candidate is upstream-schema-valid. The remaining blocker is external maintainer discussion/acceptance; current connector writes return 403.
+6. **US-33 — VERIFIED CLOSED.**
+   PR #6 reduced the checkpoint to one commit, passed the full merge gate, and was squash-merged to main.
+7. **US-30 — package only after independent conformance consumption or upstream acceptance.**
+   Do not freeze an API merely because internal reviewability is solved.
 8. **US-26 / US-27 — P1 cross-benchmark generalization.**
    Keep AgentAbstain as a constraint/fail-closed stress test, not as the definition of residual-necessity correctness.
 9. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
