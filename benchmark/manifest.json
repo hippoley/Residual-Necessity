@@ -152,7 +152,12 @@
         "repository": "caoshidong66/safeact",
         "commit": "841816cf1e376e6fbf8600cffac5df1736e1d369",
         "code_license": "MIT",
-        "data_license": "CC BY 4.0"
+        "data_license": "CC BY 4.0",
+        "upstream_code_module": "scripts/safeact_contract.py",
+        "contract_id": "safeact_evaluation_v1",
+        "integration_run": 37911867246,
+        "integration_artifact_id": 11606827845,
+        "contract_delegation": "canonical outcome normalization and evaluation contract invariants are loaded from pinned upstream code, not reimplemented locally"
       },
       "cases": {
         "supported": "SAB-V1-009",
@@ -171,8 +176,47 @@
       "corpus_audit": {
         "scope": "all pinned SafeAct materialized_evidence JSON documents",
         "invariant": "all projected predicates remain constraints; missing/defer never grants negative authority",
-        "required": true
-      }
+        "required": true,
+        "observed": {
+          "materialized_files": 277,
+          "predicate_count": 277,
+          "positive_authority_count": 176,
+          "negative_authority_count": 0,
+          "projected_status_counts": {
+            "TRUE": 176,
+            "UNKNOWN": 93,
+            "STALE": 7,
+            "CONFLICTED": 1
+          },
+          "source_status_counts": {
+            "SUPPORTED": 181,
+            "MISSING": 53,
+            "VIOLATED": 42,
+            "UNAVAILABLE_IN_ENV": 1
+          }
+        }
+      },
+      "necessity_signal_bias": {
+        "existing_execution": {
+          "count": 233,
+          "observed_values": {
+            "false": 233
+          }
+        },
+        "existing_refund": {
+          "count": 16,
+          "observed_values": {
+            "false": 16
+          }
+        },
+        "conclusion": "SafeAct static materialized corpus is not a balanced residual-necessity benchmark; do not synthesize necessity-negative labels from action-support evidence.",
+        "benchmark_policy": "Use SafeAct only for evidence/constraint grounding unless a real stateful before/after execution pair is obtained from upstream runtime."
+      },
+      "forbidden_claims": [
+        "SafeAct SUPPORTED implies RN ACT",
+        "SafeAct MISSING/DEFER implies RN FALSE or ABSTAIN",
+        "SafeAct static corpus provides balanced necessity positives and negatives"
+      ]
     }
   ],
   "aggregation": {
