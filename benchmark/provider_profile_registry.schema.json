@@ -164,6 +164,32 @@
               "const": "complete_result_field"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "kind",
+            "expression",
+            "authority"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "cel"
+            },
+            "expression": {
+              "type": "string",
+              "minLength": 1
+            },
+            "authority": {
+              "const": "complete_result_field"
+            }
+          }
         }
       ]
     },
