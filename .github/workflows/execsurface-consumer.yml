@@ -1,0 +1,158 @@
+name: ExecSurface external consumer
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+
+concurrency:
+  group: residual-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  residual-necessity-workload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Install workload dependencies
+        run: python -m pip install pytest==9.1.1 jsonschema==4.26.0
+
+      - name: Download and verify ExecSurface Alpha.6
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=v0.1.0-alpha.6
+          TARGET=x86_64-unknown-linux-gnu
+          ASSET="execsurface-${VERSION}-${TARGET}.tar.gz"
+          BASE="https://github.com/AETHERXGLOBAL/execsurface/releases/download/${VERSION}"
+          curl -fLO "${BASE}/${ASSET}"
+          curl -fLO "${BASE}/${ASSET}.sha256"
+          sha256sum -c "${ASSET}.sha256"
+          tar -xzf "${ASSET}"
+          find . -type f -name execsurface -perm -111 -print -quit > /tmp/execsurface-path
+          test -s /tmp/execsurface-path
+          "$(cat /tmp/execsurface-path)" --version
+
+      - name: ExecSurface doctor
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXE="$(cat /tmp/execsurface-path)"
+          "$EXE" doctor
+
+      - name: Generate isolated consumer config
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXE="$(cat /tmp/execsurface-path)"
+          mkdir -p /tmp/execsurface-consumer
+          cd /tmp/execsurface-consumer
+          "$GITHUB_WORKSPACE/$EXE" init --command "python -m pytest -q" --github-actions
+          ls -la
+
+      - name: Capture typed runtime evidence
+        shell: bash
+        run: |
+          set +e
+          EXE="$GITHUB_WORKSPACE/$(cat /tmp/execsurface-path)"
+          cd "$GITHUB_WORKSPACE"
+          "$EXE" observe --evidence-output /tmp/execsurface-evidence.json -- python -m pytest -q
+          RC=$?
+          echo "observe_exit_code=$RC"
+          if [ -f /tmp/execsurface-evidence.json ]; then
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("/tmp/execsurface-evidence.json")
+          data = json.loads(p.read_text())
+          print("schema_version=", data.get("schema_version"))
+          print("report_kind=", data.get("report_kind"))
+          print("collection_health=", data.get("collection_health"))
+          print("unsupported_capabilities=", data.get("unsupported_capabilities"))
+          raw = data.get("raw_observation") or {}
+          print("raw_complete=", raw.get("complete"))
+          print("raw_warnings=", raw.get("warnings"))
+          print("effects=", len(data.get("effects") or []))
+          PY
+          fi
+          exit 0
+
+      - name: Learn Residual Necessity workload
+        id: learn
+        shell: bash
+        run: |
+          set +e
+          EXE="$GITHUB_WORKSPACE/$(cat /tmp/execsurface-path)"
+          cd "$GITHUB_WORKSPACE"
+          "$EXE" learn -- python -m pytest -q
+          RC=$?
+          echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+          echo "learn_exit_code=$RC"
+          exit 0
+
+      - name: Qualify learn outcome against captured evidence
+        shell: bash
+        env:
+          LEARN_EXIT_CODE: ${{ steps.learn.outputs.exit_code }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          rc = int(os.environ["LEARN_EXIT_CODE"])
+          evidence = json.loads(Path("/tmp/execsurface-evidence.json").read_text())
+          health = (evidence.get("collection_health") or {}).get("state")
+          warnings = (evidence.get("collection_health") or {}).get("warning_codes") or []
+
+          print("learn_exit_code=", rc)
+          print("collection_health=", health)
+          print("warning_codes=", warnings)
+
+          if rc == 0:
+              print("classification=BASELINE_LEARNED")
+          elif health and health != "complete":
+              print("classification=FAIL_CLOSED_ON_INCOMPLETE_EVIDENCE")
+          else:
+              raise SystemExit(
+                  "learn failed without an evidence-level incomplete classification"
+              )
+          PY
+
+      - name: Check same external workload
+        if: steps.learn.outputs.exit_code == '0'
+        shell: bash
+        run: |
+          set +e
+          EXE="$GITHUB_WORKSPACE/$(cat /tmp/execsurface-path)"
+          cd "$GITHUB_WORKSPACE"
+          "$EXE" check --json-output /tmp/execsurface-report.json -- python -m pytest -q
+          RC=$?
+          echo "execsurface_exit_code=$RC"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("/tmp/execsurface-report.json")
+          print("report_exists=", p.exists())
+          if p.exists():
+              data = json.loads(p.read_text())
+              print("schema_version=", data.get("schema_version"))
+              print("verdict=", data.get("verdict"))
+              print("findings=", len(data.get("findings", [])))
+          PY
+          exit "$RC"
+
+      - name: Preserve external consumer report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: execsurface-residual-necessity-report
+          path: |
+            /tmp/execsurface-report.json
+            /tmp/execsurface-evidence.json
+          if-no-files-found: warn

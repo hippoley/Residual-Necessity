@@ -1,0 +1,97 @@
+# User Story Audit
+
+Status vocabulary:
+
+- **CLOSED** — implemented and covered by executable tests or external evidence.
+- **PARTIAL** — code exists but an external/runtime acceptance test is still pending.
+- **OPEN** — promised by positioning or required by Reality Gate but not yet implemented.
+- **DE-SCOPED** — explicitly removed because the repository cannot currently justify the claim.
+
+## Core decision semantics
+
+| ID | User story | Status | Acceptance evidence |
+| --- | --- | --- | --- |
+| US-01 | As a runtime, I only ACT when a current violated reality predicate is explicitly linked to the proposed intervention. | CLOSED | `intervention.justified_by` must reference required reality predicates; core tests reject unknown/non-reality justification. |
+| US-02 | As a runtime, TRUE evidence from the wrong target/revision must never authorize ACT. | CLOSED | Positive authority is scoped to predicate + target + revision; wrong-target/revision tests return INVESTIGATE. |
+| US-03 | As a runtime, absence alone must never become FALSE. | CLOSED | FALSE without scoped negative authority returns INVESTIGATE. |
+| US-04 | As a runtime, authoritative FALSE for the exact predicate/target/revision may justify ABSTAIN. | CLOSED | Bounded negative-authority witness + conformance case `already-resolved-abstain`. |
+| US-05 | As a runtime, missing / UNKNOWN / CONFLICTED / STALE required evidence must not silently authorize mutation. | CLOSED | Gate maps unresolved required evidence to INVESTIGATE. |
+| US-06 | As a runtime, a human-only predicate must route to human resolution. | CLOSED | Core test + conformance vector `human-only-escalate`. |
+| US-07 | As a runtime, a stale request that is already satisfied should ABSTAIN when current-state absence is authoritative. | CLOSED | Conformance vector `already-resolved-abstain`. |
+| US-08 | As a runtime, a retry/repeated action should ABSTAIN when the previous transition already satisfied the invariant. | CLOSED | Conformance vector `retry-after-success-abstain`. |
+| US-09 | As a runtime, a partial fix must still ACT when the historical symptom is gone but a residual violated property remains. | CLOSED | `examples/residual-act.json` + conformance vector `partial-fix-residual-act`. |
+| US-10 | As a runtime, FALSE freshness/scope must not be confused with “problem solved”. | CLOSED | Freshness/scope FALSE returns INVESTIGATE; core test covers freshness. |
+| US-11 | As a runtime, duplicate predicate IDs or malformed justification references must fail closed. | CLOSED | Core tests reject duplicates and unknown justification predicates. |
+
+## Evidence-provider semantics
+
+| ID | User story | Status | Acceptance evidence |
+| --- | --- | --- | --- |
+| US-12 | As an evidence consumer, I can distinguish record/evidence completeness from proposition-level completeness. | CLOSED at reference-contract level | `docs/COMPLETENESS_WITNESS.md`; gate requires bounded negative authority. |
+| US-13 | As an ExecSurface consumer, matching typed evidence can become a scoped TRUE observation without inheriting policy authority. | CLOSED in adapter tests | Adapter validates typed/raw consistency and emits `positive_authority` scoped to receipt target/revision. |
+| US-14 | As an ExecSurface consumer, incomplete or unsupported evidence stays UNKNOWN. | CLOSED | Adapter tests cover incomplete collection and unsupported capability. |
+| US-15 | As an ExecSurface consumer, effect absence must not become FALSE until the producer grants proposition-specific negative authority. | CLOSED by conservative contract | Absence returns UNKNOWN; external contract question is open upstream. |
+| US-16 | As a consumer, contradictory typed/raw evidence must fail closed. | CLOSED | Backend, completeness, and warning-code mismatch tests. |
+| US-17 | As a runtime, every decision is pinned to a current target revision/state token rather than relying on wall-clock freshness heuristics. | CLOSED for draft semantics | `target.revision` is required; positive/negative authority must match it. Wall-clock TTL is intentionally not inferred by the gate. |
+
+## Governance/runtime integrations
+
+| ID | User story | Status | Acceptance evidence |
+| --- | --- | --- | --- |
+| US-18 | As an ACS host, policy decisions must inherit the same core gate semantics instead of trusting a naked status. | CLOSED in code/tests | ACS annotator now consumes a full receipt and calls `gate.evaluate()`. |
+| US-19 | As an Agent Hooks host, scoped ACT permits while ABSTAIN/unresolved evidence blocks before the side effect. | CLOSED for canonical control contract | Agent Hooks Beta E2E is green on push and PR runs using the real InterceptionEmitter. |
+| US-20 | As an ACS/audit consumer, each verdict is bound to the exact receipt used for the decision. | CLOSED in bridge | Annotation includes receipt SHA-256 digest; ACS evidence artefact references it. Released ACS 0.3.1b1 PRE_TOOL_CALL compatibility is green. |
+| US-21 | As an external project, I can independently reproduce a real Residual-Necessity workload result. | CLOSED for one upstream evidence record | ExecSurface maintainers independently qualified one run as genuine external real-workload evidence. |
+| US-22 | As a standards implementer, I can use an executable conformance pack rather than prose examples. | PARTIAL | `conformance/core-cases.json` exists and is executed in tests; Agent Hooks interoperability is green, but no upstream CTK/conformance claim exists yet. |
+
+## Evaluation / Reality Gate
+
+| ID | User story | Status | Acceptance evidence |
+| --- | --- | --- | --- |
+| US-23 | As an evaluator, unnecessary intervention and missed required action use the correct class-conditional denominators. | CLOSED after audit fix | Expected-ABSTAIN ACTs count as unnecessary intervention; expected-ACT **any non-ACT** counts as false abstention / missed required action; `act_recall` is reported so always-INVESTIGATE cannot game the metric. |
+| US-24 | As an evaluator, paired accuracy only scores complete ACT/ABSTAIN pairs. | CLOSED | Incomplete pairs excluded; duplicate members rejected. |
+| US-25 | As a benchmark consumer, hidden gold never leaks into inference. | CLOSED for data preparation | AgentAbstain blind-slice tests and CI boundary. |
+| US-26 | As a benchmark consumer, Residual Necessity actually predicts AgentAbstain outcomes from **tool-visible** current-state observations before labels are revealed. | OPEN — implementation debt, not data unavailability | AgentAbstain publicly ships the executable environments and runtime export path. Directly reading hidden initial state or gold task fields is disallowed; a read/verify-tool probe runner is still missing. |
+| US-27 | As a project, I can demonstrate lower unnecessary intervention without collapsing legitimate-action recall. | OPEN — primary Reality Gate | No superiority result yet. |
+| US-28 | As a project, I compare against always-act, always-abstain, and at least one reasonable evidence/repair baseline. | PARTIAL | Trivial baselines implemented and now measured with non-ACT missed-action semantics; meaningful runtime-evidence baseline still open. |
+| US-29 | As a project, partial-fix cases are present in the real evaluation, not only synthetic fixtures. | OPEN | Current partial-fix conformance vector is synthetic; external FixedBench artifact path remains unresolved. |
+
+## Product / dependency surface
+
+| ID | User story | Status | Acceptance evidence |
+| --- | --- | --- | --- |
+| US-30 | As a third-party developer, I can install a versioned package and import a stable API. | BLOCKED BY REALITY GATE | Packaging now would prematurely freeze an unvalidated API. Keep importable adapters in-tree until US-26/27 survive real paired evaluation. |
+| US-31 | As a third-party developer, schema changes are versioned and examples cannot silently drift. | CLOSED for current draft | Receipt schema bumped to 0.2; examples/conformance validated by JSON Schema in CI. |
+| US-32 | As a third-party developer, the repository has a canonical license file. | CLOSED | Full canonical Apache-2.0 license text installed. |
+| US-33 | As a reviewer, one PR tells one coherent story. | PARTIAL, materially improved | PR #2 is now reframed around one Reality Gate foundation: receipt semantics + benchmark boundary + canonical runtime/evidence interoperability + explicit node migration. It remains a large 90+ commit draft until latest-head CI is green and it is squash-merged. |
+| US-34 | As a maintainer, latest commits cancel superseded CI so one PR does not accumulate stale runs. | CLOSED | Workflow concurrency + cancel-in-progress added. |
+| US-35 | As a runtime integrator, unknown or misspelled control fields cannot silently change semantics even when JSON Schema validation is bypassed. | CLOSED after audit fix | Schema core objects are closed and `gate.evaluate()` independently fails closed on unknown fields, malformed predicates/interventions, and orphan observations. |
+| US-36 | As an Agent Hooks audit consumer, evidence supporting a permit remains attributable after verdict composition. | OPEN upstream-contract gap | Real Beta E2E shows interceptor permit evidence is not preserved on synthesized combined allow; reproduction is frozen in `docs/AGENT_HOOKS_PERMIT_EVIDENCE_NOTE.md`. No upstream acceptance yet. |
+| US-37 | As a Reality Gate runner, I can obtain AgentAbstain observations without reading hidden initial state or gold task metadata. | CLOSED for one real external path | Public CI run 37871728936 used pinned AgentAbstain runtime commit `cfc3faf...`, called only `security_and_privacy_admin.search_breach_records` (kind=`lookup`), produced one execution-log entry, exposed no gold fields, read no raw state, and preserved artifact 11590222305. This proves the observation boundary, not predictive value. |
+
+## Claims deliberately de-scoped
+
+| ID | Former claim | Status | Reason |
+| --- | --- | --- | --- |
+| DS-01 | “Compute the smallest justified state change.” | DE-SCOPED | No action-effect/minimization model exists. Current project only judges whether the proposed transition is justified. |
+| DS-02 | “Pre-action evidence gate” as primary novelty. | DE-SCOPED | Too crowded; overlaps ACS/OAP/TwinCheck and other runtime-governance work. |
+| DS-03 | “No-op/stale/retry detection” as primary novelty. | DE-SCOPED | TwinCheck and adjacent work already cover significant portions. |
+| DS-04 | “Fill ADL §8.8.” | DE-SCOPED | ADL §8.8 is record omission completeness; predicate completeness is a distinct question and must not be conflated. |
+
+# Remaining closure order
+
+The repository should not expand framework surface until these are resolved in order:
+
+1. **US-26 / US-27 / US-28 — blinded AgentAbstain prediction and measurement.**
+   US-37 now proves one read/verify-only external observation path. The next existential step is to turn tool-visible observations into frozen predictions across paired cases, then reveal labels and measure both error directions.
+2. **US-29 — real partial-fix evidence.**
+   FixedBench confirms the failure mode, but no directly consumable public partial-fix executable corpus is currently integrated.
+3. **US-36 / US-22 — Agent Hooks upstream/conformance reality.**
+   Canonical runtime interoperability is green; external maintainer discussion, CTK vector, or accepted conformance artifact is still absent.
+4. **US-33 — PR/history cleanup.**
+   Latest-head CI must be green, then squash-merge the Reality Gate foundation so main has one reviewable checkpoint.
+5. **US-30 — package only after US-27 survives.**
+   Do not freeze an API before the existential benchmark result.
+6. **Time-based TTL remains out of scope unless a real workload proves revision/state-token binding insufficient.**
+
+If the real evaluation cannot beat reasonable baselines without false-abstention collapse, stop independent framework growth and upstream the useful completeness/conformance pieces.

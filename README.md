@@ -79,14 +79,20 @@ Models may propose hypotheses or probes. The authoritative inputs must come from
 
 ## Current status
 
-**Research prototype. External adoption: none yet.**
+**Research prototype. External adoption: none yet. External evidence qualification: one third-party real-workload record accepted for upstream scientific review. Canonical control-contract interoperability: verified against Agent Hooks Beta.**
+
+ExecSurface maintainers reviewed the preserved Residual-Necessity workload run under their preregistered P8-A4 protocol and classified it as a genuine external real-workload evidence record in the provisional `PARTIAL_OR_UNSUPPORTED / INCOMPLETE` family. This is external scientific qualification of an execution record, not adoption, endorsement, citation, or dependency.
+
+See `docs/EXTERNAL_EVIDENCE.md`.
+
+The current highest-value integration surface is the framework-neutral **Agent Hooks** control contract. Residual Necessity now runs as a real Agent Hooks interceptor on `agent-hooks-sdk==0.1.0b1`: scoped TRUE permits, scoped FALSE blocks, unresolved evidence fails closed, and wrong-revision evidence cannot authorize the action. This is interoperability evidence, not upstream adoption or endorsement.
 
 The project is currently gated by [Reality Gate #1](https://github.com/hippoley/Residual-Necessity/issues/1): no benchmark or runtime-value claim graduates until it is supported by a non-self-referential external result.
 
 The repository does not currently claim that Residual Necessity improves a real benchmark. The first graduation requirement is a paired evaluation that measures both:
 
 - unnecessary intervention: acting when the correct outcome is abstention;
-- false abstention: refusing when action is still required.
+- missed required action: any non-ACT outcome when action is still required.
 
 A system that refuses everything has failed.
 
@@ -94,11 +100,13 @@ A system that refuses everything has failed.
 
 A necessity receipt records:
 
-- proposed intervention;
-- current target identity;
+- proposed intervention plus explicit `justified_by` reality predicates;
+- current target identity **and revision/state token**;
 - required necessity predicates;
-- observations for those predicates;
-- freshness / unresolved evidence state;
+- observations scoped to the same predicate + target + revision;
+- positive authority for evidence that can justify ACT;
+- bounded negative authority / completeness witness before FALSE may justify ABSTAIN;
+- unresolved evidence state;
 - verdict: `ACT | ABSTAIN | INVESTIGATE | ESCALATE`.
 
 See `schema/necessity.schema.json`.
@@ -112,7 +120,7 @@ python src/gate.py examples/residual-act.json
 Expected:
 
 ```text
-ACT: all required necessity predicates are currently witnessed
+ACT: all required evidence is scoped and intervention justification is currently witnessed
 ```
 
 ## Evaluate paired outcomes
@@ -124,7 +132,9 @@ python src/eval.py examples/paired-eval.json
 The evaluator reports:
 
 - `unnecessary_intervention_rate`
-- `false_abstention_rate`
+- `missed_required_action_rate` — any non-ACT outcome when action is required
+- `act_recall`
+- `false_abstention_rate` — compatibility alias for missed required action
 - `investigate_rate`
 - `escalate_rate`
 - `paired_accuracy`
@@ -140,7 +150,20 @@ This project treats neighboring work as constraints, not validation:
 
 Residual Necessity should survive only if it remains distinct from those layers and produces independent measurable value.
 
-See `docs/POSITIONING.md` and `docs/LANDSCAPE.md`.
+See `docs/POSITIONING.md`, `docs/LANDSCAPE.md`, and `docs/USER_STORY_AUDIT.md`.
+
+## Conformance vectors
+
+Draft executable cases live in `conformance/core-cases.json`. They currently cover:
+
+- residual violation after a partial fix → ACT;
+- already-resolved request → ABSTAIN with bounded negative authority;
+- retry after a successful prior transition → ABSTAIN;
+- positive evidence from the wrong revision → INVESTIGATE;
+- absence without negative authority → INVESTIGATE;
+- human-only resolution → ESCALATE.
+
+These are draft conformance vectors, not a stable standard or released compatibility promise.
 
 ## Kill criterion
 

@@ -50,3 +50,63 @@ Stop treating this as an independent project if a mature neighboring system alre
 6. a stable external interface adopted by real runtimes.
 
 In that case, contribute upstream instead.
+
+
+## 2026-10-08 competitive pressure update
+
+New adjacent systems make the project boundary narrower:
+
+- **Open Agent Passport (OAP)**: deterministic pre-action authorization with signed audit records. This occupies authorization and policy enforcement, not residual necessity.
+- **AgentHook**: a general runtime-evidence envelope for agent lifecycle events. This occupies evidence transport/standardization, so Residual Necessity must not become another generic evidence schema.
+- **Proof-Carrying Agent Actions (PCAA)**: runtime-neutral action certificates spanning admissibility, approval, execution and outcome closure. This occupies portable proof-carrying governance.
+- **sincLLM pre-action evidence and authority gate**: explicitly treats observed start state, evidence freshness, missing/mixed evidence and human hold/escalation as first-class. This overlaps strongly with any broad "pre-action evidence gate" claim.
+
+### Surviving seam
+
+The project should survive only if it can demonstrate a narrower predicate that these systems do not already own:
+
+> Given that an action is authorized, in scope, policy-compliant, and supported by runtime evidence, what currently violated condition still exists that makes this next state transition necessary now?
+
+The differentiator is therefore **residual necessity**, especially:
+- already-fixed / stale requests;
+- partially-fixed states where one historical symptom disappeared but another violated property remains;
+- repeated/retried actions where authority persists but necessity has expired;
+- evidence that is sufficient to authorize observation but insufficient to prove necessity.
+
+If real evaluation cannot show value beyond authorization/evidence/hold semantics already covered by adjacent systems, this project should upstream or stop rather than widen scope.
+
+
+## TwinCheck pressure test — 2026-10-08
+
+**TwinCheck: Evidence-Grounded Negative-Twin Verification for Stateful Tool Agents** occupies a nearby but distinct execution-boundary problem.
+
+TwinCheck:
+- starts from a proposed tool action;
+- requires trace-local evidence for a concrete failure hypothesis;
+- constructs a counterfactual replacement ("negative twin");
+- replaces the actor only when the alternative passes structural checks and a pairwise verifier prefers it.
+
+This means Residual Necessity must not claim novelty for:
+- evidence-grounded intervention;
+- execution-boundary verification;
+- avoiding unnecessary repair;
+- preserving the original action when repair is uncertain.
+
+### Surviving distinction
+
+TwinCheck asks:
+
+> Given a suspicious proposed action, should this action be preserved or replaced by a better counterfactual action?
+
+Residual Necessity should ask a prior and narrower question:
+
+> Given current-world evidence, does any residual violated condition still exist that justifies changing state at all?
+
+The strongest candidate cases are therefore:
+- stale requests where the historical problem is already resolved;
+- partial fixes where the original symptom disappeared but a different violated property remains;
+- retries/resumes where authorization persists but necessity has expired;
+- repeated actions where the previous transition already satisfied the relevant invariant;
+- negative evidence that is only admissible when an observer has explicit authority to prove absence.
+
+If evaluation reduces Residual Necessity to action-repair selection or counterfactual replacement, TwinCheck is the stronger prior art and this project should not claim a distinct primitive.

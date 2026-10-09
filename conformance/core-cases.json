@@ -1,0 +1,277 @@
+[
+  {
+    "id": "partial-fix-residual-act",
+    "expected": "ACT",
+    "receipt": {
+      "schema_version": "0.2",
+      "intervention": {
+        "id": "patch-p2",
+        "kind": "modify_code",
+        "description": "patch remaining P2 only",
+        "justified_by": [
+          "residual_violation_exists"
+        ]
+      },
+      "target": {
+        "identity": "repo:example/project",
+        "revision": "r2"
+      },
+      "predicates": [
+        {
+          "id": "residual_violation_exists",
+          "required": true,
+          "kind": "reality"
+        },
+        {
+          "id": "target_is_current",
+          "required": true,
+          "kind": "freshness"
+        }
+      ],
+      "observations": {
+        "residual_violation_exists": {
+          "status": "TRUE",
+          "positive_authority": {
+            "scope": {
+              "predicate_id": "residual_violation_exists",
+              "target_identity": "repo:example/project",
+              "target_revision": "r2"
+            },
+            "basis": "current_revision_test",
+            "evidence_ref": "test:p2"
+          }
+        },
+        "target_is_current": {
+          "status": "TRUE",
+          "positive_authority": {
+            "scope": {
+              "predicate_id": "target_is_current",
+              "target_identity": "repo:example/project",
+              "target_revision": "r2"
+            },
+            "basis": "revision_identity",
+            "evidence_ref": "git:r2"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "already-resolved-abstain",
+    "expected": "ABSTAIN",
+    "receipt": {
+      "schema_version": "0.2",
+      "intervention": {
+        "id": "repair-service",
+        "kind": "modify_state",
+        "description": "repair service only if violation remains",
+        "justified_by": [
+          "residual_violation_exists"
+        ]
+      },
+      "target": {
+        "identity": "service:payments",
+        "revision": "r9"
+      },
+      "predicates": [
+        {
+          "id": "residual_violation_exists",
+          "required": true,
+          "kind": "reality"
+        },
+        {
+          "id": "target_is_current",
+          "required": true,
+          "kind": "freshness"
+        }
+      ],
+      "observations": {
+        "residual_violation_exists": {
+          "status": "FALSE",
+          "negative_authority": {
+            "scope": {
+              "predicate_id": "residual_violation_exists",
+              "target_identity": "service:payments",
+              "target_revision": "r9"
+            },
+            "basis": "authoritative_state_query",
+            "evidence_ref": "api:payments:r9"
+          }
+        },
+        "target_is_current": {
+          "status": "TRUE",
+          "positive_authority": {
+            "scope": {
+              "predicate_id": "target_is_current",
+              "target_identity": "service:payments",
+              "target_revision": "r9"
+            },
+            "basis": "revision_identity",
+            "evidence_ref": "deploy:r9"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "retry-after-success-abstain",
+    "expected": "ABSTAIN",
+    "receipt": {
+      "schema_version": "0.2",
+      "intervention": {
+        "id": "retry-window-close",
+        "kind": "device_command",
+        "description": "close window on retry only if still open",
+        "justified_by": [
+          "window_still_open"
+        ]
+      },
+      "target": {
+        "identity": "device:window:kitchen",
+        "revision": "state-104"
+      },
+      "predicates": [
+        {
+          "id": "window_still_open",
+          "required": true,
+          "kind": "reality"
+        },
+        {
+          "id": "target_is_current",
+          "required": true,
+          "kind": "freshness"
+        }
+      ],
+      "observations": {
+        "window_still_open": {
+          "status": "FALSE",
+          "negative_authority": {
+            "scope": {
+              "predicate_id": "window_still_open",
+              "target_identity": "device:window:kitchen",
+              "target_revision": "state-104"
+            },
+            "basis": "authoritative_device_state",
+            "evidence_ref": "device-state:104"
+          }
+        },
+        "target_is_current": {
+          "status": "TRUE",
+          "positive_authority": {
+            "scope": {
+              "predicate_id": "target_is_current",
+              "target_identity": "device:window:kitchen",
+              "target_revision": "state-104"
+            },
+            "basis": "device_state_revision",
+            "evidence_ref": "device-state:104"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "wrong-revision-positive-investigate",
+    "expected": "INVESTIGATE",
+    "receipt": {
+      "schema_version": "0.2",
+      "intervention": {
+        "id": "repair",
+        "kind": "modify_state",
+        "description": "repair current service",
+        "justified_by": [
+          "violation_exists"
+        ]
+      },
+      "target": {
+        "identity": "service:orders",
+        "revision": "r3"
+      },
+      "predicates": [
+        {
+          "id": "violation_exists",
+          "required": true,
+          "kind": "reality"
+        }
+      ],
+      "observations": {
+        "violation_exists": {
+          "status": "TRUE",
+          "positive_authority": {
+            "scope": {
+              "predicate_id": "violation_exists",
+              "target_identity": "service:orders",
+              "target_revision": "r2"
+            },
+            "basis": "old_probe",
+            "evidence_ref": "probe:r2"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "absence-without-negative-authority-investigate",
+    "expected": "INVESTIGATE",
+    "receipt": {
+      "schema_version": "0.2",
+      "intervention": {
+        "id": "repair",
+        "kind": "modify_state",
+        "description": "repair only if needed",
+        "justified_by": [
+          "violation_exists"
+        ]
+      },
+      "target": {
+        "identity": "service:orders",
+        "revision": "r3"
+      },
+      "predicates": [
+        {
+          "id": "violation_exists",
+          "required": true,
+          "kind": "reality"
+        }
+      ],
+      "observations": {
+        "violation_exists": {
+          "status": "FALSE",
+          "source": "non_exhaustive_observer"
+        }
+      }
+    }
+  },
+  {
+    "id": "human-only-escalate",
+    "expected": "ESCALATE",
+    "receipt": {
+      "schema_version": "0.2",
+      "intervention": {
+        "id": "irreversible-change",
+        "kind": "modify_state",
+        "description": "perform irreversible change",
+        "justified_by": [
+          "violation_exists"
+        ]
+      },
+      "target": {
+        "identity": "resource:critical",
+        "revision": "v1"
+      },
+      "predicates": [
+        {
+          "id": "violation_exists",
+          "required": true,
+          "kind": "reality",
+          "human_only": true
+        }
+      ],
+      "observations": {
+        "violation_exists": {
+          "status": "UNKNOWN"
+        }
+      }
+    }
+  }
+]
