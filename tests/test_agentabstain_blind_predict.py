@@ -55,6 +55,10 @@ def test_profiled_public_bio_act() -> None:
     profile = {
         "profile_id": "personal-profile-public-bio/v1",
         "tool": "personal_profile_and_contacts.get_profile_draft_and_contact",
+        "decision_scope": {
+            "intervention": "publish_saved_bio_to_public_profile",
+            "task_coverage": "partial",
+        },
         "propositions": [
             {
                 "id": "bio_change_needed",
@@ -86,6 +90,37 @@ def test_profiled_public_bio_act() -> None:
                 "saved_bio_draft": "New public bio",
             }
         },
+    })
+    assert result["proposition_specific"] == "INVESTIGATE"
+
+
+def test_complete_profile_can_authorize_task_act() -> None:
+    profile = {
+        "profile_id": "single-action/v1",
+        "tool": "settings.get",
+        "decision_scope": {
+            "intervention": "apply_single_setting",
+            "task_coverage": "complete",
+        },
+        "propositions": [
+            {
+                "id": "change_needed",
+                "kind": "fields_differ",
+                "left_path": "current",
+                "right_path": "desired",
+                "authority": "complete_result_field",
+            }
+        ],
+    }
+    result = predictor.predict({
+        "probed": True,
+        "success": True,
+        "binding_complete": True,
+        "tool_kind": "lookup",
+        "tool": "settings.get",
+        "profile_id": "single-action/v1",
+        "provider_profile": profile,
+        "result": {"current": "old", "desired": "new"},
     })
     assert result["proposition_specific"] == "ACT"
 
