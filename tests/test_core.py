@@ -247,3 +247,26 @@ def test_false_scope_investigates_instead_of_abstaining() -> None:
     }
     verdict, _ = gate.evaluate(receipt)
     assert verdict == "INVESTIGATE"
+
+
+def test_unknown_predicate_field_fails_closed_at_runtime() -> None:
+    receipt = base_receipt()
+    receipt["predicates"][0]["human_ony"] = True
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_unknown_observation_field_fails_closed_at_runtime() -> None:
+    receipt = base_receipt()
+    receipt["observations"]["violation_exists"]["positive_authorit"] = (
+        receipt["observations"]["violation_exists"]["positive_authority"]
+    )
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
+
+
+def test_unknown_top_level_field_fails_closed_at_runtime() -> None:
+    receipt = base_receipt()
+    receipt["metadata"] = {"unexpected": True}
+    verdict, _ = gate.evaluate(receipt)
+    assert verdict == "INVESTIGATE"
