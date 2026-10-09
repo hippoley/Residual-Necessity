@@ -63,6 +63,12 @@ jobs:
           assert "negative_authority" not in observation
           PY
 
+      - name: Inventory current-state necessity signals
+        run: |
+          python experiments/safeact_necessity_signal_inventory.py \
+            /tmp/safeact \
+            --out /tmp/safeact-necessity-signal-inventory.json
+
       - name: Prove SafeAct support cannot masquerade as necessity
         run: |
           python - <<'PY'
@@ -101,4 +107,5 @@ jobs:
           path: |
             /tmp/safeact-supported.json
             /tmp/safeact-missing.json
+            /tmp/safeact-necessity-signal-inventory.json
           if-no-files-found: error
