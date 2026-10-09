@@ -1,0 +1,85 @@
+{
+  "schema_version": "external-modules/0.1",
+  "modules": [
+    {
+      "id": "safeact-contract",
+      "source": "https://github.com/caoshidong66/safeact",
+      "pin": "841816cf1e376e6fbf8600cffac5df1736e1d369",
+      "upstream_module": "scripts/safeact_contract.py",
+      "integration_role": "canonical action-support/evaluation contract provider",
+      "local_glue": "experiments/safeact_upstream_contract.py",
+      "local_adapter": "experiments/safeact_constraint_adapter.py",
+      "workflow": ".github/workflows/safeact-interop.yml",
+      "code_license": "MIT",
+      "data_license": "CC BY 4.0",
+      "semantic_boundary": {
+        "upstream_owns": [
+          "canonical outcome normalization",
+          "protocol contracts",
+          "evaluation contract invariants",
+          "SafeAct time semantics"
+        ],
+        "residual_necessity_owns": [
+          "necessity versus constraint role",
+          "target/revision scoped authority",
+          "ACT/ABSTAIN/INVESTIGATE/ESCALATE gate"
+        ],
+        "forbidden_mapping": [
+          "SafeAct action support -> RN necessity",
+          "SafeAct MISSING/DEFER -> RN FALSE/negative authority"
+        ]
+      },
+      "failure_policy": "fail closed in CI if upstream contract or license assumptions drift"
+    },
+    {
+      "id": "agent-hooks",
+      "source": "https://github.com/responsibleai/agent-hooks",
+      "pin": "agent-hooks-sdk==0.1.0b1",
+      "upstream_module": "agent_hooks Python SDK",
+      "integration_role": "framework-neutral control/interceptor contract",
+      "local_glue": "experiments/agent_hooks_interceptor.py",
+      "workflow": ".github/workflows/agent-hooks-e2e.yml",
+      "semantic_boundary": {
+        "upstream_owns": [
+          "AgentContext",
+          "InterceptionEmitter",
+          "Verdict",
+          "Evidence",
+          "composition"
+        ],
+        "residual_necessity_owns": [
+          "necessity receipt semantics",
+          "evidence authority mapping"
+        ],
+        "known_gap": [
+          "permit-side evidence is not retained on synthesized combined allow"
+        ]
+      },
+      "failure_policy": "fail closed; do not emulate Agent Hooks semantics locally"
+    },
+    {
+      "id": "execsurface",
+      "source": "https://github.com/AETHERXGLOBAL/execsurface",
+      "pin": "external typed-evidence schema/workflow pin in execsurface-consumer CI",
+      "upstream_module": "typed observation evidence producer",
+      "integration_role": "runtime observation provider",
+      "local_glue": "experiments/execsurface_consumer.py",
+      "workflow": ".github/workflows/execsurface-consumer.yml",
+      "semantic_boundary": {
+        "upstream_owns": [
+          "observation collection health",
+          "typed runtime effects"
+        ],
+        "residual_necessity_owns": [
+          "proposition authority",
+          "necessity verdict"
+        ],
+        "forbidden_mapping": [
+          "PASS/REVIEW/BLOCK -> necessity",
+          "absence -> FALSE without negative authority"
+        ]
+      },
+      "failure_policy": "incomplete/unsupported evidence becomes UNKNOWN"
+    }
+  ]
+}
