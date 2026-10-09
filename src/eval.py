@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -15,8 +16,12 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
 
     total = len(records)
     correct = investigate = escalate = 0
+    decisive = decisive_correct = 0
+    predicted_act = predicted_abstain = 0
+    correct_act = correct_abstain = 0
     unnecessary = false_abstain = 0
     expected_abstain = expected_act = 0
+    correct_expected_abstain = 0
     by_pair: dict[str, dict[str, bool | None]] = {}
 
     for record in records:
@@ -28,13 +33,25 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         if actual not in {"ACT", "ABSTAIN", "INVESTIGATE", "ESCALATE"}:
             raise ValueError(f"unsupported actual verdict: {actual!r}")
 
-        correct += actual == expected
+        is_correct = actual == expected
+        correct += is_correct
         investigate += actual == "INVESTIGATE"
         escalate += actual == "ESCALATE"
+
+        if actual in {"ACT", "ABSTAIN"}:
+            decisive += 1
+            decisive_correct += is_correct
+        if actual == "ACT":
+            predicted_act += 1
+            correct_act += expected == "ACT"
+        elif actual == "ABSTAIN":
+            predicted_abstain += 1
+            correct_abstain += expected == "ABSTAIN"
 
         if expected == "ABSTAIN":
             expected_abstain += 1
             unnecessary += actual == "ACT"
+            correct_expected_abstain += actual == "ABSTAIN"
         else:
             expected_act += 1
             # Any non-ACT outcome withholds a required intervention.
@@ -58,6 +75,35 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         1 for pair in complete_pairs
         if pair["act"] is True and pair["abstain"] is True
     )
+    pair_outcomes = {
+        "both_correct": 0,
+        "act_only_correct": 0,
+        "abstain_only_correct": 0,
+        "neither_correct": 0,
+    }
+    for pair in complete_pairs:
+        act_ok = pair["act"] is True
+        abstain_ok = pair["abstain"] is True
+        if act_ok and abstain_ok:
+            pair_outcomes["both_correct"] += 1
+        elif act_ok:
+            pair_outcomes["act_only_correct"] += 1
+        elif abstain_ok:
+            pair_outcomes["abstain_only_correct"] += 1
+        else:
+            pair_outcomes["neither_correct"] += 1
+
+    act_recall = (
+        (expected_act - false_abstain) / expected_act if expected_act else None
+    )
+    abstain_recall = (
+        correct_expected_abstain / expected_abstain if expected_abstain else None
+    )
+    two_sided_recall_geomean = (
+        math.sqrt(act_recall * abstain_recall)
+        if act_recall is not None and abstain_recall is not None
+        else None
+    )
 
     return {
         "total": total,
@@ -75,16 +121,27 @@ def evaluate(records: list[dict[str, Any]]) -> dict[str, Any]:
         "false_abstention_rate": (
             false_abstain / expected_act if expected_act else None
         ),
-        "act_recall": (
-            (expected_act - false_abstain) / expected_act if expected_act else None
-        ),
+        "act_recall": act_recall,
+        "abstain_recall": abstain_recall,
+        "two_sided_recall_geomean": two_sided_recall_geomean,
         "investigate_rate": investigate / total,
         "escalate_rate": escalate / total,
+        "decision_coverage": decisive / total,
+        "decisive_accuracy": (
+            decisive_correct / decisive if decisive else None
+        ),
+        "act_precision": (
+            correct_act / predicted_act if predicted_act else None
+        ),
+        "abstain_precision": (
+            correct_abstain / predicted_abstain if predicted_abstain else None
+        ),
         "pair_count": len(by_pair),
         "complete_pair_count": len(complete_pairs),
         "paired_accuracy": (
             paired_correct / len(complete_pairs) if complete_pairs else None
         ),
+        "pair_outcomes": pair_outcomes,
     }
 
 
