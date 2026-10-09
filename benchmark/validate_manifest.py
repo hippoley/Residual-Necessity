@@ -57,6 +57,30 @@ def validate(data: dict) -> list[str]:
     if int(stats.get("bootstrap_samples",0)) < 1000:
         errors.append("runtime bootstrap must use at least 1000 samples")
     methods=runtime.get("methods") or {}
+    reporting=runtime.get("reporting_policy") or {}
+    required_headline={
+        "paired_accuracy",
+        "act_recall",
+        "abstain_recall",
+        "unnecessary_intervention_rate",
+        "missed_required_action_rate",
+        "decision_coverage",
+        "two_sided_recall_geomean",
+    }
+    if not required_headline.issubset(set(reporting.get("headline_metrics") or [])):
+        errors.append("runtime reporting policy missing required two-sided headline metrics")
+    if reporting.get("category_stratification_required") is not True:
+        errors.append("runtime scoring must require category stratification")
+    if reporting.get("pair_outcome_taxonomy_required") is not True:
+        errors.append("runtime scoring must require pair outcome taxonomy")
+    if reporting.get("development_results_may_not_claim_benchmark_superiority") is not True:
+        errors.append("development-only results must not support superiority claims")
+    if reporting.get("superiority_requires_frozen_holdout_reveal") is not True:
+        errors.append("superiority claim must require frozen holdout reveal")
+    if "decisive_accuracy" not in set(reporting.get("diagnostic_only_metrics") or []):
+        errors.append("decisive_accuracy must remain diagnostic-only")
+
+    methods=runtime.get("methods") or {}
     if methods.get("candidate_partition")!="development":
         errors.append("candidate method must remain development-only before reveal")
     if methods.get("holdout_reveal_requires_frozen_method") is not True:
