@@ -105,6 +105,15 @@
         "static_pair_equivalence_required": true,
         "category_visible_only_to_trusted_scoring": true,
         "source_task_identity_visible_to_inference": false
+      },
+      "provider_expression_engine": {
+        "name": "Common Expression Language",
+        "implementation": "cel-expr-python",
+        "version": "0.1.3",
+        "repository": "cel-expr/cel-python",
+        "license": "Apache-2.0",
+        "loading": "benchmark-only lazy runtime",
+        "authority_boundary": "CEL evaluates profile expressions but never grants authority without an explicit provider profile and complete binding"
       }
     },
     {
