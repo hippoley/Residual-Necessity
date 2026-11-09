@@ -40,6 +40,20 @@ It does **not** establish:
 - that ExecSurface has a defect;
 - that Residual Necessity improves abstention metrics.
 
+### Evaluator disclosure update — 2026-11-09
+
+Following the AETHER X GLOBAL request for P8-A4 clarification, the evaluator supplied an explicit declaration in [issue #140, comment 6733173781](https://github.com/AETHERXGLOBAL/execsurface/issues/140#issuecomment-6733173781):
+
+- **Relationship / independence:** no employment, ownership, contractual, or organizational affiliation with AETHER X GLOBAL; no authored ExecSurface code contribution. A prior public issue/report relationship exists: separate ExecSurface issue #164, raised after a separate trial and before the 8 October #140 run. This is disclosed; no A1 zero-assistance claim is made.
+- **Prior assistance:** no team guidance, private assistance, troubleshooting, or collaborative preparation before the original #140 run. Later clarification on the #164 observe-output privacy issue occurred after that original run.
+- **Operational environment:** GitHub-hosted Ubuntu x86_64, Python 3.11, checksum-verified Alpha.6 artifact. `doctor` passed and the target pytest workload passed 15/15. No separate setup, privilege, or documentation blocker was recorded. The material blocker was incomplete observation: `learn` exited 2 and created no baseline.
+- **Privacy accounting:** public records include workflow/command identity, timestamp/revision context, test result, doctor result, and learn exit/error classification. A field-by-field privacy audit of every captured value for the original #140 run was **not completed**; redaction completeness is therefore **not fully assessed**. Do not claim every potentially sensitive value was redacted. The separate #164 trial exposed path-bearing observe output; that is a distinct run and its remediation is separately recorded.
+- **Original execution:** no baseline was approved, and no downstream check or drift evaluation was performed after learning failed closed. The 15 passing workload tests are not an ExecSurface product baseline or PASS/REVIEW/BLOCK verdict.
+
+The original source run-head `ca7d14f937ce9069dc2eb742d20b7a03751ee073` and workflow merge-ref checkout `1283968a7d1797c45a47de5ee3c3aaa2cc399dbf` remain distinct identities. Later O_TMPFILE diagnostic artifacts do not retroactively establish syscall flags for the original run.
+
+**Current upstream gate status:** AETHER RESEARCH's prior decision remains `REQUEST_MORE_EVIDENCE`; the AETHER ASSURANCE audit of ExecSurface PR #190 recorded `REVISE`, not approval. The evaluator declaration above addresses the requested intake fields, but only the project's authorized scientific gatekeeper can decide whether it is sufficient to upgrade formal A4 qualification. Until that decision is recorded, keep the evidence as external intake / `INSUFFICIENT_DETAIL`; P8-A5 remains open. See [current PR #190](https://github.com/AETHERXGLOBAL/execsurface/pull/190) and [AETHER RESEARCH decision](https://github.com/AETHERXGLOBAL/execsurface/issues/114#issuecomment-6220943075).
+
 ## ExecSurface consumer-contract discussion
 
 - Upstream: AETHERXGLOBAL/execsurface
